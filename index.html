@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Flourishing Life Year Index — A new measure of the American good life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Serif+4:ital,opsz,wght@1,8..60,300;1,8..60,400;1,8..60,500&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1814;
+    --ink-soft: #3d3830;
+    --paper: #f4efe6;
+    --paper-warm: #ece5d6;
+    --paper-dark: #e0d8c4;
+    --rule: #c9bfa8;
+    --accent: #c8371d;        /* oxblood red */
+    --accent-soft: #e89a8a;
+    --domain-1: #2d5a4a;      /* deep green — purchasing power */
+    --domain-2: #8b6b2c;      /* ochre — wealth */
+    --domain-3: #a64238;      /* terracotta — family */
+    --domain-4: #355878;      /* slate blue — health */
+    --domain-5: #5c3a5c;      /* plum — education */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.55;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Subtle paper noise */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 48px; position: relative; z-index: 2; }
+
+  /* ————— NAV ————— */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(244, 239, 230, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 19px;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-mark {
+    width: 22px;
+    height: 22px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: relative;
+  }
+  .logo-mark::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    background: var(--paper);
+    border-radius: 50%;
+  }
+  .logo-mark::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    background: var(--ink);
+    border-radius: 50%;
+    z-index: 1;
+  }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .nav-links a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    color: var(--ink);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+  .nav-cta:hover { background: var(--ink); color: var(--paper); }
+
+  /* ————— HERO ————— */
+  header.hero {
+    padding: 80px 0 60px;
+    position: relative;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(48px, 7vw, 92px);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    margin-bottom: 32px;
+    max-width: 14ch;
+  }
+  h1 em {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+    letter-spacing: -0.015em;
+  }
+
+  .hero-lede {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(19px, 1.9vw, 24px);
+    line-height: 1.45;
+    font-weight: 300;
+    max-width: 56ch;
+    color: var(--ink-soft);
+    margin-bottom: 56px;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .stat {
+    padding: 28px 24px;
+    border-right: 1px solid var(--rule);
+  }
+  .stat:first-child { padding-left: 0; }
+  .stat:last-child { border-right: none; padding-right: 0; }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 44px;
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .stat-num .unit { font-size: 22px; color: var(--ink-soft); margin-left: 2px; }
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* ————— MISSION ————— */
+  section.mission {
+    padding: 120px 0 100px;
+    border-top: 1px solid var(--rule);
+    margin-top: 100px;
+  }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .mission-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .mission-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 38px;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+  .mission-title em { font-family: 'Source Serif 4', serif; font-style: italic; color: var(--accent); font-weight: 400; }
+  .mission-body p {
+    font-size: 18px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+    color: var(--ink-soft);
+  }
+  .mission-body p:first-child {
+    font-family: 'Fraunces', serif;
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .mission-body p:first-child::first-letter {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    float: left;
+    font-size: 68px;
+    line-height: 0.85;
+    padding: 6px 10px 0 0;
+    color: var(--accent);
+  }
+
+  /* ————— EQUATION ————— */
+  section.equation-section {
+    padding: 120px 0 100px;
+    border-top: 1px solid var(--rule);
+  }
+  .equation-heading {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 72px;
+    max-width: 22ch;
+  }
+  .equation-heading em {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+  .equation-viz {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 56px 48px;
+    position: relative;
+  }
+  .eq-domains {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: nowrap;
+    margin-bottom: 40px;
+  }
+  .eq-domain {
+    flex: 1;
+    text-align: center;
+    padding: 20px 8px;
+    border-top: 3px solid var(--c);
+    background: var(--paper-warm);
+    min-width: 0;
+  }
+  .eq-val {
+    font-family: 'Fraunces', serif;
+    font-size: 38px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--c);
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .eq-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    line-height: 1.3;
+  }
+  .eq-op {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--ink-soft);
+    padding: 0 2px;
+    flex-shrink: 0;
+  }
+  .eq-equals {
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .eq-result {
+    flex: 1.2;
+    text-align: center;
+    padding: 20px 8px;
+    border-top: 3px solid var(--accent);
+    background: var(--accent);
+    color: var(--paper);
+    min-width: 0;
+  }
+  .eq-result-val {
+    font-family: 'Fraunces', serif;
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .eq-result-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+  .eq-caption {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 68ch;
+    margin: 0 auto 48px;
+    text-align: center;
+    font-style: italic;
+    font-family: 'Source Serif 4', serif;
+  }
+  .eq-rollup {
+    max-width: 640px;
+    margin: 0 auto;
+    padding-top: 40px;
+    border-top: 1px solid var(--rule);
+  }
+  .eq-rollup-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 100px;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .eq-rollup-row.eq-rollup-sum {
+    border-top: 1px solid var(--ink);
+    margin-top: 4px;
+    padding-top: 18px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .eq-rollup-bar {
+    height: 8px;
+    background: var(--paper-warm);
+    border-radius: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+  .eq-rollup-bar span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    display: block;
+    border-radius: 1px;
+  }
+  .eq-rollup-val {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+    text-align: right;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .eq-rollup-sum .eq-rollup-val {
+    color: var(--accent);
+    font-size: 22px;
+  }
+  .eq-rollup-caption {
+    margin-top: 36px;
+    text-align: center;
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 58ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .eq-rollup-caption strong {
+    color: var(--ink);
+    font-weight: 500;
+    font-style: normal;
+    font-family: 'Fraunces', serif;
+  }
+
+  /* ————— DOMAINS ————— */
+  section.domains {
+    padding: 100px 0;
+    background: var(--paper-warm);
+    margin: 0 -9999px;
+    padding-left: 9999px;
+    padding-right: 9999px;
+  }
+  .domains-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  .domains-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-bottom: 80px;
+    align-items: end;
+  }
+  .domains-header h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 52px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .domains-header h2 em { font-family: 'Source Serif 4', serif; font-style: italic; font-weight: 400; color: var(--accent); }
+  .domains-header p {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 46ch;
+  }
+
+  .domain-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 24px;
+  }
+
+  .domain-card {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 32px;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .domain-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 48px -24px rgba(26, 24, 20, 0.18);
+  }
+  .domain-card.span-6 { grid-column: span 6; }
+  .domain-card.span-4 { grid-column: span 4; }
+
+  .domain-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .domain-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .domain-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 12px;
+  }
+  .domain-desc {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+  }
+  .domain-viz {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+  }
+  .domain-viz-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  .domain-metrics {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    line-height: 1.7;
+  }
+  .domain-metrics span {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--paper-warm);
+    border-radius: 2px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  /* ————— METHODOLOGY ————— */
+  section.method {
+    padding: 120px 0;
+  }
+  .method-header {
+    max-width: 720px;
+    margin-bottom: 80px;
+  }
+  .method-header h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 52px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+  .method-header h2 em { font-family: 'Source Serif 4', serif; font-style: italic; font-weight: 400; color: var(--accent); }
+  .method-header p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  .method-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ink);
+  }
+  .step {
+    padding: 32px 28px;
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+  .step:first-child { padding-left: 0; }
+  .step:last-child { border-right: none; padding-right: 0; }
+  .step-num {
+    font-family: 'Fraunces', serif;
+    font-size: 56px;
+    font-weight: 300;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .step-title {
+    font-family: 'Fraunces', serif;
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+  .step-body {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .principle-block {
+    margin-top: 100px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+  }
+  .principle {
+    padding-top: 24px;
+    border-top: 2px solid var(--ink);
+  }
+  .principle-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+  .principle-body {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  /* ————— QUOTE ————— */
+  section.quote-section {
+    padding: 100px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  blockquote {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 3.8vw, 48px);
+    line-height: 1.2;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    max-width: 22ch;
+    margin: 0 auto;
+    text-align: center;
+    color: var(--ink);
+    position: relative;
+  }
+  blockquote em { font-family: 'Source Serif 4', serif; font-style: italic; color: var(--accent); }
+  blockquote::before {
+    content: '“';
+    font-family: 'Fraunces', serif;
+    font-size: 120px;
+    color: var(--accent);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    line-height: 1;
+    opacity: 0.3;
+  }
+  .quote-attrib {
+    margin-top: 32px;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* ————— FOOTER ————— */
+  footer {
+    padding: 80px 0 48px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+  }
+  .footer-brand {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    max-width: 20ch;
+  }
+  .footer-tag {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    max-width: 32ch;
+  }
+  .footer-col h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .footer-col a {
+    display: block;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 8px;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom {
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* ————— ANIMATIONS ————— */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in {
+    opacity: 0;
+    animation: fadeUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  .d1 { animation-delay: 0.1s; }
+  .d2 { animation-delay: 0.25s; }
+  .d3 { animation-delay: 0.4s; }
+  .d4 { animation-delay: 0.55s; }
+  .d5 { animation-delay: 0.7s; }
+
+  @keyframes drawLine {
+    from { stroke-dashoffset: 400; }
+    to { stroke-dashoffset: 0; }
+  }
+  .draw {
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: drawLine 2s ease-out 0.5s forwards;
+  }
+
+  @keyframes growBar {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+  .bar {
+    transform-origin: bottom;
+    animation: growBar 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    transform: scaleY(0);
+  }
+
+  /* ————— RESPONSIVE ————— */
+  @media (max-width: 900px) {
+    .wrap { padding: 0 24px; }
+    .nav-inner { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(2) { border-right: none; }
+    .stat:nth-child(3), .stat:nth-child(4) { border-top: 1px solid var(--rule); padding-top: 24px; }
+    .mission-grid { grid-template-columns: 1fr; gap: 32px; }
+    .domains-header { grid-template-columns: 1fr; gap: 24px; margin-bottom: 48px; }
+    .domains-header h2 { font-size: 38px; }
+    .domain-card.span-6, .domain-card.span-4 { grid-column: span 12; }
+    .method-steps { grid-template-columns: 1fr; }
+    .step { border-right: none; border-bottom: 1px solid var(--rule); padding: 24px 0 !important; }
+    .step:last-child { border-bottom: none; }
+    .principle-block { grid-template-columns: 1fr; gap: 24px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .footer-bottom { flex-direction: column; gap: 12px; }
+    .domains-inner { padding: 0 24px; }
+    .equation-heading { font-size: 32px; }
+    .equation-viz { padding: 32px 20px; }
+    .eq-domains { flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .eq-domain { flex: 0 0 calc(50% - 6px); }
+    .eq-result { flex: 0 0 100%; margin-top: 8px; }
+    .eq-op { display: none; }
+    .eq-val { font-size: 28px; }
+    .eq-result-val { font-size: 36px; }
+    .eq-rollup-row { grid-template-columns: 1fr; gap: 8px; text-align: left; }
+    .eq-rollup-val { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <span>The Flourishing Life Year Index</span>
+    </div>
+    <div class="nav-links">
+      <a href="#mission">Flourishing Life Year</a>
+      <a href="#domains">Five Domains</a>
+      <a href="#method">Methodology</a>
+      <a href="#">Data</a>
+    </div>
+    <a href="#" class="nav-cta">Explore ↗</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow fade-in d1">Introducing the Flourishing Life Year</div>
+    <h1 class="fade-in d2">GDP counts what we make. The Flourishing Life Year counts what it's <em>for</em>.</h1>
+    <p class="hero-lede fade-in d3">
+      The Flourishing Life Year — the FLY — is a single number that measures whether a place sustains a flourishing life. One Flourishing Life Year equals one year lived under reference-quality conditions across five domains: purchasing power, wealth, family, health, and useful education. We publish Flourishing Life Years for every county, every year, from the same open federal data that powers GDP itself.
+    </p>
+
+    <div class="hero-stats fade-in d4">
+      <div class="stat">
+        <div class="stat-num">287<span class="unit">M</span></div>
+        <div class="stat-label">US Flourishing Life Years, 2025</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0.85</div>
+        <div class="stat-label">Flourishing Life Years per person</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">+0.4<span class="unit">%</span></div>
+        <div class="stat-label">Year-over-year change</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3,143</div>
+        <div class="stat-label">Counties tracked</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MISSION -->
+  <section class="mission" id="mission">
+    <div class="section-label">§ 01 — The Unit</div>
+    <div class="mission-grid">
+      <h2 class="mission-title">
+        One year, lived <em>well,</em> in the place you actually live.
+      </h2>
+      <div class="mission-body">
+        <p>
+          A Flourishing Life Year is the amount of human flourishing a place produces for one resident in one year. If the conditions around you — your earnings, your savings, your family, your health, your education — match a national reference, that counts as one Flourishing Life Year. If they fall short, the year counts for less. If they exceed it, for more.
+        </p>
+        <p>
+          The Flourishing Life Year borrows from the Quality-Adjusted Life Year used in health economics, but generalizes it. A year in a county where the median paycheck buys 70% of the national basket, where homeownership is out of reach, where life expectancy is five years below average, isn't the same year as one lived at reference. It's a discounted year — and the discount is exactly what the five domains measure.
+        </p>
+        <p>
+          Multiply Flourishing Life Years per person by population and you get total Flourishing Life Years — a stock of flourishing that a county, a state, or the country produces each year. It sums cleanly, it moves meaningfully, and unlike GDP it answers the question GDP can't: <em>is the life this economy supports actually a good one?</em>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE EQUATION -->
+  <section class="equation-section">
+    <div class="section-label">§ 02 — The Arithmetic</div>
+    <h2 class="equation-heading">A Flourishing Life Year is what you get when you <em>multiply the five</em> together.</h2>
+
+    <div class="equation-viz">
+      <!-- The five domain weights -->
+      <div class="eq-domains">
+        <div class="eq-domain" style="--c: var(--domain-1)">
+          <div class="eq-val">0.94</div>
+          <div class="eq-name">Purchasing<br>power</div>
+        </div>
+        <div class="eq-op">×</div>
+        <div class="eq-domain" style="--c: var(--domain-2)">
+          <div class="eq-val">0.88</div>
+          <div class="eq-name">Wealth<br>accumulation</div>
+        </div>
+        <div class="eq-op">×</div>
+        <div class="eq-domain" style="--c: var(--domain-3)">
+          <div class="eq-val">0.79</div>
+          <div class="eq-name">Family<br>formation</div>
+        </div>
+        <div class="eq-op">×</div>
+        <div class="eq-domain" style="--c: var(--domain-4)">
+          <div class="eq-val">0.91</div>
+          <div class="eq-name">Healthy<br>lifespan</div>
+        </div>
+        <div class="eq-op">×</div>
+        <div class="eq-domain" style="--c: var(--domain-5)">
+          <div class="eq-val">0.82</div>
+          <div class="eq-name">Useful<br>education</div>
+        </div>
+        <div class="eq-op eq-equals">=</div>
+        <div class="eq-result">
+          <div class="eq-result-val">0.49</div>
+          <div class="eq-result-label">Flourishing Life Years / person</div>
+        </div>
+      </div>
+
+      <div class="eq-caption">
+        Illustrative county, one year. Each domain score is the county's value normalized against a national reference. A score of 1.00 matches the reference exactly; below 1.00 discounts the year. The product is a conservative, geometric-mean composite — a deficit in any single domain pulls the whole Flourishing Life Year down, because a flourishing life isn't additive.
+      </div>
+
+      <!-- The national rollup -->
+      <div class="eq-rollup">
+        <div class="eq-rollup-row">
+          <span class="eq-rollup-label">Flourishing Life Years / person</span>
+          <span class="eq-rollup-bar"><span style="width: 49%; background: var(--domain-3)"></span></span>
+          <span class="eq-rollup-val">0.49</span>
+        </div>
+        <div class="eq-rollup-row">
+          <span class="eq-rollup-label">× County population</span>
+          <span class="eq-rollup-bar"><span style="width: 18%; background: var(--ink-soft)"></span></span>
+          <span class="eq-rollup-val">142,000</span>
+        </div>
+        <div class="eq-rollup-row eq-rollup-sum">
+          <span class="eq-rollup-label">= Total Flourishing Life Years</span>
+          <span class="eq-rollup-bar"><span style="width: 38%; background: var(--accent)"></span></span>
+          <span class="eq-rollup-val">69,580</span>
+        </div>
+      </div>
+      <div class="eq-rollup-caption">
+        County Flourishing Life Years sum to state totals, and state totals sum to the national figure — the same additive structure as GDP. In 2025, the United States produced an estimated <strong>287 million Flourishing Life Years</strong>.
+      </div>
+    </div>
+  </section>
+
+  <!-- DOMAINS -->
+  <section class="domains" id="domains">
+    <div class="domains-inner">
+      <div class="section-label">§ 03 — The Framework</div>
+      <div class="domains-header">
+        <h2>Five domains. <em>One year.</em></h2>
+        <p>Each domain contributes a discount factor to the Flourishing Life Year calculation. Each is built from federal indicators that exist at county level, normalized against a national reference. Strong in one, weak in another, and the Flourishing Life Year product tells you exactly how the trade-off resolves for that place.</p>
+      </div>
+
+      <div class="domain-grid">
+
+        <!-- Domain 1: Purchasing Power (span 6) -->
+        <div class="domain-card span-6">
+          <div class="domain-num">
+            <span>01 / PURCHASING POWER</span>
+            <span class="domain-dot" style="background: var(--domain-1)"></span>
+          </div>
+          <h3 class="domain-title">Does a paycheck go far here?</h3>
+          <p class="domain-desc">
+            Real purchasing power: what the local median wage actually buys after housing, groceries, utilities, transport, and childcare — benchmarked to a national reference and broken out by household archetype.
+          </p>
+          <div class="domain-viz">
+            <div class="domain-viz-label">Paycheck parity index — selected metros (US = 100)</div>
+            <svg viewBox="0 0 440 150" width="100%" height="150" role="img" aria-label="Bar chart of paycheck parity across sample metros. Pittsburgh 113, Des Moines 119, Atlanta 104, US 100, Boston 87, NYC 79, SF 71">
+              <!-- Chart area: x 50-430, y 20-110. Baseline at y=110 (index=0), y=20 (index=140) -->
+              <!-- Gridlines and axis labels -->
+              <g font-family="IBM Plex Mono" font-size="9" fill="#8a8370">
+                <line x1="50" y1="110" x2="430" y2="110" stroke="#c9bfa8" stroke-width="1"/>
+                <line x1="50" y1="73.6" x2="430" y2="73.6" stroke="#c9bfa8" stroke-width="0.5" stroke-dasharray="2,3"/>
+                <text x="44" y="113" text-anchor="end">0</text>
+                <text x="44" y="76.6" text-anchor="end">100</text>
+                <text x="44" y="40" text-anchor="end">140</text>
+                <text x="50" y="18" font-weight="500" fill="#3d3830">Index value</text>
+              </g>
+
+              <!-- Reference label for 100 line, positioned at right -->
+              <text x="430" y="70" text-anchor="end" font-family="IBM Plex Mono" font-size="9" fill="#8a8370" font-style="italic">national avg</text>
+
+              <!-- Bars: x-step = 54, width = 36. Index-to-y: y = 110 - (index * 0.649). Value label 8px above bar top. -->
+              <!-- Pitts: 113 → height=73.3, y=36.7 -->
+              <g class="bar" style="animation-delay: 0.1s">
+                <rect x="60" y="36.7" width="36" height="73.3" fill="#2d5a4a"/>
+                <text x="78" y="30" font-family="IBM Plex Mono" font-size="10" fill="#2d5a4a" text-anchor="middle" font-weight="600">113</text>
+              </g>
+              <text x="78" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">Pittsburgh</text>
+
+              <!-- Des Moines: 119 → height=77.3, y=32.7 -->
+              <g class="bar" style="animation-delay: 0.2s">
+                <rect x="114" y="32.7" width="36" height="77.3" fill="#2d5a4a"/>
+                <text x="132" y="26" font-family="IBM Plex Mono" font-size="10" fill="#2d5a4a" text-anchor="middle" font-weight="600">119</text>
+              </g>
+              <text x="132" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">Des Moines</text>
+
+              <!-- Atlanta: 104 → height=67.5, y=42.5 -->
+              <g class="bar" style="animation-delay: 0.3s">
+                <rect x="168" y="42.5" width="36" height="67.5" fill="#2d5a4a"/>
+                <text x="186" y="35.5" font-family="IBM Plex Mono" font-size="10" fill="#2d5a4a" text-anchor="middle" font-weight="600">104</text>
+              </g>
+              <text x="186" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">Atlanta</text>
+
+              <!-- US: 100 → height=64.9, y=45.1 (neutral) -->
+              <g class="bar" style="animation-delay: 0.4s">
+                <rect x="222" y="45.1" width="36" height="64.9" fill="#8a8370"/>
+                <text x="240" y="38.1" font-family="IBM Plex Mono" font-size="10" fill="#3d3830" text-anchor="middle" font-weight="600">100</text>
+              </g>
+              <text x="240" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle" font-weight="500">US avg</text>
+
+              <!-- Boston: 87 → height=56.5, y=53.5 -->
+              <g class="bar" style="animation-delay: 0.5s">
+                <rect x="276" y="53.5" width="36" height="56.5" fill="#c8371d"/>
+                <text x="294" y="46.5" font-family="IBM Plex Mono" font-size="10" fill="#c8371d" text-anchor="middle" font-weight="600">87</text>
+              </g>
+              <text x="294" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">Boston</text>
+
+              <!-- NYC: 79 → height=51.3, y=58.7 -->
+              <g class="bar" style="animation-delay: 0.6s">
+                <rect x="330" y="58.7" width="36" height="51.3" fill="#c8371d"/>
+                <text x="348" y="51.7" font-family="IBM Plex Mono" font-size="10" fill="#c8371d" text-anchor="middle" font-weight="600">79</text>
+              </g>
+              <text x="348" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">NYC</text>
+
+              <!-- SF: 71 → height=46.1, y=63.9 -->
+              <g class="bar" style="animation-delay: 0.7s">
+                <rect x="384" y="63.9" width="36" height="46.1" fill="#c8371d"/>
+                <text x="402" y="56.9" font-family="IBM Plex Mono" font-size="10" fill="#c8371d" text-anchor="middle" font-weight="600">71</text>
+              </g>
+              <text x="402" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">SF</text>
+            </svg>
+          </div>
+          <div class="domain-metrics">
+            <span>BEA RPP</span><span>ACS median income</span><span>local cost basket</span><span>archetype adjusted</span>
+          </div>
+        </div>
+
+        <!-- Domain 2: Wealth (span 6) -->
+        <div class="domain-card span-6">
+          <div class="domain-num">
+            <span>02 / WEALTH ACCUMULATION</span>
+            <span class="domain-dot" style="background: var(--domain-2)"></span>
+          </div>
+          <h3 class="domain-title">Can people build something that lasts?</h3>
+          <p class="domain-desc">
+            A composite proxy for household balance-sheet health: homeownership, home equity, retirement contribution rates, small business density, mortgage delinquency, and intergenerational mobility.
+          </p>
+          <div class="domain-viz">
+            <div class="domain-viz-label">Household balance-sheet indicators, percentile rank</div>
+            <svg viewBox="0 0 440 150" width="100%" height="150" role="img" aria-label="Horizontal bar indicators for wealth accumulation components">
+              <!-- Label column: 0-170. Bar column: 180-400. Value column: 410-440 -->
+              <g font-family="IBM Plex Sans" font-size="11" fill="#3d3830">
+                <!-- Row 1: Homeownership 66% -->
+                <text x="0" y="20">Homeownership rate</text>
+                <rect x="180" y="12" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="12" width="145.2" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 12px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.15s forwards;"/>
+                <text x="410" y="20" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">66</text>
+
+                <!-- Row 2: Retirement 47% -->
+                <text x="0" y="45">Retirement contributions</text>
+                <rect x="180" y="37" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="37" width="103.4" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 37px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.25s forwards;"/>
+                <text x="410" y="45" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">47</text>
+
+                <!-- Row 3: Small biz 59% -->
+                <text x="0" y="70">Small business density</text>
+                <rect x="180" y="62" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="62" width="129.8" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 62px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.35s forwards;"/>
+                <text x="410" y="70" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">59</text>
+
+                <!-- Row 4: Delinquency inv 80% -->
+                <text x="0" y="95">Delinquency (inverse)</text>
+                <rect x="180" y="87" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="87" width="176" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 87px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.45s forwards;"/>
+                <text x="410" y="95" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">80</text>
+
+                <!-- Row 5: Mobility 54% -->
+                <text x="0" y="120">Intergenerational mobility</text>
+                <rect x="180" y="112" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="112" width="118.8" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 112px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.55s forwards;"/>
+                <text x="410" y="120" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">54</text>
+              </g>
+              <!-- Scale ticks -->
+              <g font-family="IBM Plex Mono" font-size="9" fill="#8a8370">
+                <text x="180" y="140">0</text>
+                <text x="290" y="140" text-anchor="middle">50</text>
+                <text x="400" y="140" text-anchor="end">100</text>
+              </g>
+            </svg>
+          </div>
+          <div class="domain-metrics">
+            <span>IRS SOI</span><span>HMDA</span><span>Census homeownership</span><span>Opportunity Atlas</span>
+          </div>
+        </div>
+
+        <!-- Domain 3: Family (span 4) -->
+        <div class="domain-card span-4">
+          <div class="domain-num">
+            <span>03 / FAMILY FORMATION</span>
+            <span class="domain-dot" style="background: var(--domain-3)"></span>
+          </div>
+          <h3 class="domain-title">Can families start and stay?</h3>
+          <p class="domain-desc">
+            Marriage, fertility, two-parent household share, household stability, and the affordability of the conditions that make family life viable.
+          </p>
+          <div class="domain-viz">
+            <div class="domain-viz-label">Share of children with both parents, by county tertile</div>
+            <svg viewBox="0 0 340 120" width="100%" height="120" role="img" aria-label="Donut charts showing share of children living with both parents across county tertiles">
+              <!-- Circumference 2π(28) ≈ 175.93 -->
+              <!-- Top tertile: 78% = 137.22 arc length -->
+              <g class="fade-in" style="animation-delay: 0.2s">
+                <circle cx="60" cy="50" r="28" fill="none" stroke="#e0d8c4" stroke-width="10"/>
+                <circle cx="60" cy="50" r="28" fill="none" stroke="#a64238" stroke-width="10"
+                        stroke-dasharray="137.22 175.93"
+                        transform="rotate(-90 60 50)"/>
+                <text x="60" y="55" text-anchor="middle" font-family="Fraunces" font-size="16" font-weight="500" fill="#1a1814">78%</text>
+              </g>
+              <text x="60" y="103" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3d3830">Top tertile</text>
+
+              <!-- Median: 64% = 112.60 -->
+              <g class="fade-in" style="animation-delay: 0.35s">
+                <circle cx="170" cy="50" r="28" fill="none" stroke="#e0d8c4" stroke-width="10"/>
+                <circle cx="170" cy="50" r="28" fill="none" stroke="#a64238" stroke-width="10" opacity="0.75"
+                        stroke-dasharray="112.60 175.93"
+                        transform="rotate(-90 170 50)"/>
+                <text x="170" y="55" text-anchor="middle" font-family="Fraunces" font-size="16" font-weight="500" fill="#1a1814">64%</text>
+              </g>
+              <text x="170" y="103" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3d3830">Median</text>
+
+              <!-- Bottom tertile: 41% = 72.13 -->
+              <g class="fade-in" style="animation-delay: 0.5s">
+                <circle cx="280" cy="50" r="28" fill="none" stroke="#e0d8c4" stroke-width="10"/>
+                <circle cx="280" cy="50" r="28" fill="none" stroke="#a64238" stroke-width="10" opacity="0.5"
+                        stroke-dasharray="72.13 175.93"
+                        transform="rotate(-90 280 50)"/>
+                <text x="280" y="55" text-anchor="middle" font-family="Fraunces" font-size="16" font-weight="500" fill="#1a1814">41%</text>
+              </g>
+              <text x="280" y="103" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3d3830">Bottom tertile</text>
+            </svg>
+          </div>
+          <div class="domain-metrics">
+            <span>ACS B09002</span><span>CDC WONDER</span><span>rent ratios</span>
+          </div>
+        </div>
+
+        <!-- Domain 4: Health (span 4) -->
+        <div class="domain-card span-4">
+          <div class="domain-num">
+            <span>04 / HEALTHY LIFESPAN</span>
+            <span class="domain-dot" style="background: var(--domain-4)"></span>
+          </div>
+          <h3 class="domain-title">How long do people live, and how well?</h3>
+          <p class="domain-desc">
+            Life expectancy at birth, healthy life expectancy, and the prevalence of chronic disease, mental distress, and deaths of despair. Not just years — usable years.
+          </p>
+          <div class="domain-viz">
+            <div class="domain-viz-label">Life expectancy distribution across US counties (years)</div>
+            <svg viewBox="0 0 340 120" width="100%" height="120" role="img" aria-label="Life expectancy distribution curve across US counties, median 77.5 years">
+              <!-- Chart area: x 20-320, y 30-100 -->
+              <!-- Median callout above curve -->
+              <g class="fade-in" style="animation-delay: 1.1s">
+                <text x="170" y="14" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#c8371d" font-weight="600">median · 77.5 yrs</text>
+                <line x1="170" y1="20" x2="170" y2="30" stroke="#c8371d" stroke-width="1"/>
+              </g>
+              <!-- Distribution area fill -->
+              <path d="M 20 100 Q 50 98, 70 92 T 120 78 Q 150 62, 170 52 T 230 62 Q 260 75, 290 90 T 320 100 L 320 100 L 20 100 Z"
+                    fill="#355878" opacity="0.15"/>
+              <!-- Distribution curve -->
+              <path d="M 20 100 Q 50 98, 70 92 T 120 78 Q 150 62, 170 52 T 230 62 Q 260 75, 290 90 T 320 100"
+                    fill="none" stroke="#355878" stroke-width="2" class="draw"/>
+              <!-- Median dashed line through curve -->
+              <line x1="170" y1="30" x2="170" y2="100" stroke="#c8371d" stroke-width="1" stroke-dasharray="2,3" opacity="0.6"/>
+              <!-- Baseline axis -->
+              <line x1="20" y1="100" x2="320" y2="100" stroke="#c9bfa8" stroke-width="1"/>
+              <!-- X-axis ticks -->
+              <g font-family="IBM Plex Mono" font-size="9" fill="#8a8370">
+                <line x1="20" y1="100" x2="20" y2="103" stroke="#c9bfa8"/>
+                <line x1="95" y1="100" x2="95" y2="103" stroke="#c9bfa8"/>
+                <line x1="170" y1="100" x2="170" y2="103" stroke="#c9bfa8"/>
+                <line x1="245" y1="100" x2="245" y2="103" stroke="#c9bfa8"/>
+                <line x1="320" y1="100" x2="320" y2="103" stroke="#c9bfa8"/>
+                <text x="20" y="115" text-anchor="middle">68</text>
+                <text x="95" y="115" text-anchor="middle">73</text>
+                <text x="170" y="115" text-anchor="middle">78</text>
+                <text x="245" y="115" text-anchor="middle">83</text>
+                <text x="320" y="115" text-anchor="middle">88</text>
+              </g>
+            </svg>
+          </div>
+          <div class="domain-metrics">
+            <span>USALEEP</span><span>CDC PLACES</span><span>NVSS</span>
+          </div>
+        </div>
+
+        <!-- Domain 5: Education (span 4) -->
+        <div class="domain-card span-4">
+          <div class="domain-num">
+            <span>05 / USEFUL EDUCATION</span>
+            <span class="domain-dot" style="background: var(--domain-5)"></span>
+          </div>
+          <h3 class="domain-title">Does schooling lead somewhere?</h3>
+          <p class="domain-desc">
+            Not degrees for their own sake. Useful education: reading and numeracy by 8th grade, credential completion, and earnings-linked outcomes 6 and 10 years after graduation.
+          </p>
+          <div class="domain-viz">
+            <div class="domain-viz-label">Pipeline outcomes, 10 years post-enrollment</div>
+            <svg viewBox="0 0 340 140" width="100%" height="140" role="img" aria-label="Education funnel showing 100 percent enrolled, 62 percent credentialed, 38 percent earning above median">
+              <!-- Three-stage funnel. Bar heights: 100%, 62%, 38% of 60px max -->
+              <!-- Stage 1: Enrolled, x=20-100 -->
+              <g class="fade-in" style="animation-delay: 0.2s">
+                <rect x="20" y="30" width="80" height="60" fill="#5c3a5c"/>
+                <text x="60" y="20" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3d3830">Enrolled</text>
+                <text x="60" y="108" text-anchor="middle" font-family="Fraunces" font-size="18" font-weight="500" fill="#5c3a5c">100%</text>
+                <text x="60" y="124" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#8a8370">baseline</text>
+              </g>
+
+              <!-- Flow 1→2: trapezoid -->
+              <g class="fade-in" style="animation-delay: 0.4s">
+                <path d="M 100 30 L 140 41.4 L 140 78.6 L 100 90 Z" fill="#5c3a5c" opacity="0.3"/>
+              </g>
+
+              <!-- Stage 2: Credentialed, 62% height = 37.2px, y=41.4 -->
+              <g class="fade-in" style="animation-delay: 0.4s">
+                <rect x="140" y="41.4" width="80" height="37.2" fill="#5c3a5c"/>
+                <text x="180" y="20" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3d3830">Credentialed</text>
+                <text x="180" y="108" text-anchor="middle" font-family="Fraunces" font-size="18" font-weight="500" fill="#5c3a5c">62%</text>
+                <text x="180" y="124" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#8a8370">completion</text>
+              </g>
+
+              <!-- Flow 2→3: trapezoid -->
+              <g class="fade-in" style="animation-delay: 0.6s">
+                <path d="M 220 41.4 L 260 48.6 L 260 71.4 L 220 78.6 Z" fill="#5c3a5c" opacity="0.45"/>
+              </g>
+
+              <!-- Stage 3: Earning ≥ median, 38% height = 22.8px, y=48.6 -->
+              <g class="fade-in" style="animation-delay: 0.6s">
+                <rect x="260" y="48.6" width="60" height="22.8" fill="#5c3a5c"/>
+                <text x="290" y="20" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3d3830">Earning ≥ median</text>
+                <text x="290" y="108" text-anchor="middle" font-family="Fraunces" font-size="18" font-weight="500" fill="#5c3a5c">38%</text>
+                <text x="290" y="124" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#8a8370">@ 10 yrs</text>
+              </g>
+            </svg>
+          </div>
+          <div class="domain-metrics">
+            <span>NAEP</span><span>NCES</span><span>College Scorecard</span><span>IPEDS</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section class="method" id="method">
+    <div class="section-label">§ 04 — How It Works</div>
+    <div class="method-header">
+      <h2>Built openly, from the <em>ground up.</em></h2>
+      <p>Every indicator is sourced from a public federal dataset, transformed in the open, and scored transparently. If a county-level number doesn't exist honestly, we don't fabricate one. Some gaps stay gaps — and we say so.</p>
+    </div>
+
+    <div class="method-steps">
+      <div class="step">
+        <div class="step-num">i.</div>
+        <h4 class="step-title">Source</h4>
+        <p class="step-body">Pull from Census, BEA, BLS, IRS SOI, CDC, NCES, HMDA, and HUD. No proprietary data, no private licenses, no black-box APIs.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">ii.</div>
+        <h4 class="step-title">Harmonize</h4>
+        <p class="step-body">Crosswalk tract and county geographies to a consistent unit. Impute only where methodologically defensible. Flag every interpolation.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">iii.</div>
+        <h4 class="step-title">Score</h4>
+        <p class="step-body">Normalize each indicator against a national benchmark. Weight within domains. Composite using documented aggregation rules.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">iv.</div>
+        <h4 class="step-title">Publish</h4>
+        <p class="step-body">Release data, code, and methodology together. Version every update. Show uncertainty. Let anyone reproduce the result.</p>
+      </div>
+    </div>
+
+    <div class="principle-block">
+      <div class="principle">
+        <h4 class="principle-title">Directional honesty over false precision</h4>
+        <p class="principle-body">A rank-order that's right is worth more than a decimal score that's wrong. Where the data can't support county-level precision, we aggregate up rather than invent.</p>
+      </div>
+      <div class="principle">
+        <h4 class="principle-title">Indicators, not index worship</h4>
+        <p class="principle-body">The composite matters less than its components. Every page shows the underlying indicators driving the score — drill down until the claim is falsifiable.</p>
+      </div>
+      <div class="principle">
+        <h4 class="principle-title">Open by construction</h4>
+        <p class="principle-body">Methodology, source list, transformation code, and raw outputs are all public. If you can't reproduce our number, it's a bug.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="quote-section">
+    <blockquote>
+      GDP asks how much a country <em>produces.</em> The Flourishing Life Year asks what it's <em>producing it for.</em>
+    </blockquote>
+    <div class="quote-attrib">— The founding premise</div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">The Flourishing Life Year Index</div>
+        <p class="footer-tag">A county-level measure of the American good life, built on open federal data. Currently in development.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="#mission">Mission</a>
+        <a href="#domains">Domains</a>
+        <a href="#method">Methodology</a>
+        <a href="#">Roadmap</a>
+      </div>
+      <div class="footer-col">
+        <h4>Data</h4>
+        <a href="#">Sources</a>
+        <a href="#">Codebook</a>
+        <a href="#">Download</a>
+        <a href="#">API</a>
+      </div>
+      <div class="footer-col">
+        <h4>Follow</h4>
+        <a href="#">Newsletter</a>
+        <a href="#">GitHub</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 — v0.3 Methodology Draft</div>
+      <div>Built on open federal data</div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
