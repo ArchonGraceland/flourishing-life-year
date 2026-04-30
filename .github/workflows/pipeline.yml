@@ -1,0 +1,33 @@
+name: pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release version (e.g. v2026.12 or v2026.04-dev)"
+        required: true
+        default: "v2026.04-dev"
+      domain:
+        description: "Domain to run"
+        required: true
+        default: "family"
+        type: choice
+        options: [family]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r pipeline/requirements.txt
+      - name: Run ${{ inputs.domain }}
+        working-directory: pipeline
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RELEASE_VERSION: ${{ inputs.release_version }}
+        run: python run_${{ inputs.domain }}.py
