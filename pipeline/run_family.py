@@ -18,19 +18,8 @@ from datetime import date
 
 import requests
 
+from lib import EXCLUDED_STATE_FIPS, load_dotenv, parse_acs_value, pg_delete_domain, pg_upsert, upload_raw
 from percentile import percentile_rank
-
-
-def load_dotenv(path: str = ".env") -> None:
-    if not os.path.exists(path):
-        return
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip())
 
 ACS_VINTAGE_YEAR = 2024  # 5-year endpoint covers 2020-2024 (released Dec 2025)
 ACS_TABLE = "B09005"
@@ -43,10 +32,6 @@ DOMAIN = "family"
 ACS_VARS = ["B09005_001E", "B09005_001M",
             "B09005_002E", "B09005_002M",
             "B09005_003E", "B09005_003M"]
-
-
-# Territories excluded per Q1 of methodology spec: PR=72, USVI=78, GU=66, AS=60, MP=69.
-EXCLUDED_STATE_FIPS = {"60", "66", "69", "72", "78"}
 
 
 def fetch_acs(api_key: str) -> list[dict]:
@@ -63,7 +48,7 @@ def fetch_acs(api_key: str) -> list[dict]:
             continue
         rec["geoid"] = rec["state"] + rec["county"]
         for v in ACS_VARS:
-            rec[v] = float(rec[v]) if rec[v] not in (None, "", "null") else None
+            rec[v] = parse_acs_value(rec[v])
         out.append(rec)
     return out
 
@@ -108,40 +93,10 @@ def to_raw_csv(records: list[dict]) -> bytes:
     return buf.getvalue().encode("utf-8")
 
 
-def upload_raw(supabase_url: str, key: str, release_version: str, body: bytes) -> str:
-    path = f"{release_version}/{SOURCE_KEY}/{ACS_TABLE}.csv"
-    url = f"{supabase_url}/storage/v1/object/raw-extracts/{path}"
-    headers = {
-        "Authorization": f"Bearer {key}",
-        "Content-Type": "text/csv",
-        "x-upsert": "true",
-    }
-    r = requests.post(url, headers=headers, data=body, timeout=60)
-    r.raise_for_status()
-    return path
-
-
-def pg_upsert(supabase_url: str, key: str, table: str, rows: list[dict], on_conflict: str) -> None:
-    if not rows:
-        return
-    url = f"{supabase_url}/rest/v1/{table}?on_conflict={on_conflict}"
-    headers = {
-        "apikey": key,
-        "Authorization": f"Bearer {key}",
-        "Content-Type": "application/json",
-        "Prefer": "resolution=merge-duplicates,return=minimal",
-    }
-    # batch in chunks to keep request bodies reasonable
-    for i in range(0, len(rows), 1000):
-        chunk = rows[i:i + 1000]
-        r = requests.post(url, headers=headers, json=chunk, timeout=120)
-        r.raise_for_status()
-
-
 def main() -> int:
     load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
     census_key = os.environ["CENSUS_API_KEY"]
-    sb_url = os.environ["SUPABASE_URL"].rstrip("/")
+    sb_url = os.environ["SUPABASE_URL"]
     sb_key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
     release = os.environ["RELEASE_VERSION"]
 
@@ -174,18 +129,11 @@ def main() -> int:
     ]
 
     print("[family] uploading raw extract…")
-    upload_raw(sb_url, sb_key, release, to_raw_csv(raw))
+    upload_raw(sb_url, sb_key, release, SOURCE_KEY, f"{ACS_TABLE}.csv", to_raw_csv(raw))
 
     print("[family] clearing prior rows for this release+domain…")
-    # delete any existing rows for (release, domain) so a re-run is fully fresh.
-    for table in ("domain_scores", "suppression_flags"):
-        del_url = (f"{sb_url}/rest/v1/{table}"
-                   f"?release_version=eq.{release}&domain=eq.{DOMAIN}")
-        r = requests.delete(del_url, headers={
-            "apikey": sb_key, "Authorization": f"Bearer {sb_key}",
-            "Prefer": "return=minimal",
-        }, timeout=120)
-        r.raise_for_status()
+    pg_delete_domain(sb_url, sb_key, "domain_scores", release, DOMAIN)
+    pg_delete_domain(sb_url, sb_key, "suppression_flags", release, DOMAIN)
 
     print("[family] writing release / source_vintages / domain_scores / suppression_flags…")
     pg_upsert(sb_url, sb_key, "releases",
