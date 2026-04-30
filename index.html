@@ -881,6 +881,22 @@
   }
   .method-table-note em { color: var(--ink); font-style: italic; }
   .method-table-note strong { color: var(--ink); font-weight: 500; font-style: normal; }
+  .method-table-footnote {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    opacity: 0.85;
+  }
+  .method-table-attribution {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: #8a8370;
+    line-height: 1.5;
+  }
 
   /* ————— QUOTE ————— */
   section.quote-section {
@@ -1315,7 +1331,7 @@
           </div>
           <h3 class="domain-title">Does a paycheck go far here?</h3>
           <p class="domain-desc">
-            Real purchasing power: median household income deflated by the local cost of living, using BEA's experimental county-level Regional Price Parities. A dollar in Mississippi and a dollar in San Francisco buy different lives — this domain measures what the dollar actually does.
+            Real purchasing power: median household income deflated by the local cost of living. BEA publishes Regional Price Parities at state and metro level — not at county level — so each county gets its metro RPP if it sits inside a metro area, or the state non-metro RPP otherwise. The imputation rule is documented. A dollar in Mississippi and a dollar in San Francisco buy different lives; this domain measures what the dollar actually does.
           </p>
           <div class="domain-viz">
             <div class="domain-viz-label">Paycheck parity index — selected metros (US = 100)</div>
@@ -1386,7 +1402,7 @@
             </svg>
           </div>
           <div class="domain-metrics">
-            <span>ACS B19013</span><span>BEA county RPP</span><span>percentile rank</span>
+            <span>ACS B19013</span><span>BEA metro RPP (imputed)</span><span>percentile rank</span>
           </div>
         </div>
 
@@ -1635,14 +1651,14 @@
         </div>
         <div class="mtable-row" style="--c: var(--domain-1)">
           <span class="mtable-d">Purchasing</span>
-          <span>ACS B19013 ÷ BEA county RPP</span>
-          <span>ACS 5-year, BEA experimental</span>
+          <span>ACS B19013 ÷ BEA metro RPP <em>(imputed to counties)</em></span>
+          <span>ACS 5-year; BEA RPP annual</span>
           <span>ACS MOE &gt; 30%</span>
         </div>
         <div class="mtable-row" style="--c: var(--domain-2)">
           <span class="mtable-d">Wealth</span>
           <span>ACS B25003, B25077 + IRS SOI county</span>
-          <span>ACS 5-year, IRS SOI ~2-yr lag</span>
+          <span>ACS 5-year, IRS SOI ~3-yr lag</span>
           <span>MOE &gt; 30%; needs 2-of-3</span>
         </div>
         <div class="mtable-row" style="--c: var(--domain-3)">
@@ -1653,9 +1669,9 @@
         </div>
         <div class="mtable-row" style="--c: var(--domain-4)">
           <span class="mtable-d">Health</span>
-          <span>NCHS USALEEP <em>(CDC WONDER fallback)</em></span>
-          <span>USALEEP irregular; mortality annual</span>
-          <span>n &lt; 20 events</span>
+          <span>NCHS USALEEP <em>(CDC WONDER UCD fallback)</em></span>
+          <span>USALEEP 2010–2015; mortality annual</span>
+          <span>n &lt; 20 events (rate reliability)</span>
         </div>
         <div class="mtable-row" style="--c: var(--domain-5)">
           <span class="mtable-d">Education</span>
@@ -1666,6 +1682,12 @@
       </div>
       <p class="method-table-note">
         A county's <em>composite</em> requires data on at least 4 of 5 domains. With one domain suppressed, the composite is computed from the four available and flagged on hover. With two or more suppressed, the county shows as gray on the map. <strong>No imputation, ever</strong> — no state averages, no nearest-neighbor fill, no modeled estimates. The number is either reproducible from federal data, or it isn't.
+      </p>
+      <p class="method-table-note method-table-footnote">
+        Two clarifications. <em>(1) Suppression vs reliability.</em> CDC WONDER itself suppresses death counts of 9 or fewer; our additional <strong>n &lt; 20</strong> rule is a reliability threshold applied on top, not a contradiction of WONDER's own publication policy. <em>(2) The county-RPP imputation</em> in the purchasing-power domain is our own deterministic rule (metro RPP for metro-attached counties; state non-metro RPP otherwise) — it is not a BEA product. Documented because it is the one place this methodology relaxes the no-imputation rule, and only because BEA does not publish below the metro level.
+      </p>
+      <p class="method-table-attribution">
+        This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.
       </p>
     </div>
 
