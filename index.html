@@ -814,6 +814,74 @@
     color: var(--ink-soft);
   }
 
+  /* ————— METHOD TABLE ————— */
+  .method-table {
+    margin-top: 80px;
+    padding-top: 56px;
+    border-top: 1px solid var(--rule);
+  }
+  .method-table-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .method-table-rows {
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 28px;
+  }
+  .mtable-head, .mtable-row {
+    display: grid;
+    grid-template-columns: 1.1fr 2fr 1.5fr 1.5fr;
+    gap: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+    line-height: 1.45;
+    align-items: baseline;
+  }
+  .mtable-row:last-child { border-bottom: none; }
+  .mtable-head {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 12px 0;
+  }
+  .mtable-d {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--c, var(--ink));
+    letter-spacing: -0.01em;
+    position: relative;
+    padding-left: 16px;
+  }
+  .mtable-d::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--c, var(--ink));
+  }
+  .method-table-note {
+    font-family: 'Source Serif 4', serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 78ch;
+    font-style: italic;
+  }
+  .method-table-note em { color: var(--ink); font-style: italic; }
+  .method-table-note strong { color: var(--ink); font-weight: 500; font-style: normal; }
+
   /* ————— QUOTE ————— */
   section.quote-section {
     padding: 100px 0;
@@ -1035,6 +1103,9 @@
     .step { border-right: none; border-bottom: 1px solid var(--rule); padding: 24px 0 !important; }
     .step:last-child { border-bottom: none; }
     .principle-block { grid-template-columns: 1fr; gap: 24px; }
+    .mtable-head { display: none; }
+    .mtable-row { grid-template-columns: 1fr; gap: 4px; padding: 16px 0; font-size: 12px; }
+    .mtable-d { margin-bottom: 4px; }
     .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
     .footer-bottom { flex-direction: column; gap: 12px; }
     .domains-inner { padding: 0 24px; }
@@ -1131,8 +1202,8 @@
         <div class="nstat-label">Year-over-year change<br>in the national average</div>
       </div>
       <div class="nstat">
-        <div class="nstat-num">3,143</div>
-        <div class="nstat-label">Counties with<br>published indicator data</div>
+        <div class="nstat-num">3,144</div>
+        <div class="nstat-label">County-equivalents<br>in scope (50 states + DC)</div>
       </div>
     </div>
   </section>
@@ -1192,21 +1263,21 @@
         </div>
         <div class="eq-op eq-equals">=</div>
         <div class="eq-result">
-          <div class="eq-result-val">0.49</div>
+          <div class="eq-result-val">0.87</div>
           <div class="eq-result-label">Flourishing Life Years / person</div>
         </div>
       </div>
 
       <div class="eq-caption">
-        The same arithmetic applies to a person or a place. Each domain score is normalized against a national reference. A score of 1.00 matches reference exactly; below 1.00 discounts the year. The product is a geometric mean — a deficit in any one domain pulls the whole Flourishing Life Year down, because a flourishing life isn't additive.
+        The same arithmetic applies to a person or a place. Each domain score is a national percentile rank — where this entity stands relative to all U.S. counties (or all Americans) on that domain, scaled to [0.01, 1.00]. The composite is the geometric mean across the five (the fifth root of the product) — a deficit in any one domain pulls the whole result down, because flourishing isn't additive.
       </div>
 
       <!-- The national rollup -->
       <div class="eq-rollup">
         <div class="eq-rollup-row">
           <span class="eq-rollup-label">Flourishing Life Years / person</span>
-          <span class="eq-rollup-bar"><span style="width: 49%; background: var(--domain-3)"></span></span>
-          <span class="eq-rollup-val">0.49</span>
+          <span class="eq-rollup-bar"><span style="width: 87%; background: var(--domain-3)"></span></span>
+          <span class="eq-rollup-val">0.87</span>
         </div>
         <div class="eq-rollup-row">
           <span class="eq-rollup-label">× County population</span>
@@ -1215,8 +1286,8 @@
         </div>
         <div class="eq-rollup-row eq-rollup-sum">
           <span class="eq-rollup-label">= Total Flourishing Life Years</span>
-          <span class="eq-rollup-bar"><span style="width: 38%; background: var(--accent)"></span></span>
-          <span class="eq-rollup-val">69,580</span>
+          <span class="eq-rollup-bar"><span style="width: 68%; background: var(--accent)"></span></span>
+          <span class="eq-rollup-val">123,540</span>
         </div>
       </div>
       <div class="eq-rollup-caption">
@@ -1244,7 +1315,7 @@
           </div>
           <h3 class="domain-title">Does a paycheck go far here?</h3>
           <p class="domain-desc">
-            Real purchasing power: what the local median wage actually buys after housing, groceries, utilities, transport, and childcare — benchmarked to a national reference and broken out by household archetype.
+            Real purchasing power: median household income deflated by the local cost of living, using BEA's experimental county-level Regional Price Parities. A dollar in Mississippi and a dollar in San Francisco buy different lives — this domain measures what the dollar actually does.
           </p>
           <div class="domain-viz">
             <div class="domain-viz-label">Paycheck parity index — selected metros (US = 100)</div>
@@ -1315,7 +1386,7 @@
             </svg>
           </div>
           <div class="domain-metrics">
-            <span>BEA RPP</span><span>ACS median income</span><span>local cost basket</span><span>archetype adjusted</span>
+            <span>ACS B19013</span><span>BEA county RPP</span><span>percentile rank</span>
           </div>
         </div>
 
@@ -1327,58 +1398,45 @@
           </div>
           <h3 class="domain-title">Can people build something that lasts?</h3>
           <p class="domain-desc">
-            A composite proxy for household balance-sheet health: homeownership, home equity, retirement contribution rates, small business density, mortgage delinquency, and intergenerational mobility.
+            A proxy stack for household balance-sheet position: homeownership rate, median home value, and the share of county adjusted gross income that comes from dividends and capital gains. There is no federal wealth survey at county level — these three together form the most defensible substitute.
           </p>
           <div class="domain-viz">
-            <div class="domain-viz-label">Household balance-sheet indicators, percentile rank</div>
-            <svg viewBox="0 0 440 150" width="100%" height="150" role="img" aria-label="Horizontal bar indicators for wealth accumulation components">
+            <div class="domain-viz-label">Three wealth proxies, percentile rank (illustrative county)</div>
+            <svg viewBox="0 0 440 150" width="100%" height="150" role="img" aria-label="Horizontal bar indicators for the three wealth proxies: homeownership rate, median home value, and capital-asset income share">
               <!-- Label column: 0-170. Bar column: 180-400. Value column: 410-440 -->
+              <!-- Bar width formula: width = value * 220/100 = value * 2.2 -->
               <g font-family="IBM Plex Sans" font-size="11" fill="#3d3830">
-                <!-- Row 1: Homeownership 66% -->
-                <text x="0" y="20">Homeownership rate</text>
-                <rect x="180" y="12" width="220" height="10" fill="#e0d8c4" rx="1"/>
-                <rect x="180" y="12" width="145.2" height="10" fill="#8b6b2c" rx="1"
-                      style="transform-origin: 180px 12px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.15s forwards;"/>
-                <text x="410" y="20" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">66</text>
+                <!-- Row 1: Homeownership rate 70 → width 154 -->
+                <text x="0" y="25">Homeownership rate</text>
+                <rect x="180" y="17" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="17" width="154" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 17px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.15s forwards;"/>
+                <text x="410" y="25" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">70</text>
 
-                <!-- Row 2: Retirement 47% -->
-                <text x="0" y="45">Retirement contributions</text>
-                <rect x="180" y="37" width="220" height="10" fill="#e0d8c4" rx="1"/>
-                <rect x="180" y="37" width="103.4" height="10" fill="#8b6b2c" rx="1"
-                      style="transform-origin: 180px 37px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.25s forwards;"/>
-                <text x="410" y="45" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">47</text>
+                <!-- Row 2: Median home value 52 → width 114.4 -->
+                <text x="0" y="65">Median home value</text>
+                <rect x="180" y="57" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="57" width="114.4" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 57px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.30s forwards;"/>
+                <text x="410" y="65" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">52</text>
 
-                <!-- Row 3: Small biz 59% -->
-                <text x="0" y="70">Small business density</text>
-                <rect x="180" y="62" width="220" height="10" fill="#e0d8c4" rx="1"/>
-                <rect x="180" y="62" width="129.8" height="10" fill="#8b6b2c" rx="1"
-                      style="transform-origin: 180px 62px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.35s forwards;"/>
-                <text x="410" y="70" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">59</text>
-
-                <!-- Row 4: Delinquency inv 80% -->
-                <text x="0" y="95">Delinquency (inverse)</text>
-                <rect x="180" y="87" width="220" height="10" fill="#e0d8c4" rx="1"/>
-                <rect x="180" y="87" width="176" height="10" fill="#8b6b2c" rx="1"
-                      style="transform-origin: 180px 87px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.45s forwards;"/>
-                <text x="410" y="95" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">80</text>
-
-                <!-- Row 5: Mobility 54% -->
-                <text x="0" y="120">Intergenerational mobility</text>
-                <rect x="180" y="112" width="220" height="10" fill="#e0d8c4" rx="1"/>
-                <rect x="180" y="112" width="118.8" height="10" fill="#8b6b2c" rx="1"
-                      style="transform-origin: 180px 112px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.55s forwards;"/>
-                <text x="410" y="120" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">54</text>
+                <!-- Row 3: Capital-asset income share (IRS SOI) 38 → width 83.6 -->
+                <text x="0" y="105">Capital-asset income share</text>
+                <rect x="180" y="97" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="97" width="83.6" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 97px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.45s forwards;"/>
+                <text x="410" y="105" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">38</text>
               </g>
               <!-- Scale ticks -->
               <g font-family="IBM Plex Mono" font-size="9" fill="#8a8370">
-                <text x="180" y="140">0</text>
-                <text x="290" y="140" text-anchor="middle">50</text>
-                <text x="400" y="140" text-anchor="end">100</text>
+                <text x="180" y="135">0</text>
+                <text x="290" y="135" text-anchor="middle">50</text>
+                <text x="400" y="135" text-anchor="end">100</text>
               </g>
             </svg>
           </div>
           <div class="domain-metrics">
-            <span>IRS SOI</span><span>HMDA</span><span>Census homeownership</span><span>Opportunity Atlas</span>
+            <span>ACS B25003</span><span>ACS B25077</span><span>IRS SOI</span><span>percentile rank</span>
           </div>
         </div>
 
@@ -1390,7 +1448,7 @@
           </div>
           <h3 class="domain-title">Can families start and stay?</h3>
           <p class="domain-desc">
-            Marriage, fertility, two-parent household share, household stability, and the affordability of the conditions that make family life viable.
+            One indicator: the share of children under 18 living with two parents. Family structure is the most direct, county-resolvable measure of the conditions in which children grow up.
           </p>
           <div class="domain-viz">
             <div class="domain-viz-label">Share of children with both parents, by county tertile</div>
@@ -1428,7 +1486,7 @@
             </svg>
           </div>
           <div class="domain-metrics">
-            <span>ACS B09002</span><span>CDC WONDER</span><span>rent ratios</span>
+            <span>ACS B09005</span><span>percentile rank</span>
           </div>
         </div>
 
@@ -1440,7 +1498,7 @@
           </div>
           <h3 class="domain-title">How long do people live, and how well?</h3>
           <p class="domain-desc">
-            Life expectancy at birth, healthy life expectancy, and the prevalence of chronic disease, mental distress, and deaths of despair. Not just years — usable years.
+            Life expectancy at birth from the NCHS Small-area Life Expectancy Estimates Project (USALEEP), with age-adjusted mortality from CDC WONDER as the suppression-friendly fallback for small counties. The most legible single measure of how long lives last here.
           </p>
           <div class="domain-viz">
             <div class="domain-viz-label">Life expectancy distribution across US counties (years)</div>
@@ -1477,7 +1535,7 @@
             </svg>
           </div>
           <div class="domain-metrics">
-            <span>USALEEP</span><span>CDC PLACES</span><span>NVSS</span>
+            <span>NCHS USALEEP</span><span>CDC WONDER</span><span>percentile rank</span>
           </div>
         </div>
 
@@ -1489,49 +1547,45 @@
           </div>
           <h3 class="domain-title">Does schooling lead somewhere?</h3>
           <p class="domain-desc">
-            Not degrees for their own sake. Useful education: reading and numeracy by 8th grade, credential completion, and earnings-linked outcomes 6 and 10 years after graduation.
+            Education here means human capital, not academic credentialism. Two components, multiplied: the share of adults with a post-secondary credential (associate's or bachelor's-and-above) and the share employed in skilled trades — construction, installation, maintenance, repair. The master electrician and the BA count equally.
           </p>
           <div class="domain-viz">
-            <div class="domain-viz-label">Pipeline outcomes, 10 years post-enrollment</div>
-            <svg viewBox="0 0 340 140" width="100%" height="140" role="img" aria-label="Education funnel showing 100 percent enrolled, 62 percent credentialed, 38 percent earning above median">
-              <!-- Three-stage funnel. Bar heights: 100%, 62%, 38% of 60px max -->
-              <!-- Stage 1: Enrolled, x=20-100 -->
-              <g class="fade-in" style="animation-delay: 0.2s">
-                <rect x="20" y="30" width="80" height="60" fill="#5c3a5c"/>
-                <text x="60" y="20" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3d3830">Enrolled</text>
-                <text x="60" y="108" text-anchor="middle" font-family="Fraunces" font-size="18" font-weight="500" fill="#5c3a5c">100%</text>
-                <text x="60" y="124" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#8a8370">baseline</text>
-              </g>
+            <div class="domain-viz-label">Two-component education score, percentile rank (illustrative county)</div>
+            <svg viewBox="0 0 340 140" width="100%" height="140" role="img" aria-label="Education domain components: post-secondary credential rank, skilled-trade occupation rank, and the geometric-mean composite">
+              <!-- Label column: 0-130. Bar column: 140-300. Value column: 310-340 -->
+              <!-- Bar width formula: width = value * 160/100 = value * 1.6 -->
+              <g font-family="IBM Plex Sans" font-size="11" fill="#3d3830">
+                <!-- Row 1: Post-secondary credential 67 → width 107.2 -->
+                <text x="0" y="25">Post-secondary credential</text>
+                <rect x="140" y="17" width="160" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="140" y="17" width="107.2" height="10" fill="#5c3a5c" rx="1"
+                      style="transform-origin: 140px 17px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.15s forwards;"/>
+                <text x="310" y="25" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#5c3a5c">67</text>
 
-              <!-- Flow 1→2: trapezoid -->
-              <g class="fade-in" style="animation-delay: 0.4s">
-                <path d="M 100 30 L 140 41.4 L 140 78.6 L 100 90 Z" fill="#5c3a5c" opacity="0.3"/>
-              </g>
+                <!-- Row 2: Skilled-trade occupation 81 → width 129.6 -->
+                <text x="0" y="60">Skilled-trade occupation</text>
+                <rect x="140" y="52" width="160" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="140" y="52" width="129.6" height="10" fill="#5c3a5c" rx="1"
+                      style="transform-origin: 140px 52px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.30s forwards;"/>
+                <text x="310" y="60" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#5c3a5c">81</text>
 
-              <!-- Stage 2: Credentialed, 62% height = 37.2px, y=41.4 -->
-              <g class="fade-in" style="animation-delay: 0.4s">
-                <rect x="140" y="41.4" width="80" height="37.2" fill="#5c3a5c"/>
-                <text x="180" y="20" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3d3830">Credentialed</text>
-                <text x="180" y="108" text-anchor="middle" font-family="Fraunces" font-size="18" font-weight="500" fill="#5c3a5c">62%</text>
-                <text x="180" y="124" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#8a8370">completion</text>
+                <!-- Row 3: Composite, geometric mean = sqrt(67*81) ≈ 73.7 → width 118.4 -->
+                <text x="0" y="95" font-style="italic">geometric mean</text>
+                <rect x="140" y="87" width="160" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="140" y="87" width="118.4" height="10" fill="#5c3a5c" opacity="0.55" rx="1"
+                      style="transform-origin: 140px 87px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.50s forwards;"/>
+                <text x="310" y="95" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#5c3a5c">74</text>
               </g>
-
-              <!-- Flow 2→3: trapezoid -->
-              <g class="fade-in" style="animation-delay: 0.6s">
-                <path d="M 220 41.4 L 260 48.6 L 260 71.4 L 220 78.6 Z" fill="#5c3a5c" opacity="0.45"/>
-              </g>
-
-              <!-- Stage 3: Earning ≥ median, 38% height = 22.8px, y=48.6 -->
-              <g class="fade-in" style="animation-delay: 0.6s">
-                <rect x="260" y="48.6" width="60" height="22.8" fill="#5c3a5c"/>
-                <text x="290" y="20" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#3d3830">Earning ≥ median</text>
-                <text x="290" y="108" text-anchor="middle" font-family="Fraunces" font-size="18" font-weight="500" fill="#5c3a5c">38%</text>
-                <text x="290" y="124" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#8a8370">@ 10 yrs</text>
+              <!-- Scale ticks -->
+              <g font-family="IBM Plex Mono" font-size="9" fill="#8a8370">
+                <text x="140" y="125">0</text>
+                <text x="220" y="125" text-anchor="middle">50</text>
+                <text x="300" y="125" text-anchor="end">100</text>
               </g>
             </svg>
           </div>
           <div class="domain-metrics">
-            <span>NAEP</span><span>NCES</span><span>College Scorecard</span><span>IPEDS</span>
+            <span>ACS B15003</span><span>ACS C24010</span><span>geometric mean</span>
           </div>
         </div>
 
@@ -1551,23 +1605,68 @@
       <div class="step">
         <div class="step-num">i.</div>
         <h4 class="step-title">Source</h4>
-        <p class="step-body">Pull from Census, BEA, BLS, IRS SOI, CDC, NCES, HMDA, and HUD. No proprietary data, no private licenses, no black-box APIs.</p>
+        <p class="step-body">Pull from the American Community Survey (Census), the Bureau of Economic Analysis (BEA), IRS Statistics of Income (SOI), and CDC's National Center for Health Statistics. No proprietary data, no private licenses, no black-box APIs.</p>
       </div>
       <div class="step">
         <div class="step-num">ii.</div>
         <h4 class="step-title">Harmonize</h4>
-        <p class="step-body">Crosswalk tract and county geographies to a consistent unit. Impute only where methodologically defensible. Flag every interpolation.</p>
+        <p class="step-body">Crosswalk tract and county geographies to a consistent unit (50 states + DC). Where data is too unreliable to publish, suppress and label. Never impute, model, or fill from neighbors.</p>
       </div>
       <div class="step">
         <div class="step-num">iii.</div>
         <h4 class="step-title">Score</h4>
-        <p class="step-body">Normalize each indicator against a national benchmark. Weight within domains. Composite using documented aggregation rules.</p>
+        <p class="step-body">Convert each indicator to a national percentile rank (1–100). Compose with equal weights — within each domain and across the five — using a geometric mean. A deficit in any one domain visibly pulls the composite down.</p>
       </div>
       <div class="step">
         <div class="step-num">iv.</div>
         <h4 class="step-title">Publish</h4>
-        <p class="step-body">Release data, code, and methodology together. Version every update. Show uncertainty. Let anyone reproduce the result.</p>
+        <p class="step-body">Release data, code, and methodology together. Versioned annually (<code>vYYYY.MM</code>, anchored to the ACS December release). Each prior version preserved and recomputable from the same inputs.</p>
       </div>
+    </div>
+
+    <div class="method-table">
+      <div class="method-table-label">§ 04.1 — Sources, vintages, suppression</div>
+      <div class="method-table-rows">
+        <div class="mtable-head">
+          <span>Domain</span>
+          <span>Primary source</span>
+          <span>Vintage strategy</span>
+          <span>Suppression rule</span>
+        </div>
+        <div class="mtable-row" style="--c: var(--domain-1)">
+          <span class="mtable-d">Purchasing</span>
+          <span>ACS B19013 ÷ BEA county RPP</span>
+          <span>ACS 5-year, BEA experimental</span>
+          <span>ACS MOE &gt; 30%</span>
+        </div>
+        <div class="mtable-row" style="--c: var(--domain-2)">
+          <span class="mtable-d">Wealth</span>
+          <span>ACS B25003, B25077 + IRS SOI county</span>
+          <span>ACS 5-year, IRS SOI ~2-yr lag</span>
+          <span>MOE &gt; 30%; needs 2-of-3</span>
+        </div>
+        <div class="mtable-row" style="--c: var(--domain-3)">
+          <span class="mtable-d">Family</span>
+          <span>ACS B09005</span>
+          <span>ACS 5-year</span>
+          <span>ACS MOE &gt; 30%</span>
+        </div>
+        <div class="mtable-row" style="--c: var(--domain-4)">
+          <span class="mtable-d">Health</span>
+          <span>NCHS USALEEP <em>(CDC WONDER fallback)</em></span>
+          <span>USALEEP irregular; mortality annual</span>
+          <span>n &lt; 20 events</span>
+        </div>
+        <div class="mtable-row" style="--c: var(--domain-5)">
+          <span class="mtable-d">Education</span>
+          <span>ACS B15003 × ACS C24010</span>
+          <span>ACS 5-year</span>
+          <span>MOE &gt; 30%; needs both components</span>
+        </div>
+      </div>
+      <p class="method-table-note">
+        A county's <em>composite</em> requires data on at least 4 of 5 domains. With one domain suppressed, the composite is computed from the four available and flagged on hover. With two or more suppressed, the county shows as gray on the map. <strong>No imputation, ever</strong> — no state averages, no nearest-neighbor fill, no modeled estimates. The number is either reproducible from federal data, or it isn't.
+      </p>
     </div>
 
     <div class="principle-block">
@@ -1638,7 +1737,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <div>© 2026 — v0.3 Methodology Draft</div>
+      <div>© 2026 — v0.4 Methodology Locked</div>
       <div>Built on open federal data</div>
     </div>
   </footer>
