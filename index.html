@@ -1141,6 +1141,50 @@
     .cta-primary-lg .cta-label { font-size: 20px; }
   }
 
+  /* ————— LIVE VINTAGE TABLE on §04 ————— */
+  .method-vintage-live {
+    margin: 28px 0 24px;
+    padding: 18px 22px;
+    background: var(--paper-warm);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 3px 3px 0;
+  }
+  .method-vintage-live-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 12px;
+  }
+  .method-vintage-list {
+    list-style: none; padding: 0; margin: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .method-vintage-list li {
+    display: grid;
+    grid-template-columns: 180px 1fr 140px;
+    gap: 14px;
+    padding: 5px 0;
+    border-bottom: 1px dotted var(--rule);
+    align-items: baseline;
+  }
+  .method-vintage-list li:last-child { border-bottom: none; }
+  .method-vintage-list .source-key { color: var(--ink); font-weight: 500; }
+  .method-vintage-list .source-vintage { color: var(--ink-soft); white-space: normal; word-break: break-word; }
+  .method-vintage-list .source-accessed {
+    color: var(--ink-soft); opacity: 0.7;
+    text-align: right; font-size: 11px;
+  }
+  .method-vintage-loading { color: var(--ink-soft); opacity: 0.55; font-style: italic; display: block !important; border-bottom: none !important; }
+  .method-vintage-error { color: var(--accent); }
+  @media (max-width: 700px) {
+    .method-vintage-list li {
+      grid-template-columns: 1fr;
+      gap: 2px; padding: 8px 0;
+    }
+    .method-vintage-list .source-accessed { text-align: left; }
+  }
+
   /* ————— LIVE EXTREMES on §03 domain cards ————— */
   .domain-live {
     margin-top: 14px;
@@ -1577,58 +1621,55 @@
                 <text x="50" y="18" font-weight="500" fill="#3d3830">Index value</text>
               </g>
 
-              <!-- Reference label for 100 line, positioned at right -->
-              <text x="430" y="70" text-anchor="end" font-family="IBM Plex Mono" font-size="9" fill="#8a8370" font-style="italic">national avg</text>
-
               <!-- Bars: x-step = 54, width = 36. Index-to-y: y = 110 - (index * 0.649). Value label 8px above bar top. -->
               <!-- Pitts: 113 → height=73.3, y=36.7 -->
               <g class="bar" style="animation-delay: 0.1s">
                 <rect x="60" y="36.7" width="36" height="73.3" fill="#2d5a4a"/>
                 <text x="78" y="30" font-family="IBM Plex Mono" font-size="10" fill="#2d5a4a" text-anchor="middle" font-weight="600">113</text>
               </g>
-              <text x="78" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">Pittsburgh</text>
+              <text x="78" y="126" font-family="IBM Plex Sans" font-size="9" fill="#3d3830" text-anchor="middle">Pittsburgh</text>
 
               <!-- Des Moines: 119 → height=77.3, y=32.7 -->
               <g class="bar" style="animation-delay: 0.2s">
                 <rect x="114" y="32.7" width="36" height="77.3" fill="#2d5a4a"/>
                 <text x="132" y="26" font-family="IBM Plex Mono" font-size="10" fill="#2d5a4a" text-anchor="middle" font-weight="600">119</text>
               </g>
-              <text x="132" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">Des Moines</text>
+              <text x="132" y="126" font-family="IBM Plex Sans" font-size="9" fill="#3d3830" text-anchor="middle">Des Moines</text>
 
               <!-- Atlanta: 104 → height=67.5, y=42.5 -->
               <g class="bar" style="animation-delay: 0.3s">
                 <rect x="168" y="42.5" width="36" height="67.5" fill="#2d5a4a"/>
                 <text x="186" y="35.5" font-family="IBM Plex Mono" font-size="10" fill="#2d5a4a" text-anchor="middle" font-weight="600">104</text>
               </g>
-              <text x="186" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">Atlanta</text>
+              <text x="186" y="126" font-family="IBM Plex Sans" font-size="9" fill="#3d3830" text-anchor="middle">Atlanta</text>
 
               <!-- US: 100 → height=64.9, y=45.1 (neutral) -->
               <g class="bar" style="animation-delay: 0.4s">
                 <rect x="222" y="45.1" width="36" height="64.9" fill="#8a8370"/>
                 <text x="240" y="38.1" font-family="IBM Plex Mono" font-size="10" fill="#3d3830" text-anchor="middle" font-weight="600">100</text>
               </g>
-              <text x="240" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle" font-weight="500">US avg</text>
+              <text x="240" y="126" font-family="IBM Plex Sans" font-size="9" fill="#3d3830" text-anchor="middle" font-weight="500">US avg</text>
 
               <!-- Boston: 87 → height=56.5, y=53.5 -->
               <g class="bar" style="animation-delay: 0.5s">
                 <rect x="276" y="53.5" width="36" height="56.5" fill="#c8371d"/>
                 <text x="294" y="46.5" font-family="IBM Plex Mono" font-size="10" fill="#c8371d" text-anchor="middle" font-weight="600">87</text>
               </g>
-              <text x="294" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">Boston</text>
+              <text x="294" y="126" font-family="IBM Plex Sans" font-size="9" fill="#3d3830" text-anchor="middle">Boston</text>
 
               <!-- NYC: 79 → height=51.3, y=58.7 -->
               <g class="bar" style="animation-delay: 0.6s">
                 <rect x="330" y="58.7" width="36" height="51.3" fill="#c8371d"/>
                 <text x="348" y="51.7" font-family="IBM Plex Mono" font-size="10" fill="#c8371d" text-anchor="middle" font-weight="600">79</text>
               </g>
-              <text x="348" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">NYC</text>
+              <text x="348" y="126" font-family="IBM Plex Sans" font-size="9" fill="#3d3830" text-anchor="middle">NYC</text>
 
               <!-- SF: 71 → height=46.1, y=63.9 -->
               <g class="bar" style="animation-delay: 0.7s">
                 <rect x="384" y="63.9" width="36" height="46.1" fill="#c8371d"/>
                 <text x="402" y="56.9" font-family="IBM Plex Mono" font-size="10" fill="#c8371d" text-anchor="middle" font-weight="600">71</text>
               </g>
-              <text x="402" y="126" font-family="IBM Plex Sans" font-size="11" fill="#3d3830" text-anchor="middle">SF</text>
+              <text x="402" y="126" font-family="IBM Plex Sans" font-size="9" fill="#3d3830" text-anchor="middle">SF</text>
             </svg>
           </div>
           <div class="domain-metrics">
@@ -1919,8 +1960,8 @@
         </div>
         <div class="mtable-row" style="--c: var(--domain-4)">
           <span class="mtable-d">Health</span>
-          <span>NCHS USALEEP <em>(CDC WONDER UCD fallback)</em></span>
-          <span>USALEEP 2010–2015; mortality annual</span>
+          <span>CDC WONDER UCD — all-cause age-adjusted mortality (inverted)</span>
+          <span>22-year pool (1999–2020); manual export per release</span>
           <span>n &lt; 20 events (rate reliability)</span>
         </div>
         <div class="mtable-row" style="--c: var(--domain-5)">
@@ -1929,6 +1970,12 @@
           <span>ACS 5-year</span>
           <span>MOE &gt; 30%; needs both components</span>
         </div>
+      </div>
+      <div class="method-vintage-live" id="method-vintage-live">
+        <div class="method-vintage-live-label">v2026.04-dev — exact sources accessed for this release</div>
+        <ul class="method-vintage-list">
+          <li class="method-vintage-loading">Loading from Supabase…</li>
+        </ul>
       </div>
       <p class="method-table-note">
         A county's <em>composite</em> requires data on at least 4 of 5 domains. With one domain suppressed, the composite is computed from the four available and flagged on hover. With two or more suppressed, the county shows as gray on the map. <strong>No imputation, ever</strong> — no state averages, no nearest-neighbor fill, no modeled estimates. The number is either reproducible from federal data, or it isn't.
@@ -2101,6 +2148,37 @@ if (domainsSection && "IntersectionObserver" in window) {
   obs.observe(domainsSection);
 } else if (domainsSection) {
   loadLiveExtremes();
+}
+
+async function loadLiveVintages() {
+  const list = document.querySelector(".method-vintage-list");
+  if (!list) return;
+  try {
+    const rows = await fetchSupa(
+      `/rest/v1/source_vintages?release_version=eq.${RELEASE}` +
+      `&select=source_key,vintage,access_date&order=source_key`
+    );
+    list.innerHTML = rows.map(r =>
+      `<li>` +
+      `<span class="source-key">${r.source_key}</span>` +
+      `<span class="source-vintage">${r.vintage}</span>` +
+      `<span class="source-accessed">accessed ${r.access_date}</span>` +
+      `</li>`
+    ).join("");
+  } catch (e) {
+    list.innerHTML = `<li class="method-vintage-error">Unavailable: ${e.message}</li>`;
+    console.error(e);
+  }
+}
+
+const methodSection = document.getElementById("method");
+if (methodSection && "IntersectionObserver" in window) {
+  const obs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) { obs.disconnect(); loadLiveVintages(); }
+  }, { rootMargin: "400px" });
+  obs.observe(methodSection);
+} else if (methodSection) {
+  loadLiveVintages();
 }
 
 // ————— Map (heavy: d3 + 2.3 MB topology, lazy-loaded on map enter) —————
