@@ -1165,6 +1165,85 @@
     .cta-primary-lg .cta-label { font-size: 20px; }
   }
 
+  /* ————— NATIONAL TRENDS (§ The country over time) ————— */
+  section.trends {
+    padding: 80px 0 80px;
+    border-top: 1px solid var(--rule);
+  }
+  .trends-inner { max-width: 1280px; }
+  .trends-header { max-width: 760px; margin-bottom: 36px; }
+  .trends-header h2 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(30px, 3.6vw, 44px); line-height: 1.05;
+    letter-spacing: -0.025em; margin-bottom: 18px;
+  }
+  .trends-header h2 em {
+    font-family: 'Source Serif 4', serif; font-style: italic;
+    color: var(--accent); font-weight: 400;
+  }
+  .trends-lede {
+    font-size: 17px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 720px;
+  }
+  .trends-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 720px) {
+    .trends-grid { grid-template-columns: 1fr; }
+  }
+  .trend-card.composite {
+    background: var(--paper);
+    border-left-width: 4px;
+  }
+  .trend-card {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 18px 18px 16px;
+    border-left: 3px solid var(--c, var(--accent));
+  }
+  .trend-card h3 {
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
+    color: var(--ink); margin: 0 0 4px;
+  }
+  .trend-sublabel {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.04em;
+    color: var(--ink-soft); margin-bottom: 14px; line-height: 1.4;
+  }
+  .trend-svg { display: block; width: 100%; height: 130px; }
+  .trend-line { fill: none; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+  .trend-axis { stroke: var(--rule); stroke-width: 0.5; }
+  .trend-axis-text {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+    fill: var(--ink-soft);
+  }
+  .trend-summary {
+    margin-top: 14px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--ink-soft); letter-spacing: 0.02em;
+  }
+  .trend-summary .endpoints { font-variant-numeric: tabular-nums; }
+  .trend-summary .change { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .trend-summary .change.up   { color: #2d5a4a; }
+  .trend-summary .change.down { color: var(--accent); }
+  .trend-summary .change.flat { color: var(--ink-soft); }
+  .trend-loading { color: var(--ink-soft); opacity: 0.55; font-style: italic; padding: 40px 0; text-align: center; }
+  .trend-error { color: var(--accent); padding: 12px 0; }
+  .trend-note {
+    margin-top: 8px; font-size: 11px; color: var(--ink-soft);
+    line-height: 1.45; opacity: 0.85;
+  }
+  .trends-footnote {
+    font-size: 13px; line-height: 1.55; color: var(--ink-soft);
+    margin-top: 12px; max-width: 780px;
+  }
+  .trends-footnote em { color: var(--ink); font-style: italic; }
+
   /* ————— LIVE VINTAGE TABLE on §04 ————— */
   .method-vintage-live {
     margin: 28px 0 24px;
@@ -1916,6 +1995,68 @@
     </div>
   </section>
 
+  <!-- NATIONAL TRENDS — five small line charts, lazy-loaded -->
+  <section class="trends" id="trends">
+    <div class="trends-inner">
+      <div class="section-label">§ The country over time</div>
+      <div class="trends-header">
+        <h2>Five domains, <em>fifteen years.</em></h2>
+        <p class="trends-lede">
+          The county FLY index is relative — each release re-percentile-ranks counties against each other, so it can't speak to whether the nation is moving forward or back. To answer that question we need <em>absolute levels</em>. These are the national-level headline indicators per domain, drawn from the same federal sources, year by year. Change figures show relative growth from the first year to the last.
+        </p>
+      </div>
+
+      <div class="trends-grid" id="trends-grid">
+        <div class="trend-card composite" data-indicator="composite" style="--c: var(--ink)">
+          <h3>National FLY index</h3>
+          <div class="trend-sublabel" data-sublabel></div>
+          <svg class="trend-svg" viewBox="0 0 280 130" preserveAspectRatio="none"></svg>
+          <div class="trend-summary"><span class="endpoints" data-endpoints>—</span><span class="change" data-change></span></div>
+          <div class="trend-note" data-note></div>
+        </div>
+        <div class="trend-card" data-indicator="purchasing_power" style="--c: var(--domain-1)">
+          <h3>Purchasing power</h3>
+          <div class="trend-sublabel" data-sublabel></div>
+          <svg class="trend-svg" viewBox="0 0 280 130" preserveAspectRatio="none"></svg>
+          <div class="trend-summary"><span class="endpoints" data-endpoints>—</span><span class="change" data-change></span></div>
+          <div class="trend-note" data-note></div>
+        </div>
+        <div class="trend-card" data-indicator="wealth" style="--c: var(--domain-2)">
+          <h3>Wealth</h3>
+          <div class="trend-sublabel" data-sublabel></div>
+          <svg class="trend-svg" viewBox="0 0 280 130" preserveAspectRatio="none"></svg>
+          <div class="trend-summary"><span class="endpoints" data-endpoints>—</span><span class="change" data-change></span></div>
+          <div class="trend-note" data-note></div>
+        </div>
+        <div class="trend-card" data-indicator="family" style="--c: var(--domain-3)">
+          <h3>Family</h3>
+          <div class="trend-sublabel" data-sublabel></div>
+          <svg class="trend-svg" viewBox="0 0 280 130" preserveAspectRatio="none"></svg>
+          <div class="trend-summary"><span class="endpoints" data-endpoints>—</span><span class="change" data-change></span></div>
+          <div class="trend-note" data-note></div>
+        </div>
+        <div class="trend-card" data-indicator="health" style="--c: var(--domain-4)">
+          <h3>Health</h3>
+          <div class="trend-sublabel" data-sublabel></div>
+          <svg class="trend-svg" viewBox="0 0 280 130" preserveAspectRatio="none"></svg>
+          <div class="trend-summary"><span class="endpoints" data-endpoints>—</span><span class="change" data-change></span></div>
+          <div class="trend-note" data-note></div>
+        </div>
+        <div class="trend-card" data-indicator="education" style="--c: var(--domain-5)">
+          <h3>Education</h3>
+          <div class="trend-sublabel" data-sublabel></div>
+          <svg class="trend-svg" viewBox="0 0 280 130" preserveAspectRatio="none"></svg>
+          <div class="trend-summary"><span class="endpoints" data-endpoints>—</span><span class="change" data-change></span></div>
+          <div class="trend-note" data-note></div>
+        </div>
+      </div>
+
+      <p class="trends-footnote">
+        Sources: <em>U.S. Census Bureau ACS 1-yr</em> (5-yr 2016–2020 used for 2020 since the 1-yr release was suspended); <em>BLS CPI-U all-items</em> for income deflation; <em>CDC NCHS National Vital Statistics</em> for life expectancy. The line charts show one indicator per domain — the one that's directly comparable across years; multi-component domains use only the longest-available comparable component. We deliberately do not roll all five into a single "national FLY" line: combining absolute levels in different units across decades requires methodology calls the data can't justify.
+      </p>
+    </div>
+  </section>
+
   <!-- METHODOLOGY -->
   <section class="method" id="method">
     <div class="section-label">§ 04 — How It Works</div>
@@ -2164,6 +2305,160 @@ if (domainsSection && "IntersectionObserver" in window) {
   obs.observe(domainsSection);
 } else if (domainsSection) {
   loadLiveExtremes();
+}
+
+// ————— National trends (§ The country over time) —————
+
+function fmtValue(v, format) {
+  if (v == null) return "—";
+  if (format === "currency") {
+    return "$" + Math.round(v).toLocaleString();
+  }
+  if (format === "percent") {
+    return (v * 100).toFixed(1) + "%";
+  }
+  if (format === "years") {
+    return v.toFixed(1) + " yr";
+  }
+  if (format === "index") {
+    return v.toFixed(1);
+  }
+  return String(v);
+}
+
+function fmtChange(first, last, _format) {
+  // Single unit across all six charts: relative percent change from first
+  // year to last year. Easier to compare at a glance than a mix of pp / pts
+  // / yr. The absolute endpoint values are still displayed alongside.
+  if (first == null || last == null || first === 0) return { text: "", cls: "flat" };
+  const pct = (last - first) / first * 100;
+  const sign = pct > 0 ? "+" : "";
+  const cls = Math.abs(pct) < 0.5 ? "flat" : (pct > 0 ? "up" : "down");
+  return { text: sign + pct.toFixed(1) + "%", cls };
+}
+
+function computeComposite(data) {
+  // Geometric mean of the five domain indicators, each year normalized to
+  // its value in the earliest year where ALL five have data (the baseline
+  // year). Output is an index where baseline = 100.
+  const ORDER = ["purchasing_power", "wealth", "family", "health", "education"];
+  const yearMap = {};  // year -> {indicator: value}
+  for (const key of ORDER) {
+    const vals = data.indicators[key].values;
+    for (const yr in vals) {
+      if (vals[yr] == null) continue;
+      if (!yearMap[yr]) yearMap[yr] = {};
+      yearMap[yr][key] = vals[yr];
+    }
+  }
+  const allYears = Object.keys(yearMap).map(Number).sort((a, b) => a - b);
+  const baselineYear = allYears.find(yr =>
+    ORDER.every(k => yearMap[String(yr)][k] != null));
+  if (!baselineYear) return { values: {}, baselineYear: null };
+  const baseline = {};
+  for (const k of ORDER) baseline[k] = yearMap[String(baselineYear)][k];
+
+  const values = {};
+  for (const yr of allYears) {
+    const row = yearMap[String(yr)];
+    if (!ORDER.every(k => row[k] != null)) continue;
+    const ratios = ORDER.map(k => row[k] / baseline[k]);
+    const product = ratios.reduce((a, b) => a * b, 1);
+    const geomean = Math.pow(product, 1 / ratios.length);
+    values[yr] = +(geomean * 100).toFixed(2);
+  }
+  return { values, baselineYear };
+}
+
+function renderTrend(card, info) {
+  const svg = card.querySelector(".trend-svg");
+  const sublabel = card.querySelector("[data-sublabel]");
+  const endpoints = card.querySelector("[data-endpoints]");
+  const change = card.querySelector("[data-change]");
+  const note = card.querySelector("[data-note]");
+  const indicator = card.dataset.indicator;
+
+  sublabel.textContent = info.label + " · " + info.unit;
+  if (info.note) note.textContent = info.note;
+
+  const yearKeys = Object.keys(info.values).map(Number).sort();
+  if (!yearKeys.length) {
+    svg.innerHTML = '<text x="140" y="65" text-anchor="middle" class="trend-axis-text">no data</text>';
+    return;
+  }
+  const points = yearKeys.map(y => ({ y, v: info.values[String(y)] }));
+
+  // Y range with 10% pad
+  const minY = Math.min(...points.map(p => p.v));
+  const maxY = Math.max(...points.map(p => p.v));
+  const range = (maxY - minY) || Math.abs(maxY) * 0.1 || 1;
+  const yMin = minY - range * 0.10;
+  const yMax = maxY + range * 0.10;
+
+  const W = 280, H = 130, PL = 6, PR = 6, PT = 12, PB = 22;
+  const xOf = year => PL + (year - yearKeys[0]) / Math.max(1, yearKeys.at(-1) - yearKeys[0]) * (W - PL - PR);
+  const yOf = val  => PT + (1 - (val - yMin) / (yMax - yMin)) * (H - PT - PB);
+
+  // Get the domain color from CSS custom property on the card
+  const cardColor = getComputedStyle(card).getPropertyValue("--c").trim() || "#c8371d";
+
+  const linePts = points.map(p => `${xOf(p.y).toFixed(1)},${yOf(p.v).toFixed(1)}`).join(" ");
+  // Endpoint markers only — keeps the line clean across 14+ years.
+  const endDots = [points[0], points.at(-1)].map(p =>
+    `<circle cx="${xOf(p.y).toFixed(1)}" cy="${yOf(p.v).toFixed(1)}" r="2.5" fill="${cardColor}" />`
+  ).join("");
+
+  svg.innerHTML = `
+    <line class="trend-axis" x1="${PL}" x2="${W - PR}" y1="${H - PB}" y2="${H - PB}" />
+    <polyline class="trend-line" points="${linePts}" stroke="${cardColor}" />
+    ${endDots}
+    <text class="trend-axis-text" x="${PL}" y="${H - PB + 14}">${yearKeys[0]}</text>
+    <text class="trend-axis-text" x="${W - PR}" y="${H - PB + 14}" text-anchor="end">${yearKeys.at(-1)}</text>
+  `;
+
+  const first = points[0].v;
+  const last = points.at(-1).v;
+  endpoints.textContent = `${fmtValue(first, info.format)} → ${fmtValue(last, info.format)}`;
+  const ch = fmtChange(first, last, info.format);
+  change.textContent = ch.text;
+  change.classList.add(ch.cls);
+}
+
+async function loadNationalTrends() {
+  const grid = document.getElementById("trends-grid");
+  if (!grid) return;
+  try {
+    const data = await fetch("/national_trends.json").then(r => r.json());
+
+    // Compute the composite client-side from the five domain series.
+    const { values: compValues, baselineYear } = computeComposite(data);
+    data.indicators.composite = {
+      label: "National FLY index",
+      unit: `geometric mean of all five domains, ${baselineYear ?? "—"} = 100`,
+      format: "index",
+      note: "A single number per year derived from the five domain series above. If every domain were unchanged from the baseline, this would stay at 100; if all five gained equally, it would rise. The geometric mean penalizes lopsided gains the same way the county composite does — a big lift in one domain can't fully compensate for a drop in another.",
+      values: compValues,
+    };
+
+    grid.querySelectorAll(".trend-card").forEach(card => {
+      const ind = card.dataset.indicator;
+      const info = data.indicators[ind];
+      if (info) renderTrend(card, info);
+    });
+  } catch (e) {
+    grid.innerHTML = `<div class="trend-error">National trends unavailable: ${e.message}</div>`;
+    console.error(e);
+  }
+}
+
+const trendsSection = document.getElementById("trends");
+if (trendsSection && "IntersectionObserver" in window) {
+  const obs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) { obs.disconnect(); loadNationalTrends(); }
+  }, { rootMargin: "400px" });
+  obs.observe(trendsSection);
+} else if (trendsSection) {
+  loadNationalTrends();
 }
 
 async function loadLiveVintages() {
