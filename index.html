@@ -265,97 +265,6 @@
     border-bottom-color: var(--ink);
   }
 
-  /* Teaser card */
-  .hero-teaser {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 40px;
-    align-items: start;
-    padding-top: 40px;
-    border-top: 1px solid var(--rule);
-  }
-  .teaser-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ink-faint, #8a8370);
-    padding-top: 6px;
-  }
-  .teaser-card {
-    background: var(--paper-warm);
-    border: 1px solid var(--rule);
-    padding: 28px 32px;
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 40px;
-    align-items: center;
-  }
-  .teaser-top {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .teaser-top-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 2px;
-  }
-  .teaser-age {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-size: 76px;
-    line-height: 0.9;
-    color: var(--ink);
-    letter-spacing: -0.04em;
-    margin-bottom: 8px;
-  }
-  .teaser-note {
-    font-family: 'Source Serif 4', serif;
-    font-style: italic;
-    font-size: 13px;
-    line-height: 1.45;
-    color: var(--ink-soft);
-    max-width: 32ch;
-  }
-  .teaser-domains {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-left: 32px;
-    border-left: 1px solid var(--rule);
-  }
-  .teaser-domain {
-    display: grid;
-    grid-template-columns: 10px 1fr auto;
-    gap: 10px;
-    align-items: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--ink-soft);
-  }
-  .td-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
-  .td-name {
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .td-val {
-    font-family: 'Fraunces', serif;
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-  .td-ahead { color: #2d5a4a; }
-  .td-behind { color: #a64238; }
-
   /* National picture strip — replaces the old hero stats */
   section.national-strip {
     padding: 48px 0 64px;
@@ -1115,10 +1024,6 @@
     .cta-primary { padding: 16px 24px; }
     .cta-primary .cta-label { font-size: 18px; }
 
-    .hero-teaser { grid-template-columns: 1fr; gap: 20px; }
-    .teaser-card { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
-    .teaser-age { font-size: 60px; }
-    .teaser-domains { padding-left: 0; border-left: none; padding-top: 20px; border-top: 1px solid var(--rule); }
 
     /* National strip */
     .national-stats { grid-template-columns: repeat(2, 1fr); gap: 0; }
@@ -1608,7 +1513,7 @@
           The idea borrows from the Quality-Adjusted Life Year used in health economics, and generalizes it. A year in which earnings, savings, family, health, and education all meet a national reference counts as one Flourishing Life Year. A year that falls short is discounted. A year that exceeds the reference scores above 1.0.
         </p>
         <p>
-          Applied to a county, it produces a map of how well places sustain flourishing lives. Applied to a person, it produces a Flourishing Age — where your life stands, measured against the national age trajectory, across the same five domains. <em>Same unit. Same data. Same honesty.</em>
+          Applied to a county, it produces a map of how well places sustain flourishing lives. Applied to a person, it produces a Flourishing Read — a categorical assessment per domain (strong, adequate, or below cohort) against the average for Americans your age. <em>Same five domains. Same federal data. Same honesty.</em>
         </p>
       </div>
     </div>
@@ -1676,7 +1581,7 @@
         </div>
       </div>
       <div class="eq-rollup-caption">
-        County Flourishing Life Years sum to state totals, and state totals sum to the national figure — the same additive structure as GDP. In 2025, the United States produced an estimated <strong>287 million Flourishing Life Years</strong>.
+        County Flourishing Life Years sum to state totals, and state totals sum to the national figure — the same additive structure as GDP. The exact national total under the index's frozen-baseline accounting (Q7, "§ The national balance") arrives with v0.6 of this page; treat the placeholder above as illustrative of the structure, not the magnitude.
       </div>
     </div>
   </section>
@@ -1687,7 +1592,7 @@
       <div class="section-label">§ 03 — The Framework</div>
       <div class="domains-header">
         <h2>Five domains. <em>One year.</em></h2>
-        <p>The same five domains measure a place and measure you. For each, we build a national age-trajectory curve from federal microdata, then see where your inputs — and your county's indicators — land on it. The assessment gives you a Flourishing Age. These are the benchmarks it's measured against.</p>
+        <p>The same five domains measure a place and measure you. For each, we build a national age-trajectory curve from federal microdata, then see where your inputs — and your county's indicators — land on it. The assessment returns a per-domain read against the cohort average for Americans your age. These are the benchmarks the read is measured against.</p>
       </div>
 
       <div class="domain-grid">
