@@ -1456,7 +1456,7 @@
     </p>
 
     <div class="meta-row" id="meta-row">
-      <div><span class="label">Release</span><span class="value">v2026.04-dev</span></div>
+      <div><span class="label">Release</span><span class="value">v2025.12</span></div>
       <div><span class="label">Counties scored</span><span class="value" id="meta-scored">…</span></div>
       <div><span class="label">Counties gray</span><span class="value" id="meta-gray">…</span></div>
       <div><span class="label" id="meta-range-label">Composite range</span><span class="value" id="meta-range">…</span></div>
@@ -1686,7 +1686,7 @@
             <span>ACS B19013</span><span>BEA metro RPP (imputed)</span><span>percentile rank</span>
           </div>
           <div class="domain-live" data-domain="purchasing_power">
-            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-label">v2025.12 — actual extremes</div>
             <div class="domain-live-row domain-live-loading">Loading…</div>
           </div>
         </div>
@@ -1740,7 +1740,7 @@
             <span>ACS B25003</span><span>ACS B25077</span><span>IRS SOI</span><span>percentile rank</span>
           </div>
           <div class="domain-live" data-domain="wealth">
-            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-label">v2025.12 — actual extremes</div>
             <div class="domain-live-row domain-live-loading">Loading…</div>
           </div>
         </div>
@@ -1794,7 +1794,7 @@
             <span>ACS B09005</span><span>percentile rank</span>
           </div>
           <div class="domain-live" data-domain="family">
-            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-label">v2025.12 — actual extremes</div>
             <div class="domain-live-row domain-live-loading">Loading…</div>
           </div>
         </div>
@@ -1847,7 +1847,7 @@
             <span>CDC WONDER UCD 1999&ndash;2020</span><span>age-adjusted</span><span>percentile rank (inverted)</span>
           </div>
           <div class="domain-live" data-domain="health">
-            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-label">v2025.12 — actual extremes</div>
             <div class="domain-live-row domain-live-loading">Loading…</div>
           </div>
         </div>
@@ -1901,7 +1901,7 @@
             <span>ACS B15003</span><span>ACS C24010</span><span>geometric mean</span>
           </div>
           <div class="domain-live" data-domain="education">
-            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-label">v2025.12 — actual extremes</div>
             <div class="domain-live-row domain-live-loading">Loading…</div>
           </div>
         </div>
@@ -1982,7 +1982,7 @@
         </div>
       </div>
       <div class="method-vintage-live" id="method-vintage-live">
-        <div class="method-vintage-live-label">v2026.04-dev — exact sources accessed for this release</div>
+        <div class="method-vintage-live-label">v2025.12 — exact sources accessed for this release</div>
         <ul class="method-vintage-list">
           <li class="method-vintage-loading">Loading from Supabase…</li>
         </ul>
@@ -2076,7 +2076,7 @@
 <script type="module">
 const SUPABASE_URL = "https://kzqzynicjmdhzmqcvuqh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_uEIU3KCMcGM1iHm0TKQICQ__2WqmlH7";
-const RELEASE = "v2026.04-dev";
+const RELEASE = "v2025.12";
 const TOPOLOGY_URL = "/county_topology.json";
 const NAMES_URL = "/geoid_names.json";
 
@@ -2137,7 +2137,7 @@ async function loadLiveExtremes() {
         `<span class="county-name">${names[r.geoid] || r.geoid}</span>` +
         `<span class="pct">p${r.percentile}</span></div>`;
       el.innerHTML =
-        `<div class="domain-live-label">v2026.04-dev — actual extremes</div>` +
+        `<div class="domain-live-label">v2025.12 — actual extremes</div>` +
         top.map(r => row("↑", r)).join("") +
         bot.map((r, i) => row("↓", r, i === 0 ? "is-bot-first" : "")).join("");
     }));
