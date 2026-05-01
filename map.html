@@ -96,21 +96,40 @@
     position: relative;
     overflow: hidden;
   }
-  #map-svg { display: block; width: 100%; height: auto; }
+  #map-svg { display: block; width: 100%; height: auto; cursor: grab; }
+  #map-svg.dragging { cursor: grabbing; }
   #map-svg .county { stroke: var(--paper-warm); stroke-width: 0.3; cursor: pointer; }
   #map-svg .county:hover { stroke: var(--ink); stroke-width: 1.2; }
   #map-svg .state-line { fill: none; stroke: var(--ink); stroke-width: 0.5; pointer-events: none; }
 
+  .zoom-controls {
+    position: absolute; top: 24px; right: 24px;
+    display: flex; flex-direction: column; gap: 4px;
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    z-index: 10;
+  }
+  .zoom-controls button {
+    width: 32px; height: 32px;
+    background: transparent; border: none; cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 500;
+    color: var(--ink); padding: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .zoom-controls button:hover { background: var(--paper-warm); }
+  .zoom-controls button + button { border-top: 1px solid var(--rule); }
+  .zoom-controls button svg { display: block; }
+
   #tooltip {
-    position: absolute;
+    position: fixed;
     pointer-events: none;
     background: var(--ink); color: var(--paper);
     padding: 10px 14px; border-radius: 3px;
     font-size: 13px; line-height: 1.4;
-    transform: translate(-50%, calc(-100% - 12px));
     opacity: 0; transition: opacity 120ms;
     white-space: nowrap;
     box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    z-index: 100;
   }
   #tooltip.visible { opacity: 1; }
   #tooltip .county-name { font-weight: 600; margin-bottom: 4px; }
@@ -207,7 +226,17 @@
 
   <div class="map-stage">
     <svg id="map-svg" viewBox="0 0 975 610" role="img"
-         aria-label="Choropleth map of US counties shaded by Flourishing Life Year composite score."></svg>
+         aria-label="Choropleth map of US counties shaded by Flourishing Life Year composite score. Scroll or pinch to zoom; drag to pan."></svg>
+    <div class="zoom-controls" role="group" aria-label="Zoom controls">
+      <button id="zoom-in"  type="button" aria-label="Zoom in">+</button>
+      <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
+      <button id="zoom-reset" type="button" aria-label="Reset zoom" title="Reset zoom">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+             stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 5 V2 H5 M9 2 H12 V5 M12 9 V12 H9 M5 12 H2 V9"/>
+        </svg>
+      </button>
+    </div>
     <div id="tooltip"></div>
     <div id="loading" class="loading">Loading map and federal data…</div>
   </div>
@@ -244,7 +273,7 @@
 const SUPABASE_URL = "https://kzqzynicjmdhzmqcvuqh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_uEIU3KCMcGM1iHm0TKQICQ__2WqmlH7";
 const RELEASE = "v2026.04-dev";
-const COUNTIES_TOPO = "https://unpkg.com/us-atlas@3/counties-10m.json";
+const TOPOLOGY_URL = "/county_topology.json";  // built from Census CB 2023 5m
 
 const DOMAIN_ORDER = [
   ["purchasing_power", "Purchasing power"],
@@ -255,7 +284,6 @@ const DOMAIN_ORDER = [
 ];
 
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import {feature, mesh} from "https://cdn.jsdelivr.net/npm/topojson-client@3/+esm";
 
 async function fetchAll(path) {
   const out = [];
@@ -287,8 +315,8 @@ function fmtPct(v) {
 async function main() {
   const loading = document.getElementById("loading");
   try {
-    const [topo, composites, domains] = await Promise.all([
-      fetch(COUNTIES_TOPO).then(r => r.json()),
+    const [topology, composites, domains] = await Promise.all([
+      fetch(TOPOLOGY_URL).then(r => r.json()),
       fetchAll(`/rest/v1/composite_scores?release_version=eq.${RELEASE}&select=geoid,composite,domains_available`),
       fetchAll(`/rest/v1/domain_scores?release_version=eq.${RELEASE}&select=geoid,domain,percentile`),
     ]);
@@ -310,10 +338,12 @@ async function main() {
     document.getElementById("meta-gray").textContent = gray.toLocaleString();
     document.getElementById("meta-range").textContent = `${minC.toFixed(1)} – ${maxC.toFixed(1)}`;
 
-    const counties = feature(topo, topo.objects.counties);
-    const stateMesh = mesh(topo, topo.objects.states, (a, b) => a !== b);
+    const counties = topology.counties;
+    const states = topology.states;
 
-    const path = d3.geoPath();
+    // Census CB shapefiles are in lon/lat; project with AlbersUsa fit to the SVG viewBox.
+    const projection = d3.geoAlbersUsa().fitSize([975, 610], counties);
+    const path = d3.geoPath(projection);
 
     const color = d3.scaleLinear()
       .domain([1, 50, 100])
@@ -326,22 +356,25 @@ async function main() {
 
     const tooltip = document.getElementById("tooltip");
 
-    svg.append("g")
+    // Wrap all geography in a single <g> that gets transformed by zoom/pan.
+    const g = svg.append("g");
+
+    g.append("g")
       .selectAll("path")
       .data(counties.features)
       .join("path")
       .attr("class", "county")
       .attr("d", path)
       .attr("fill", d => {
-        const c = compByGeoid.get(String(d.id).padStart(5, "0"));
+        const c = compByGeoid.get(d.properties.GEOID);
         if (!c || c.composite == null) return "#c9bfa8";  /* gray */
         return color(c.composite);
       })
       .on("mousemove", (event, d) => {
-        const geoid = String(d.id).padStart(5, "0");
+        const geoid = d.properties.GEOID;
         const c = compByGeoid.get(geoid);
         const dom = domainsByGeoid.get(geoid) || {};
-        const name = (d.properties && d.properties.name) ? d.properties.name : geoid;
+        const name = d.properties.NAME || geoid;
         const stateFips = geoid.slice(0, 2);
         const stateAbbr = STATE_ABBR[stateFips] || "";
         let html = `<div class="county-name">${name}${stateAbbr ? `, ${stateAbbr}` : ""}</div>`;
@@ -357,15 +390,46 @@ async function main() {
         }
         tooltip.innerHTML = html;
         tooltip.classList.add("visible");
-        const stage = document.querySelector(".map-stage").getBoundingClientRect();
-        tooltip.style.left = (event.clientX - stage.left) + "px";
-        tooltip.style.top  = (event.clientY - stage.top)  + "px";
+        // Position fixed (viewport coords) with edge-flip so the tooltip never clips.
+        const t = tooltip.getBoundingClientRect();
+        const margin = 8;
+        let x = event.clientX - t.width / 2;
+        let y = event.clientY - t.height - 12;
+        if (x < margin) x = margin;
+        if (x + t.width > window.innerWidth - margin) x = window.innerWidth - t.width - margin;
+        if (y < margin) y = event.clientY + 16;  // flip below cursor if too close to top
+        tooltip.style.left = x + "px";
+        tooltip.style.top  = y + "px";
       })
       .on("mouseleave", () => tooltip.classList.remove("visible"));
 
-    svg.append("path")
+    g.append("g")
+      .selectAll("path")
+      .data(states.features)
+      .join("path")
       .attr("class", "state-line")
-      .attr("d", path(stateMesh));
+      .attr("d", path);
+
+    // Zoom and pan. Strokes scale inversely so they don't get heavy when zoomed in.
+    const zoom = d3.zoom()
+      .scaleExtent([1, 24])
+      .translateExtent([[-50, -50], [1025, 660]])
+      .on("zoom", (event) => {
+        g.attr("transform", event.transform);
+        const k = event.transform.k;
+        g.selectAll(".county").attr("stroke-width", 0.3 / k);
+        g.selectAll(".state-line").attr("stroke-width", 0.5 / k);
+      })
+      .on("start", () => svg.node().classList.add("dragging"))
+      .on("end",   () => svg.node().classList.remove("dragging"));
+    svg.call(zoom);
+
+    document.getElementById("zoom-in")
+      .addEventListener("click", () => svg.transition().duration(250).call(zoom.scaleBy, 1.6));
+    document.getElementById("zoom-out")
+      .addEventListener("click", () => svg.transition().duration(250).call(zoom.scaleBy, 1 / 1.6));
+    document.getElementById("zoom-reset")
+      .addEventListener("click", () => svg.transition().duration(350).call(zoom.transform, d3.zoomIdentity));
 
     loading.style.display = "none";
   } catch (e) {
