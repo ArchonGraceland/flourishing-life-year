@@ -1141,6 +1141,34 @@
     .cta-primary-lg .cta-label { font-size: 20px; }
   }
 
+  /* ————— LIVE EXTREMES on §03 domain cards ————— */
+  .domain-live {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--rule);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .domain-live-label {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 8px;
+  }
+  .domain-live-row {
+    display: flex; align-items: baseline; gap: 8px;
+    font-variant-numeric: tabular-nums; letter-spacing: 0.01em;
+  }
+  .domain-live-row + .domain-live-row { margin-top: 2px; }
+  .domain-live-row.is-bot-first { margin-top: 8px; }
+  .domain-live-row .arrow { color: var(--accent); font-weight: 600; flex-shrink: 0; width: 8px; }
+  .domain-live-row .county-name {
+    color: var(--ink); flex: 1 1 auto; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .domain-live-row .pct { color: var(--ink-soft); opacity: 0.7; flex-shrink: 0; }
+  .domain-live-loading { color: var(--ink-soft); opacity: 0.55; font-style: italic; }
+  .domain-live-error { color: var(--accent); opacity: 0.85; }
+
   /* ————— COUNTRY MAP (§ The country, in one map) ————— */
   section.country-map { padding: 100px 0 80px; }
   .map-section-title {
@@ -1606,6 +1634,10 @@
           <div class="domain-metrics">
             <span>ACS B19013</span><span>BEA metro RPP (imputed)</span><span>percentile rank</span>
           </div>
+          <div class="domain-live" data-domain="purchasing_power">
+            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-row domain-live-loading">Loading…</div>
+          </div>
         </div>
 
         <!-- Domain 2: Wealth (span 6) -->
@@ -1655,6 +1687,10 @@
           </div>
           <div class="domain-metrics">
             <span>ACS B25003</span><span>ACS B25077</span><span>IRS SOI</span><span>percentile rank</span>
+          </div>
+          <div class="domain-live" data-domain="wealth">
+            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-row domain-live-loading">Loading…</div>
           </div>
         </div>
 
@@ -1706,6 +1742,10 @@
           <div class="domain-metrics">
             <span>ACS B09005</span><span>percentile rank</span>
           </div>
+          <div class="domain-live" data-domain="family">
+            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-row domain-live-loading">Loading…</div>
+          </div>
         </div>
 
         <!-- Domain 4: Health (span 4) -->
@@ -1753,7 +1793,11 @@
             </svg>
           </div>
           <div class="domain-metrics">
-            <span>NCHS USALEEP</span><span>CDC WONDER</span><span>percentile rank</span>
+            <span>CDC WONDER UCD 1999&ndash;2020</span><span>age-adjusted</span><span>percentile rank (inverted)</span>
+          </div>
+          <div class="domain-live" data-domain="health">
+            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-row domain-live-loading">Loading…</div>
           </div>
         </div>
 
@@ -1804,6 +1848,10 @@
           </div>
           <div class="domain-metrics">
             <span>ACS B15003</span><span>ACS C24010</span><span>geometric mean</span>
+          </div>
+          <div class="domain-live" data-domain="education">
+            <div class="domain-live-label">v2026.04-dev — actual extremes</div>
+            <div class="domain-live-row domain-live-loading">Loading…</div>
           </div>
         </div>
 
@@ -1973,6 +2021,7 @@ const SUPABASE_URL = "https://kzqzynicjmdhzmqcvuqh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_uEIU3KCMcGM1iHm0TKQICQ__2WqmlH7";
 const RELEASE = "v2026.04-dev";
 const TOPOLOGY_URL = "/county_topology.json";
+const NAMES_URL = "/geoid_names.json";
 
 const DOMAIN_ORDER = [
   ["purchasing_power", "Purchasing power"],
@@ -1996,7 +2045,65 @@ const STATE_ABBR = {
   "56":"WY"
 };
 
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+// ————— Live extremes on §03 domain cards (no d3 dep — paints early) —————
+
+let namesPromise = null;
+function getNames() {
+  if (!namesPromise) namesPromise = fetch(NAMES_URL).then(r => r.json());
+  return namesPromise;
+}
+
+async function fetchSupa(path) {
+  const r = await fetch(`${SUPABASE_URL}${path}`, {
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+  });
+  if (!r.ok) throw new Error(`Supabase ${r.status}`);
+  return r.json();
+}
+
+async function loadLiveExtremes() {
+  const els = [...document.querySelectorAll(".domain-live")];
+  if (!els.length) return;
+  try {
+    const names = await getNames();
+    await Promise.all(els.map(async el => {
+      const dom = el.dataset.domain;
+      const [top, bot] = await Promise.all([
+        fetchSupa(`/rest/v1/domain_scores?release_version=eq.${RELEASE}&domain=eq.${dom}` +
+                  `&select=geoid,percentile&order=percentile.desc.nullslast,geoid&limit=3`),
+        fetchSupa(`/rest/v1/domain_scores?release_version=eq.${RELEASE}&domain=eq.${dom}` +
+                  `&select=geoid,percentile&order=percentile.asc.nullslast,geoid&limit=3`),
+      ]);
+      const row = (arrow, r, extraCls = "") =>
+        `<div class="domain-live-row${extraCls ? " " + extraCls : ""}">` +
+        `<span class="arrow">${arrow}</span>` +
+        `<span class="county-name">${names[r.geoid] || r.geoid}</span>` +
+        `<span class="pct">p${r.percentile}</span></div>`;
+      el.innerHTML =
+        `<div class="domain-live-label">v2026.04-dev — actual extremes</div>` +
+        top.map(r => row("↑", r)).join("") +
+        bot.map((r, i) => row("↓", r, i === 0 ? "is-bot-first" : "")).join("");
+    }));
+  } catch (e) {
+    els.forEach(el => {
+      el.innerHTML = `<div class="domain-live-label">Live data</div>` +
+                     `<div class="domain-live-error">Unavailable: ${e.message}</div>`;
+    });
+    console.error(e);
+  }
+}
+
+const domainsSection = document.getElementById("domains");
+if (domainsSection && "IntersectionObserver" in window) {
+  const obs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) { obs.disconnect(); loadLiveExtremes(); }
+  }, { rootMargin: "400px" });
+  obs.observe(domainsSection);
+} else if (domainsSection) {
+  loadLiveExtremes();
+}
+
+// ————— Map (heavy: d3 + 2.3 MB topology, lazy-loaded on map enter) —————
 
 async function fetchAll(path) {
   const out = [];
@@ -2026,6 +2133,11 @@ async function loadMap() {
   const loading = document.getElementById("map-loading");
   loading.textContent = "Loading map and federal data…";
   try {
+    // Dynamic d3 import keeps it off the §03 paint path; the import is cached
+    // by the browser, so no double-fetch if §03 ever needs it.
+    const d3Module = await import("https://cdn.jsdelivr.net/npm/d3@7/+esm");
+    const d3 = d3Module;
+
     const [topology, composites, domains] = await Promise.all([
       fetch(TOPOLOGY_URL).then(r => r.json()),
       fetchAll(`/rest/v1/composite_scores?release_version=eq.${RELEASE}&select=geoid,composite,domains_available`),

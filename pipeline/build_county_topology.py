@@ -31,6 +31,7 @@ CB_BASE = "https://www2.census.gov/geo/tiger/GENZ2023/shp/"
 COUNTY_ZIP = "cb_2023_us_county_5m.zip"
 STATE_ZIP  = "cb_2023_us_state_5m.zip"
 OUT_PATH = os.path.join(os.path.dirname(__file__), "..", "county_topology.json")
+NAMES_PATH = os.path.join(os.path.dirname(__file__), "..", "geoid_names.json")
 
 EXCLUDED_STATEFP = {"60", "66", "69", "72", "78"}  # AS, GU, MP, PR, VI per Q1
 
@@ -268,6 +269,24 @@ def main() -> int:
     with open(out_path, "w") as f:
         json.dump(out, f, separators=(",", ":"))
     print(f"[topology] wrote {out_path} ({os.path.getsize(out_path):,} bytes)", file=sys.stderr)
+
+    # Also emit a small geoid → "Name, ST" lookup so the home page can label
+    # counties without pulling the full 2.3 MB topology.
+    state_abbr = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL",
+                  "13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME",
+                  "24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH",
+                  "34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI",
+                  "45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"}
+    names = {}
+    for f in cf:
+        geoid = f["properties"]["GEOID"]
+        name = f["properties"]["NAME"]
+        st = state_abbr.get(f["properties"]["STATEFP"], "")
+        names[geoid] = f"{name}, {st}".rstrip(", ")
+    names_path = os.path.realpath(NAMES_PATH)
+    with open(names_path, "w") as f:
+        json.dump(names, f, separators=(",", ":"))
+    print(f"[topology] wrote {names_path} ({os.path.getsize(names_path):,} bytes)", file=sys.stderr)
     return 0
 
 
