@@ -1075,6 +1075,117 @@
     .cta-primary-lg .cta-label { font-size: 20px; }
   }
 
+  /* ————— THE NATIONAL BALANCE (Q7 trend section) ————— */
+  section.balance {
+    padding: 100px 0 90px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper-warm);
+  }
+  .balance-inner { max-width: 1180px; margin: 0 auto; }
+  .balance-header { max-width: 800px; margin-bottom: 40px; }
+  .balance-header h2 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(32px, 4vw, 48px); line-height: 1.05;
+    letter-spacing: -0.02em; margin-bottom: 18px;
+  }
+  .balance-header h2 em {
+    font-family: 'Source Serif 4', serif; font-style: italic;
+    color: var(--accent); font-weight: 400;
+  }
+  .balance-lede {
+    font-size: 17px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 720px;
+  }
+  .balance-headline-strip {
+    display: inline; font-family: 'Fraunces', serif; font-style: italic;
+    color: var(--ink); font-size: 18px;
+  }
+  .balance-headline-strip .delta-up   { color: #2d5a4a; }
+  .balance-headline-strip .delta-down { color: var(--accent); }
+  .balance-headline-strip .delta-flat { color: var(--ink-soft); }
+
+  .balance-chart-card {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 24px 28px 20px;
+    margin-bottom: 18px;
+  }
+  .balance-chart-card h3 {
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px;
+    color: var(--ink); margin: 0 0 4px;
+  }
+  .balance-chart-card .balance-sublabel {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.04em;
+    margin-bottom: 18px; line-height: 1.5;
+  }
+  .balance-chart-svg {
+    display: block; width: 100%; height: auto;
+  }
+  .balance-primary { border-left: 4px solid var(--ink); }
+  .balance-secondary { border-left: 4px solid var(--accent-soft, #e89a8a); }
+
+  .balance-line { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .balance-line-composite { stroke: var(--ink); stroke-width: 2.4; }
+  .balance-line-domain { stroke-width: 1.4; opacity: 0.85; }
+  .balance-axis { stroke: var(--rule); stroke-width: 0.6; }
+  .balance-axis-text {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px;
+    fill: var(--ink-soft);
+  }
+  .balance-baseline {
+    stroke: var(--ink); stroke-width: 0.4; stroke-dasharray: 3 4; opacity: 0.4;
+  }
+
+  .balance-summary {
+    margin-top: 14px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--ink-soft);
+    border-top: 1px dashed var(--rule); padding-top: 12px;
+  }
+  .balance-summary .yr {
+    font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500;
+    margin-right: 12px;
+  }
+  .balance-summary .delta-up   { color: #2d5a4a; font-weight: 600; }
+  .balance-summary .delta-down { color: var(--accent); font-weight: 600; }
+  .balance-summary .delta-flat { color: var(--ink-soft); }
+
+  .balance-legend {
+    margin-top: 16px;
+    display: flex; flex-wrap: wrap; gap: 10px 22px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--ink-soft); letter-spacing: 0.04em;
+  }
+  .balance-legend-row {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .balance-legend-row::before {
+    content: ""; display: inline-block; width: 16px; height: 2.5px;
+    background: var(--c, var(--accent));
+  }
+  .balance-legend-row.composite { color: var(--ink); font-weight: 600; }
+  .balance-legend-row.composite::before { background: var(--ink); height: 3.5px; }
+
+  .balance-footnote {
+    font-size: 13px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 880px; margin-top: 14px;
+  }
+  .balance-footnote strong { color: var(--ink); font-weight: 500; }
+  .balance-footnote em { color: var(--ink); font-style: italic; }
+
+  .balance-loading {
+    text-align: center; padding: 60px 0;
+    color: var(--ink-soft); font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: 0.04em; opacity: 0.6;
+  }
+
+  @media (max-width: 720px) {
+    section.balance { padding: 60px 0 50px; }
+    .balance-chart-card { padding: 18px 18px 16px; }
+  }
+
   /* ————— NATIONAL TRENDS (§ The country over time) ————— */
   section.trends {
     padding: 80px 0 80px;
@@ -1586,8 +1697,47 @@
         </div>
       </div>
       <div class="eq-rollup-caption">
-        County Flourishing Life Years sum to state totals, and state totals sum to the national figure — the same additive structure as GDP. The exact national total under the index's frozen-baseline accounting (Q7, "§ The national balance") arrives with v0.6 of this page; treat the placeholder above as illustrative of the structure, not the magnitude.
+        County Flourishing Life Years sum to state totals, and state totals sum to the national figure — the same additive structure as GDP. The 287M figure above is illustrative of the additive structure; the index's actual frozen-baseline accounting starts in <a href="#balance">§ The national balance</a> below, anchored at 2019 = 100.
       </div>
+    </div>
+  </section>
+
+  <!-- THE NATIONAL BALANCE — Q7 trend section -->
+  <section class="balance" id="balance">
+    <div class="balance-inner">
+      <div class="section-label">§ The national balance</div>
+      <div class="balance-header">
+        <h2>National FLY, year over year. <em>2019 = 100.</em></h2>
+        <p class="balance-lede">
+          The county map is cross-sectional — one snapshot per release. To answer "is national flourishing moving up or down?" we anchor at 2019 (the last full pre-COVID year) and track the index forward in real terms. <span class="balance-headline-strip" id="balance-headline-strip"></span>
+        </p>
+      </div>
+
+      <div class="balance-chart-card balance-primary">
+        <h3>National FLY composite index</h3>
+        <div class="balance-sublabel">Geometric mean of the five domain ratios versus 2019. Real (CPI-deflated) income; rates and life expectancy in their natural units.</div>
+        <svg class="balance-chart-svg" data-which="composite" viewBox="0 0 880 260" role="img"
+             aria-label="National FLY composite index by year, 2019 baseline."></svg>
+        <div class="balance-summary" id="balance-summary-primary">—</div>
+      </div>
+
+      <div class="balance-chart-card balance-secondary">
+        <h3>By domain, each anchored at 2019 = 100</h3>
+        <div class="balance-sublabel">Five per-domain ratio lines plus the composite, on a shared axis. Watch the 2020–2022 health dip — that's the COVID era.</div>
+        <svg class="balance-chart-svg" data-which="per_domain" viewBox="0 0 880 320" role="img"
+             aria-label="Per-domain FLY index by year, 5 lines plus composite."></svg>
+        <div class="balance-legend" id="balance-legend"></div>
+      </div>
+
+      <p class="balance-footnote">
+        <strong>2020–2022 health dip:</strong> the COVID era. The index counts the ~1.1 million excess deaths of those years as a loss of flourishing life years — that's what the health domain measures and that's what the trend reflects. We don't seasonally adjust, smooth, or otherwise soften the dip. The number you're reading is what the framework reads.
+      </p>
+      <p class="balance-footnote">
+        <strong>ACS 5-year overlap caveat:</strong> the four ACS-driven domains (purchasing power, wealth, family, education) use ACS 5-year releases, which overlap by 4 years from one release to the next. Year-to-year changes in these domains on this chart are smoothed by that rolling-sample design — a true year-of-event change shows up as a 5-year ramp. Mortality (NCHS NVSS final, single-year) responds in real time, which is why the COVID dip is sharper than any ACS-driven movement.
+      </p>
+      <p class="balance-footnote">
+        <strong>Most-recent-year cutoff:</strong> the trend extends to 2023, the most recent year with NCHS-final mortality. The 2024 number arrives in late 2026 when NVSS final 2024 is published. Provisional WONDER mortality is available but not used here — provisional data is subject to revision, and the index's "if you can't reproduce our number, it's a bug" promise requires final data only.
+      </p>
     </div>
   </section>
 
@@ -2400,6 +2550,169 @@ if (methodSection && "IntersectionObserver" in window) {
   obs.observe(methodSection);
 } else if (methodSection) {
   loadLiveVintages();
+}
+
+// ————— § The national balance (Q7) — composite + per-domain trend charts —————
+
+const BALANCE_DOMAIN_ORDER = [
+  ["purchasing_power", "Purchasing power", "var(--domain-1)"],
+  ["wealth",            "Wealth",           "var(--domain-2)"],
+  ["family",            "Family",           "var(--domain-3)"],
+  ["health",            "Health",           "var(--domain-4)"],
+  ["education",         "Education",        "var(--domain-5)"],
+];
+
+// Format an index value (100 = baseline) as a signed percent change.
+// 102.88 → "+2.9%"; 97.72 → "-2.3%"; 100.0 → "0.0%".
+function fmtIndexAsPct(indexValue) {
+  if (indexValue == null) return "—";
+  const delta = indexValue - 100;
+  const sign = delta > 0 ? "+" : delta < 0 ? "" : "";  // negative gets its own minus from toFixed
+  return `${sign}${delta.toFixed(1)}%`;
+}
+
+function renderBalanceLineSVG(svg, dataSeries, opts = {}) {
+  // dataSeries: array of {name, color, points: [{year, value}, ...], thick: bool}
+  const W = svg.viewBox.baseVal.width || 880;
+  const H = svg.viewBox.baseVal.height || 260;
+  // Extra right padding leaves room for the trailing composite-value label
+  // and so the rightmost year tick (text-anchor="middle") doesn't overhang.
+  const PL = 50, PR = 80, PT = 20, PB = 40;
+  // Year axis from min to max across all series
+  const allYears = new Set();
+  const allValues = [100];  // baseline always 100
+  for (const s of dataSeries) {
+    for (const p of s.points) {
+      allYears.add(p.year);
+      if (p.value != null) allValues.push(p.value);
+    }
+  }
+  const years = [...allYears].sort();
+  const minVal = Math.min(...allValues);
+  const maxVal = Math.max(...allValues);
+  const span = (maxVal - minVal) || 5;
+  const yMin = Math.floor((minVal - span * 0.15));
+  const yMax = Math.ceil((maxVal + span * 0.15));
+  const xOf = y => PL + (y - years[0]) / Math.max(1, years.at(-1) - years[0]) * (W - PL - PR);
+  const yOf = v => PT + (1 - (v - yMin) / (yMax - yMin)) * (H - PT - PB);
+
+  let svgInner = "";
+  // Baseline at 100
+  svgInner += `<line class="balance-baseline" x1="${PL}" x2="${W - PR}" y1="${yOf(100).toFixed(1)}" y2="${yOf(100).toFixed(1)}" />`;
+  // Y-axis ticks at yMin, baseline (100), and yMax — labeled as percent-change vs 2019.
+  const yTicks = [yMin, 100, yMax];
+  for (const t of yTicks) {
+    svgInner += `<text class="balance-axis-text" x="${PL - 6}" y="${(yOf(t) + 3).toFixed(1)}" text-anchor="end">${fmtIndexAsPct(t)}</text>`;
+  }
+  // X-axis: at bottom, with year ticks
+  svgInner += `<line class="balance-axis" x1="${PL}" x2="${W - PR}" y1="${H - PB}" y2="${H - PB}" />`;
+  for (const yr of years) {
+    svgInner += `<text class="balance-axis-text" x="${xOf(yr).toFixed(1)}" y="${H - PB + 16}" text-anchor="middle">${yr}</text>`;
+  }
+  // Series lines + endpoint dots
+  for (const s of dataSeries) {
+    const pts = s.points.filter(p => p.value != null)
+      .map(p => `${xOf(p.year).toFixed(1)},${yOf(p.value).toFixed(1)}`).join(" ");
+    const cls = s.thick ? "balance-line balance-line-composite" : "balance-line balance-line-domain";
+    const color = s.thick ? null : s.color;
+    svgInner += `<polyline class="${cls}" points="${pts}"${color ? ` stroke="${color}"` : ""} />`;
+    // Endpoints
+    if (s.points.length) {
+      for (const p of [s.points[0], s.points.at(-1)]) {
+        if (p.value == null) continue;
+        const fill = s.thick ? "var(--ink)" : (s.color || "var(--accent)");
+        svgInner += `<circle cx="${xOf(p.year).toFixed(1)}" cy="${yOf(p.value).toFixed(1)}" r="${s.thick ? 3 : 2.5}" fill="${fill}" />`;
+      }
+    }
+    // Last-point label for the composite (only) so the trajectory ending number is readable.
+    // Anchored at "start" so text grows rightward into the right padding band, never past it.
+    if (s.thick && s.points.length) {
+      const last = s.points.at(-1);
+      if (last.value != null) {
+        const lx = xOf(last.year) + 8;
+        const ly = yOf(last.value) + 4;
+        svgInner += `<text class="balance-axis-text" x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="start" font-weight="600" fill="var(--ink)">${fmtIndexAsPct(last.value)}</text>`;
+      }
+    }
+  }
+  svg.innerHTML = svgInner;
+}
+
+async function loadBalance() {
+  const section = document.getElementById("balance");
+  if (!section) return;
+  try {
+    const rows = await fetchSupa(
+      `/rest/v1/national_trend?release_version=eq.${RELEASE}` +
+      `&select=year,composite_index,per_domain_breakdown&order=year`
+    );
+    if (!rows.length) {
+      section.querySelector(".balance-headline-strip").textContent =
+        "Trend data not available for this release.";
+      return;
+    }
+
+    // Headline: delta from 2019 to most recent year (as percent change).
+    const first = rows[0];
+    const last = rows.at(-1);
+    const delta = (last.composite_index - first.composite_index);
+    const dCls = delta > 0.2 ? "delta-up" : delta < -0.2 ? "delta-down" : "delta-flat";
+    const dSign = delta > 0 ? "+" : "";
+    document.getElementById("balance-headline-strip").innerHTML =
+      `As of ${last.year}: <span class="${dCls}">${dSign}${delta.toFixed(1)}% vs 2019</span>.`;
+
+    // Primary chart: composite only
+    const compositeSeries = {
+      name: "composite",
+      points: rows.map(r => ({ year: r.year, value: r.composite_index })),
+      thick: true,
+    };
+    renderBalanceLineSVG(
+      section.querySelector('svg[data-which="composite"]'),
+      [compositeSeries]
+    );
+    // Primary summary line — each year shown as percent vs 2019.
+    const summary = rows.map(r =>
+      `<span class="yr">${r.year}: ${fmtIndexAsPct(r.composite_index)}</span>`
+    ).join(" · ");
+    document.getElementById("balance-summary-primary").innerHTML =
+      `${summary} <span class="${dCls}">(${dSign}${delta.toFixed(1)}% net 2019→${last.year})</span>`;
+
+    // Secondary chart: 5 per-domain lines + composite
+    const domainSeries = BALANCE_DOMAIN_ORDER.map(([key, label, color]) => ({
+      name: label,
+      color: color,
+      points: rows.map(r => {
+        const v = r.per_domain_breakdown && r.per_domain_breakdown[key];
+        return { year: r.year, value: (v != null ? v : null) };
+      }),
+      thick: false,
+    }));
+    renderBalanceLineSVG(
+      section.querySelector('svg[data-which="per_domain"]'),
+      [...domainSeries, compositeSeries]
+    );
+
+    // Legend
+    const legend = document.getElementById("balance-legend");
+    legend.innerHTML = BALANCE_DOMAIN_ORDER.map(([key, label, color]) =>
+      `<span class="balance-legend-row" style="--c: ${color}">${label}</span>`
+    ).join("") + `<span class="balance-legend-row composite">Composite (geomean)</span>`;
+  } catch (e) {
+    section.querySelector(".balance-headline-strip").textContent =
+      `Trend data unavailable: ${e.message}`;
+    console.error(e);
+  }
+}
+
+const balanceSection = document.getElementById("balance");
+if (balanceSection && "IntersectionObserver" in window) {
+  const obs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) { obs.disconnect(); loadBalance(); }
+  }, { rootMargin: "400px" });
+  obs.observe(balanceSection);
+} else if (balanceSection) {
+  loadBalance();
 }
 
 // ————— Map (heavy: d3 + 2.3 MB topology, lazy-loaded on map enter) —————
