@@ -1166,6 +1166,28 @@
   .balance-headline-figure .delta-down { color: var(--accent); }
   .balance-headline-figure .delta-flat { color: var(--ink-soft); }
 
+  .balance-verdict {
+    margin-top: 14px; padding: 16px 22px;
+    border-radius: 4px; line-height: 1.55;
+    font-size: 15px; color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--ink-soft);
+  }
+  .balance-verdict:empty { display: none; }
+  .balance-verdict-head {
+    display: block; font-family: 'Fraunces', serif;
+    font-style: italic; font-weight: 500; font-size: 18px;
+    margin-bottom: 6px;
+  }
+  .balance-verdict-body { color: var(--ink-soft); font-size: 14px; }
+  .balance-verdict-body strong { color: var(--ink); font-weight: 600; }
+  .balance-verdict.verdict-up   { border-left-color: #2d5a4a; }
+  .balance-verdict.verdict-up   .balance-verdict-head { color: #2d5a4a; }
+  .balance-verdict.verdict-flat { border-left-color: var(--ink-soft); }
+  .balance-verdict.verdict-down { border-left-color: var(--accent); }
+  .balance-verdict.verdict-down .balance-verdict-head { color: var(--accent); }
+
   .balance-chart-card {
     background: var(--paper);
     border: 1px solid var(--rule);
@@ -1791,6 +1813,7 @@
           The county map is cross-sectional — one snapshot per release. To answer "is national flourishing moving up or down?" we anchor at 2019 (the last full pre-COVID year) and track the index forward in real terms.
         </p>
         <div class="balance-headline-strip" id="balance-headline-strip"></div>
+        <div class="balance-verdict" id="balance-verdict"></div>
       </div>
 
       <div class="balance-chart-card balance-primary">
@@ -2735,8 +2758,15 @@ async function loadBalance() {
       return;
     }
 
-    // Headline: delta from 2019 to most recent year — both as percent change
-    // and as absolute FLY-years (total_fly column) created vs the 2019 anchor.
+    // Headline: anchored on three figures the reader needs side-by-side to
+    // judge whether the country is "flourishing faster than it's growing."
+    //   1. Total FLY in the most recent year.
+    //   2. ΔFLY from 2019 (with composite-index pct delta as a check).
+    //   3. ΔPopulation from 2019 — the question is whether ΔFLY exceeds ΔPop × 0.50,
+    //      i.e. whether each new American on average brought more than the
+    //      baseline 0.50-FLY-per-person.
+    // Population is back-derived from total_fly = (composite/100) × 0.5 × pop.
+    const FLY_PER_CAP_ANCHOR = 0.50;
     const first = rows[0];
     const last = rows.at(-1);
     const delta = (last.composite_index - first.composite_index);
@@ -2747,11 +2777,24 @@ async function loadBalance() {
       const m = n / 1e6;
       return (m >= 100 ? m.toFixed(1) : m.toFixed(2)) + "M";
     };
+    const popOf = (r) => (r.total_fly != null && r.composite_index)
+      ? r.total_fly / ((r.composite_index / 100) * FLY_PER_CAP_ANCHOR)
+      : null;
+    const popLast = popOf(last);
+    const popFirst = popOf(first);
+    const popDelta = (popLast != null && popFirst != null) ? (popLast - popFirst) : null;
+    const popDeltaPct = (popDelta != null && popFirst) ? (popDelta / popFirst * 100) : null;
     const totalLast = last.total_fly;
     const totalFirst = first.total_fly;
     const totalDelta = (totalLast != null && totalFirst != null) ? (totalLast - totalFirst) : null;
+    const totalDeltaPct = (totalDelta != null && totalFirst) ? (totalDelta / totalFirst * 100) : null;
     const tdSign = (totalDelta != null && totalDelta > 0) ? "+" : "";
-    const headlineHTML =
+    const pdSign = (popDelta != null && popDelta > 0) ? "+" : "";
+    // Marginal FLY per marginal capita: > 0.50 means flourishing outpaced
+    // population (composite index rose). < 0.50 means we're going backwards.
+    const marginalFLYpc = (totalDelta != null && popDelta && popDelta > 0)
+      ? (totalDelta / popDelta) : null;
+    const tilesHTML =
       `<span class="balance-headline-figure">` +
         `<span class="bh-num">${fmtMillions(totalLast)}</span>` +
         `<span class="bh-unit">Flourishing Life Years produced in ${last.year}</span>` +
@@ -2759,10 +2802,43 @@ async function loadBalance() {
       (totalDelta != null
         ? `<span class="balance-headline-figure">` +
             `<span class="bh-num ${dCls}">${tdSign}${fmtMillions(Math.abs(totalDelta))}</span>` +
-            `<span class="bh-unit">vs 2019 (<span class="${dCls}">${dSign}${delta.toFixed(1)}%</span> composite)</span>` +
+            `<span class="bh-unit">FLY-years vs 2019 (<span class="${dCls}">${dSign}${totalDeltaPct.toFixed(1)}%</span>)</span>` +
+          `</span>`
+        : "") +
+      (popDelta != null
+        ? `<span class="balance-headline-figure">` +
+            `<span class="bh-num">${pdSign}${fmtMillions(Math.abs(popDelta))}</span>` +
+            `<span class="bh-unit">Americans vs 2019 (+${popDeltaPct.toFixed(1)}%)</span>` +
           `</span>`
         : "");
-    document.getElementById("balance-headline-strip").innerHTML = headlineHTML;
+    document.getElementById("balance-headline-strip").innerHTML = tilesHTML;
+
+    // Verdict line — the question the user asked: are we creating flourishing
+    // faster than we're creating Americans?
+    const verdictEl = document.getElementById("balance-verdict");
+    if (verdictEl && marginalFLYpc != null) {
+      const mfpc = marginalFLYpc.toFixed(2);
+      // Expected FLY at baseline pace = ΔPop × 0.50.
+      const expectedFly = popDelta * FLY_PER_CAP_ANCHOR;
+      const excess = totalDelta - expectedFly;
+      const excessSign = excess > 0 ? "+" : "";
+      let verdictCls, verdictHead, verdictBody;
+      if (marginalFLYpc > 0.55) {
+        verdictCls = "verdict-up";
+        verdictHead = "Flourishing is outpacing population growth.";
+        verdictBody = `For every new American added since 2019, the country produced <strong>${mfpc} Flourishing Life Years</strong> — above the 0.50-per-person baseline. At baseline, ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} FLY; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is running ahead.`;
+      } else if (marginalFLYpc >= 0.45) {
+        verdictCls = "verdict-flat";
+        verdictHead = "Flourishing is keeping pace with population.";
+        verdictBody = `Each new American added since 2019 brought <strong>${mfpc} Flourishing Life Years</strong> — at the 0.50-per-person baseline. We're not gaining ground, but not losing it either.`;
+      } else {
+        verdictCls = "verdict-down";
+        verdictHead = "Population is growing faster than flourishing.";
+        verdictBody = `Each new American added since 2019 brought only <strong>${mfpc} Flourishing Life Years</strong> — below the 0.50-per-person baseline. ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} FLY at baseline; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is going backwards on a per-American basis.`;
+      }
+      verdictEl.className = "balance-verdict " + verdictCls;
+      verdictEl.innerHTML = `<strong class="balance-verdict-head">${verdictHead}</strong><span class="balance-verdict-body">${verdictBody}</span>`;
+    }
 
     // Also write the most-recent year's absolute FLY count into §02's caption,
     // replacing the placeholder so the rollup arithmetic ends with a real number.
