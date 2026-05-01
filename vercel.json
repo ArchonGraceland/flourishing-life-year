@@ -1,4 +1,5 @@
 {
+  "cleanUrls": true,
   "redirects": [
     { "source": "/map.html", "destination": "/#map", "permanent": true }
   ]
