@@ -1,9 +1,20 @@
-"""Education domain — ACS B15003 (post-secondary credential share)
-× ACS C24010 (skilled-trade occupation share), geometric mean per spec Q2.
+"""Education domain — three components (Q2 + Q8.3), geometric mean.
 
-Q5: equal weights within the domain — geometric mean of the two component
-percentile ranks. Q6: BOTH components must be usable; if either is suppressed,
-the whole domain is suppressed for that county.
+  1. ACS B15003 — share of pop 25+ with associate's degree or higher
+  2. ACS C24010 — share of civilian-employed 16+ in SOC 47/49 skilled trades
+  3. ACS B23006 — share of pop 25-64 with bachelor's-or-higher AND currently
+     employed (Q8.3 conjunction proxy: "meaningfully employed in work that
+     uses the credential"). Q8.3 amendment 2026-05-01: Q8.1.2 calls for
+     credential AND deployment of credential. ACS doesn't publish a clean
+     "occupation-matches-credential" cross at county level, so this uses the
+     bachelor's-or-higher employment rate as the strictest county-resolvable
+     proxy. Methodology page documents the trade-off (associate-degree
+     holders aren't separable from "some college, no degree" in B23006).
+
+Q5: equal weights within the domain — geometric mean of the available
+component percentile ranks.
+Q6 (Q8.3 update): need ≥ 2 of 3 components. With 2, geomean of available;
+with ≤ 1, the domain is suppressed. (Was BOTH-of-2 before Q8.3.)
 
 Spec stance: "Education here means human capital, not academic credentialism.
 The master electrician and the BA count equally."
@@ -42,8 +53,27 @@ C24010_DENOM_M = "C24010_001M"
 C24010_NUM = ["C24010_032E", "C24010_033E", "C24010_068E", "C24010_069E"]
 C24010_NUM_M = [v.replace("E", "M") for v in C24010_NUM]
 
+# B23006 — Educational Attainment by Employment Status for the Population 25-64.
+# Total: _001. Bachelor's-or-higher branch:
+#   _023 bachelor-or-higher subtotal
+#     _024 in labor force
+#       _025 in civilian labor force
+#         _026 employed (civilian)
+#         _027 unemployed (civilian)
+#       _028 in armed forces
+#     _029 not in labor force
+# Q8.3 numerator = _026 + _028 (credentialed AND currently employed, civilian + AF).
+# Denominator for the share = _001 (population 25-64). This yields the share of
+# the working-age population that is BOTH bachelor's-or-higher AND employed —
+# the strictest county-resolvable proxy for Q8.1.2's "meaningfully employed."
+B23006_DENOM = "B23006_001E"
+B23006_DENOM_M = "B23006_001M"
+B23006_NUM = ["B23006_026E", "B23006_028E"]
+B23006_NUM_M = [v.replace("E", "M") for v in B23006_NUM]
+
 ACS_VARS = ([B15003_DENOM, B15003_DENOM_M] + B15003_NUM + B15003_NUM_M
-            + [C24010_DENOM, C24010_DENOM_M] + C24010_NUM + C24010_NUM_M)
+            + [C24010_DENOM, C24010_DENOM_M] + C24010_NUM + C24010_NUM_M
+            + [B23006_DENOM, B23006_DENOM_M] + B23006_NUM + B23006_NUM_M)
 
 
 def fetch_acs(api_key: str) -> list[dict]:
@@ -93,7 +123,7 @@ def combined_moe(moes: list[float]) -> float:
 
 
 def compute_components(rec: dict):
-    """Return (c1, c1_moe_pct, c1_status, c2, c2_moe_pct, c2_status).
+    """Return ((c1, c1_mp, c1_status), (c2, c2_mp, c2_status), (c3, c3_mp, c3_status)).
 
     Q1 amendment: high MOE no longer suppresses; only structural missingness
     (denom <= 0, num missing) sets a status. Otherwise status is None and
@@ -113,7 +143,14 @@ def compute_components(rec: dict):
     c2_status = "acs_missing" if c2 is None else None
     c2_moe_pct = (c2_moe / c2) if (c2 is not None and c2 > 0 and c2_moe is not None) else None
 
-    return c1, c1_moe_pct, c1_status, c2, c2_moe_pct, c2_status
+    # Component 3 (Q8.3): bachelor's-or-higher AND employed share among pop 25-64.
+    num3 = sum((rec[v] or 0) for v in B23006_NUM) if all(rec[v] is not None for v in B23006_NUM) else None
+    moe_num3 = combined_moe([rec[v] for v in B23006_NUM_M])
+    c3, c3_moe = proportion_with_moe(num3, moe_num3, rec[B23006_DENOM], rec[B23006_DENOM_M])
+    c3_status = "acs_missing" if c3 is None else None
+    c3_moe_pct = (c3_moe / c3) if (c3 is not None and c3 > 0 and c3_moe is not None) else None
+
+    return (c1, c1_moe_pct, c1_status), (c2, c2_moe_pct, c2_status), (c3, c3_moe_pct, c3_status)
 
 
 def main() -> int:
@@ -131,58 +168,80 @@ def main() -> int:
 
     c1_values: dict[str, float] = {}
     c2_values: dict[str, float] = {}
+    c3_values: dict[str, float] = {}
     c1_moe_pcts: dict[str, float] = {}
     c2_moe_pcts: dict[str, float] = {}
-    suppressed: list[dict] = []
+    c3_moe_pcts: dict[str, float] = {}
+    suppression_by_county: dict[str, list[tuple[str, str]]] = {}
+
+    def mark(geoid: str, source: str, reason: str) -> None:
+        suppression_by_county.setdefault(geoid, []).append((source, reason))
 
     for rec in acs:
         geoid = rec["geoid"]
-        c1, c1_mp, c1_status, c2, c2_mp, c2_status = compute_components(rec)
+        (c1, c1_mp, c1_status), (c2, c2_mp, c2_status), (c3, c3_mp, c3_status) = compute_components(rec)
         if c1_status is None:
             c1_values[geoid] = c1
             if c1_mp is not None:
                 c1_moe_pcts[geoid] = c1_mp
+        else:
+            mark(geoid, "acs_b15003", c1_status)
         if c2_status is None:
             c2_values[geoid] = c2
             if c2_mp is not None:
                 c2_moe_pcts[geoid] = c2_mp
-        if c1_status or c2_status:
-            # Q6: domain suppressed only when a component is structurally missing.
-            failed_source = "acs_b15003" if c1_status else "acs_c24010"
-            failed_reason = c1_status or c2_status
-            suppressed.append({
-                "release_version": release, "geoid": geoid, "domain": DOMAIN,
-                "reason": failed_reason, "source_key": failed_source,
-            })
+        else:
+            mark(geoid, "acs_c24010", c2_status)
+        if c3_status is None:
+            c3_values[geoid] = c3
+            if c3_mp is not None:
+                c3_moe_pcts[geoid] = c3_mp
+        else:
+            mark(geoid, "acs_b23006", c3_status)
 
     flagged_c1 = sum(1 for mp in c1_moe_pcts.values() if mp > 0.30)
     flagged_c2 = sum(1 for mp in c2_moe_pcts.values() if mp > 0.30)
+    flagged_c3 = sum(1 for mp in c3_moe_pcts.values() if mp > 0.30)
     print(f"[edu] c1 usable={len(c1_values)} (MOE>30% flagged={flagged_c1}); "
           f"c2 usable={len(c2_values)} (MOE>30% flagged={flagged_c2}); "
-          f"suppressed={len(suppressed)}")
+          f"c3 usable={len(c3_values)} (MOE>30% flagged={flagged_c3})")
 
     c1_ranks = percentile_rank(c1_values)
     c2_ranks = percentile_rank(c2_values)
+    c3_ranks = percentile_rank(c3_values)
 
     domain_rows = []
     domain_flagged = 0
-    for geoid in c1_ranks:
-        if geoid not in c2_ranks:
-            continue
-        # Geometric mean of the two component percentiles, floor 1, cap 100.
-        combined = math.sqrt(c1_ranks[geoid] * c2_ranks[geoid])
-        pct = max(1, min(100, round(combined)))
-        # Domain reliability = max of available component MOEs (worst component drives the flag).
-        mp = max(c1_moe_pcts.get(geoid, 0), c2_moe_pcts.get(geoid, 0)) or None
-        if mp and mp > 0.30:
-            domain_flagged += 1
-        domain_rows.append({
-            "release_version": release, "geoid": geoid, "domain": DOMAIN,
-            "percentile": pct, "raw_value": None,
-            "moe_pct": mp,
-        })
-    print(f"[edu] domain_scores={len(domain_rows)} (both components present); "
-          f"MOE>30% flagged={domain_flagged}")
+    suppressed: list[dict] = []
+    geoids = {r["geoid"] for r in acs}
+    for geoid in geoids:
+        present = []
+        if geoid in c1_ranks: present.append(("c1", c1_ranks[geoid], c1_moe_pcts.get(geoid)))
+        if geoid in c2_ranks: present.append(("c2", c2_ranks[geoid], c2_moe_pcts.get(geoid)))
+        if geoid in c3_ranks: present.append(("c3", c3_ranks[geoid], c3_moe_pcts.get(geoid)))
+        if len(present) >= 2:  # Q6 (Q8.3 update): need ≥ 2 of 3
+            ranks = [p[1] for p in present]
+            geo = math.exp(sum(math.log(x) for x in ranks) / len(ranks))
+            pct = max(1, min(100, round(geo)))
+            mp_vals = [p[2] for p in present if p[2] is not None]
+            mp = max(mp_vals) if mp_vals else None
+            if mp and mp > 0.30:
+                domain_flagged += 1
+            domain_rows.append({
+                "release_version": release, "geoid": geoid, "domain": DOMAIN,
+                "percentile": pct, "raw_value": None,
+                "moe_pct": mp,
+            })
+        else:
+            failures = suppression_by_county.get(geoid, [])
+            reason = "education_lt_2_components" if failures else "education_no_data"
+            source = failures[0][0] if failures else None
+            suppressed.append({
+                "release_version": release, "geoid": geoid, "domain": DOMAIN,
+                "reason": reason, "source_key": source,
+            })
+    print(f"[edu] domain_scores={len(domain_rows)} (≥2 of 3 components); "
+          f"MOE>30% flagged={domain_flagged}; suppressed={len(suppressed)}")
 
     # Raw extract: a single combined CSV is fine; both tables share the same call.
     print("[edu] uploading raw extract…")
@@ -195,6 +254,7 @@ def main() -> int:
     body = buf.getvalue().encode()
     upload_raw(sb_url, sb_key, release, "acs_b15003", "B15003.csv", body)
     upload_raw(sb_url, sb_key, release, "acs_c24010", "C24010.csv", body)
+    upload_raw(sb_url, sb_key, release, "acs_b23006", "B23006.csv", body)
 
     print("[edu] clearing prior rows for this release+domain…")
     pg_delete_domain(sb_url, sb_key, "domain_scores", release, DOMAIN)
@@ -210,6 +270,10 @@ def main() -> int:
          "release_date": None, "access_date": today,
          "tool_or_product": "Census Bureau Data API"},
         {"release_version": release, "source_key": "acs_c24010",
+         "vintage": f"ACS 5-yr {ACS_VINTAGE_YEAR - 4}-{ACS_VINTAGE_YEAR}",
+         "release_date": None, "access_date": today,
+         "tool_or_product": "Census Bureau Data API"},
+        {"release_version": release, "source_key": "acs_b23006",
          "vintage": f"ACS 5-yr {ACS_VINTAGE_YEAR - 4}-{ACS_VINTAGE_YEAR}",
          "release_date": None, "access_date": today,
          "tool_or_product": "Census Bureau Data API"},

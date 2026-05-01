@@ -1947,11 +1947,11 @@
           </div>
           <h3 class="domain-title">Can people build something that lasts?</h3>
           <p class="domain-desc">
-            A proxy stack for household balance-sheet position: homeownership rate, median home value, the share of county adjusted gross income that comes from dividends and capital gains, and (per Q8.5, in v0.7) the share of households making active long-term-savings contributions via IRS SOI retirement-deduction data. There is no federal wealth survey at county level — these proxies together form the most defensible substitute. Three are <em>stocks</em> (what you've accumulated); the fourth is the <em>flow</em> (whether you're still adding). Q8.5 requires both.
+            A four-proxy stack for household balance-sheet position: homeownership rate, median home value, the share of county adjusted gross income that comes from dividends and capital gains, and (per Q8.5) the share of returns claiming an IRA or self-employed retirement-plan deduction. There is no federal wealth survey at county level — these proxies together form the most defensible substitute. Three are <em>stocks</em> (what you've accumulated); the fourth is the <em>flow</em> (whether you're still adding). Q8.5 requires both.
           </p>
           <div class="domain-viz">
-            <div class="domain-viz-label">Three stock proxies, percentile rank (illustrative county) — Q8.5 savings-flow proxy ships v0.7</div>
-            <svg viewBox="0 0 440 150" width="100%" height="150" role="img" aria-label="Horizontal bar indicators for the three wealth proxies: homeownership rate, median home value, and capital-asset income share">
+            <div class="domain-viz-label">Four wealth proxies, percentile rank (illustrative county)</div>
+            <svg viewBox="0 0 440 190" width="100%" height="190" role="img" aria-label="Horizontal bar indicators for the four wealth proxies: homeownership rate, median home value, capital-asset income share, and retirement-savings flow.">
               <!-- Label column: 0-170. Bar column: 180-400. Value column: 410-440 -->
               <!-- Bar width formula: width = value * 220/100 = value * 2.2 -->
               <g font-family="IBM Plex Sans" font-size="11" fill="#3d3830">
@@ -1963,29 +1963,36 @@
                 <text x="410" y="25" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">70</text>
 
                 <!-- Row 2: Median home value 52 → width 114.4 -->
-                <text x="0" y="65">Median home value</text>
-                <rect x="180" y="57" width="220" height="10" fill="#e0d8c4" rx="1"/>
-                <rect x="180" y="57" width="114.4" height="10" fill="#8b6b2c" rx="1"
-                      style="transform-origin: 180px 57px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.30s forwards;"/>
-                <text x="410" y="65" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">52</text>
+                <text x="0" y="60">Median home value</text>
+                <rect x="180" y="52" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="52" width="114.4" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 52px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.30s forwards;"/>
+                <text x="410" y="60" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">52</text>
 
                 <!-- Row 3: Capital-asset income share (IRS SOI) 38 → width 83.6 -->
-                <text x="0" y="105">Capital-asset income share</text>
-                <rect x="180" y="97" width="220" height="10" fill="#e0d8c4" rx="1"/>
-                <rect x="180" y="97" width="83.6" height="10" fill="#8b6b2c" rx="1"
-                      style="transform-origin: 180px 97px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.45s forwards;"/>
-                <text x="410" y="105" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">38</text>
+                <text x="0" y="95">Capital-asset income share</text>
+                <rect x="180" y="87" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="87" width="83.6" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 87px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.45s forwards;"/>
+                <text x="410" y="95" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">38</text>
+
+                <!-- Row 4 (Q8.5): Retirement-savings flow (IRS SOI N03210+N03150 / N1) 47 → width 103.4 -->
+                <text x="0" y="130">Retirement-savings flow</text>
+                <rect x="180" y="122" width="220" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="180" y="122" width="103.4" height="10" fill="#8b6b2c" rx="1"
+                      style="transform-origin: 180px 122px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.60s forwards;"/>
+                <text x="410" y="130" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#8b6b2c">47</text>
               </g>
               <!-- Scale ticks -->
               <g font-family="IBM Plex Mono" font-size="9" fill="#8a8370">
-                <text x="180" y="135">0</text>
-                <text x="290" y="135" text-anchor="middle">50</text>
-                <text x="400" y="135" text-anchor="end">100</text>
+                <text x="180" y="165">0</text>
+                <text x="290" y="165" text-anchor="middle">50</text>
+                <text x="400" y="165" text-anchor="end">100</text>
               </g>
             </svg>
           </div>
           <div class="domain-metrics">
-            <span>ACS B25003</span><span>ACS B25077</span><span>IRS SOI</span><span>percentile rank</span>
+            <span>ACS B25003</span><span>ACS B25077</span><span>IRS SOI A00600/A01000</span><span>IRS SOI N03210/N03150</span>
           </div>
           <div class="domain-live" data-domain="wealth">
             <div class="domain-live-label">v2025.12 — actual extremes</div>
@@ -2108,11 +2115,11 @@
           </div>
           <h3 class="domain-title">Does schooling lead somewhere?</h3>
           <p class="domain-desc">
-            Education here means human capital, not academic credentialism. Two components, multiplied: the share of adults with a post-secondary credential (associate's or bachelor's-and-above) and the share employed in skilled trades — construction, installation, maintenance, repair. The master electrician and the BA count equally. Per Q8.3 (in v0.7), the personal-assessment read additionally requires the credential to be <em>used</em> in current employment — "meaningfully employed," not merely "credentialed." County-map version of the conjunction (B23025 × B24010) ships v0.7.
+            Education here means human capital, not academic credentialism. Three components, geometric-mean'd: the share of adults with a post-secondary credential (associate's or bachelor's-and-above), the share employed in skilled trades — construction, installation, maintenance, repair — and (per Q8.3) the share of working-age adults who BOTH hold a bachelor's-or-higher credential AND are currently employed. The first two measure capability and trade depth; the third measures Q8.1.2's "meaningfully employed" — credential AND deployment, not merely credentialed. The master electrician and the BA count equally; the BA driving rideshare doesn't.
           </p>
           <div class="domain-viz">
-            <div class="domain-viz-label">Two-component education score, percentile rank (illustrative county)</div>
-            <svg viewBox="0 0 340 140" width="100%" height="140" role="img" aria-label="Education domain components: post-secondary credential rank, skilled-trade occupation rank, and the geometric-mean composite">
+            <div class="domain-viz-label">Three-component education score, percentile rank (illustrative county)</div>
+            <svg viewBox="0 0 340 175" width="100%" height="175" role="img" aria-label="Education domain components: post-secondary credential rank, skilled-trade occupation rank, credentialed-and-employed rank, and the geometric-mean composite">
               <!-- Label column: 0-130. Bar column: 140-300. Value column: 310-340 -->
               <!-- Bar width formula: width = value * 160/100 = value * 1.6 -->
               <g font-family="IBM Plex Sans" font-size="11" fill="#3d3830">
@@ -2124,29 +2131,36 @@
                 <text x="310" y="25" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#5c3a5c">67</text>
 
                 <!-- Row 2: Skilled-trade occupation 81 → width 129.6 -->
-                <text x="0" y="60">Skilled-trade occupation</text>
-                <rect x="140" y="52" width="160" height="10" fill="#e0d8c4" rx="1"/>
-                <rect x="140" y="52" width="129.6" height="10" fill="#5c3a5c" rx="1"
-                      style="transform-origin: 140px 52px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.30s forwards;"/>
-                <text x="310" y="60" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#5c3a5c">81</text>
+                <text x="0" y="55">Skilled-trade occupation</text>
+                <rect x="140" y="47" width="160" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="140" y="47" width="129.6" height="10" fill="#5c3a5c" rx="1"
+                      style="transform-origin: 140px 47px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.30s forwards;"/>
+                <text x="310" y="55" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#5c3a5c">81</text>
 
-                <!-- Row 3: Composite, geometric mean = sqrt(67*81) ≈ 73.7 → width 118.4 -->
-                <text x="0" y="95" font-style="italic">geometric mean</text>
-                <rect x="140" y="87" width="160" height="10" fill="#e0d8c4" rx="1"/>
-                <rect x="140" y="87" width="118.4" height="10" fill="#5c3a5c" opacity="0.55" rx="1"
-                      style="transform-origin: 140px 87px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.50s forwards;"/>
-                <text x="310" y="95" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#5c3a5c">74</text>
+                <!-- Row 3 (Q8.3): Credentialed AND employed 58 → width 92.8 -->
+                <text x="0" y="85">Credentialed &amp; employed</text>
+                <rect x="140" y="77" width="160" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="140" y="77" width="92.8" height="10" fill="#5c3a5c" rx="1"
+                      style="transform-origin: 140px 77px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.45s forwards;"/>
+                <text x="310" y="85" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#5c3a5c">58</text>
+
+                <!-- Row 4: Composite, geomean cuberoot(67*81*58) ≈ 68.0 → width 108.8 -->
+                <text x="0" y="120" font-style="italic">geometric mean</text>
+                <rect x="140" y="112" width="160" height="10" fill="#e0d8c4" rx="1"/>
+                <rect x="140" y="112" width="108.8" height="10" fill="#5c3a5c" opacity="0.55" rx="1"
+                      style="transform-origin: 140px 112px; transform: scaleX(0); animation: growBar 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.60s forwards;"/>
+                <text x="310" y="120" font-family="IBM Plex Mono" font-size="11" font-weight="600" fill="#5c3a5c">68</text>
               </g>
               <!-- Scale ticks -->
               <g font-family="IBM Plex Mono" font-size="9" fill="#8a8370">
-                <text x="140" y="125">0</text>
-                <text x="220" y="125" text-anchor="middle">50</text>
-                <text x="300" y="125" text-anchor="end">100</text>
+                <text x="140" y="155">0</text>
+                <text x="220" y="155" text-anchor="middle">50</text>
+                <text x="300" y="155" text-anchor="end">100</text>
               </g>
             </svg>
           </div>
           <div class="domain-metrics">
-            <span>ACS B15003</span><span>ACS C24010</span><span>geometric mean</span>
+            <span>ACS B15003</span><span>ACS C24010</span><span>ACS B23006</span><span>geometric mean</span>
           </div>
           <div class="domain-live" data-domain="education">
             <div class="domain-live-label">v2025.12 — actual extremes</div>

@@ -1,10 +1,18 @@
-"""Wealth domain — geometric mean of three proxies (Q2):
+"""Wealth domain — geometric mean of FOUR proxies (Q2 + Q8.5):
   1. ACS B25003 — homeownership rate
   2. ACS B25077 — median home value (owner-occupied)
   3. IRS SOI county — investment income share = (A00600 + A01000) / A02650
        i.e. (ordinary dividends + net capital gain) / AGI
+  4. IRS SOI county — retirement-savings flow = (N03210 + N03150) / N1
+       i.e. share of returns claiming an IRA deduction or self-employed retirement plan
+       contribution. Q8.5 amendment (2026-05-01): Q8.1.3 requires both savings *capacity*
+       (proxies 1–3, all stocks) AND active *practice* (this flow proxy). 401(k) / 403(b)
+       contributions don't appear on the tax return — they're netted out of wages before
+       AGI — so this proxy undercounts workplace-plan savers; it's directional, not
+       comprehensive. Documented as such on the methodology page.
 
-Q6: needs ≥ 2 of 3 components. With 2, geometric mean of available; with ≤1, suppressed.
+Q6 (Q8.5 update): needs ≥ 3 of 4 components. With 3, geometric mean of available;
+with ≤ 2, suppressed. (Was ≥ 2 of 3 before Q8.5.)
 
 The wealth domain is explicitly a *proxy stack* (no federal county-level wealth survey
 exists), and the methodology page must say so. Each component is percentile-ranked
@@ -65,7 +73,10 @@ def fetch_acs(api_key: str) -> list[dict]:
 def fetch_irs_soi() -> tuple[bytes, dict[str, dict]]:
     """Download SOI county CSV and aggregate per-county sums across all AGI brackets.
 
-    Returns (raw_csv_bytes, {geoid: {agi, dividends, capgains, returns}}).
+    Returns (raw_csv_bytes, {geoid: {agi, div, cap, n1, n_ira, n_seretire}}).
+    n_ira = N03210 (IRA-deduction returns); n_seretire = N03150 (self-employed
+    retirement plan returns). Sum / N1 = retirement-savings-flow proxy (Q8.5).
+    Some columns may be missing in older or partial extracts; treated as 0.
     """
     r = requests.get(SOI_URL, timeout=180)
     r.raise_for_status()
@@ -81,12 +92,19 @@ def fetch_irs_soi() -> tuple[bytes, dict[str, dict]]:
         if cf == "000":  # state-total rollup row, skip
             continue
         geoid = sf + cf
-        a = agg.setdefault(geoid, {"agi": 0.0, "div": 0.0, "cap": 0.0, "n1": 0.0})
+        a = agg.setdefault(geoid, {
+            "agi": 0.0, "div": 0.0, "cap": 0.0, "n1": 0.0,
+            "n_ira": 0.0, "n_seretire": 0.0,
+        })
         try:
-            a["agi"] += float(row["A02650"]) if row["A02650"] else 0.0
-            a["div"] += float(row["A00600"]) if row["A00600"] else 0.0
-            a["cap"] += float(row["A01000"]) if row["A01000"] else 0.0
-            a["n1"]  += float(row["N1"])     if row["N1"]     else 0.0
+            a["agi"] += float(row.get("A02650") or 0)
+            a["div"] += float(row.get("A00600") or 0)
+            a["cap"] += float(row.get("A01000") or 0)
+            a["n1"]  += float(row.get("N1") or 0)
+            # Q8.5: IRA deductions and self-employed retirement contributions.
+            # Either column may be absent in some SOI vintages — default to 0.
+            a["n_ira"]      += float(row.get("N03210") or 0)
+            a["n_seretire"] += float(row.get("N03150") or 0)
         except ValueError:
             pass
     return blob, agg
@@ -124,6 +142,7 @@ def main() -> int:
     c1: dict[str, float] = {}      # homeownership rate
     c2: dict[str, float] = {}      # median home value
     c3: dict[str, float] = {}      # investment income share
+    c4: dict[str, float] = {}      # retirement-savings flow share (Q8.5)
     c1_moe: dict[str, float] = {}  # homeownership-rate MOE/estimate
     c2_moe: dict[str, float] = {}  # median home-value MOE/estimate
     suppression_by_county: dict[str, list[tuple[str, str]]] = {}
@@ -161,13 +180,23 @@ def main() -> int:
         else:
             c3[geoid] = (s["div"] + s["cap"]) / s["agi"]
 
-    print(f"[wealth] usable c1={len(c1)} c2={len(c2)} c3={len(c3)} "
+        # Component 4 (Q8.5): retirement-savings flow = (IRA + self-employed retirement
+        # returns) / total returns. IRS SOI; source-default suppression — no MOE.
+        # Suppress component-only (NOT the whole row) when N1 is missing or zero;
+        # the wealth domain's Q6 ≥3-of-4 rule handles partial-component cases.
+        if s is None or not s.get("n1") or s["n1"] <= 0:
+            mark(geoid, "irs_soi_retirement", "soi_unavailable")
+        else:
+            c4[geoid] = (s.get("n_ira", 0) + s.get("n_seretire", 0)) / s["n1"]
+
+    print(f"[wealth] usable c1={len(c1)} c2={len(c2)} c3={len(c3)} c4={len(c4)} "
           f"(c1 MOE>30% flagged={sum(1 for m in c1_moe.values() if m > 0.30)}, "
           f"c2 MOE>30% flagged={sum(1 for m in c2_moe.values() if m > 0.30)})")
 
     r1 = percentile_rank(c1)
     r2 = percentile_rank(c2)
     r3 = percentile_rank(c3)
+    r4 = percentile_rank(c4)
 
     domain_rows = []
     suppressed: list[dict] = []
@@ -178,7 +207,8 @@ def main() -> int:
         if geoid in r1: present.append(("c1", r1[geoid], c1_moe.get(geoid)))
         if geoid in r2: present.append(("c2", r2[geoid], c2_moe.get(geoid)))
         if geoid in r3: present.append(("c3", r3[geoid], None))  # IRS SOI: no MOE
-        if len(present) >= 2:  # Q6: need ≥ 2 of 3
+        if geoid in r4: present.append(("c4", r4[geoid], None))  # IRS SOI: no MOE
+        if len(present) >= 3:  # Q6 (Q8.5 update): need ≥ 3 of 4
             ranks = [p[1] for p in present]
             geo = math.exp(sum(math.log(x) for x in ranks) / len(ranks))
             # Domain reliability: max MOE across the ACS components actually used.
@@ -193,9 +223,9 @@ def main() -> int:
                 "moe_pct": mp,
             })
         else:
-            # < 2 components -> domain suppressed. Record one flag with the most informative reason.
+            # < 3 components -> domain suppressed. Record one flag with the most informative reason.
             failures = suppression_by_county.get(geoid, [])
-            reason = "wealth_lt_2_proxies" if failures else "wealth_no_data"
+            reason = "wealth_lt_3_proxies" if failures else "wealth_no_data"
             source = failures[0][0] if failures else None
             suppressed.append({
                 "release_version": release, "geoid": geoid, "domain": DOMAIN,
