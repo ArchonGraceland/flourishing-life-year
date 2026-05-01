@@ -12,7 +12,7 @@ on:
         required: true
         default: "family"
         type: choice
-        options: [family, purchasing_power, education, wealth, health]
+        options: [family, purchasing_power, education, wealth, health, composite]
 
 jobs:
   run:
