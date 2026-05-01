@@ -1227,6 +1227,19 @@
     z-index: 100;
   }
   #tooltip.visible { opacity: 1; }
+  #tooltip.pinned {
+    box-shadow: 0 0 0 1px var(--accent-soft, #e89a8a), 0 6px 16px rgba(0,0,0,0.18);
+  }
+  #tooltip.pinned::before {
+    content: "Pinned · click outside or press Esc";
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.06em;
+    color: rgba(244,239,230,0.55);
+    margin-bottom: 6px; padding-bottom: 6px;
+    border-bottom: 1px solid rgba(244,239,230,0.18);
+  }
+  #map-svg .county.pinned { stroke: var(--accent, #c8371d); stroke-width: 1.8; }
   #tooltip .county-name { font-weight: 600; margin-bottom: 4px; }
   #tooltip .score-row { display: flex; justify-content: space-between; gap: 16px; }
   #tooltip .score-row + .score-row { margin-top: 2px; }
@@ -1335,23 +1348,23 @@
   <!-- NATIONAL PICTURE STRIP -->
   <section class="national-strip">
     <div class="national-strip-label">§ The national picture</div>
-    <div class="national-strip-title">Every personal result is measured against <em>this</em> — the real distribution of American life, built from federal data.</div>
+    <div class="national-strip-title">Every score on this site is drawn from these inputs — open federal data, <em>no proprietary estimates</em>.</div>
     <div class="national-stats">
-      <div class="nstat">
-        <div class="nstat-num">287<span class="unit">M</span></div>
-        <div class="nstat-label">Flourishing Life Years<br>produced nationally, 2025</div>
-      </div>
-      <div class="nstat">
-        <div class="nstat-num">0.85</div>
-        <div class="nstat-label">Average Flourishing Life Years<br>per American, 2025</div>
-      </div>
-      <div class="nstat">
-        <div class="nstat-num">+0.4<span class="unit">%</span></div>
-        <div class="nstat-label">Year-over-year change<br>in the national average</div>
-      </div>
       <div class="nstat">
         <div class="nstat-num">3,144</div>
         <div class="nstat-label">County-equivalents<br>in scope (50 states + DC)</div>
+      </div>
+      <div class="nstat">
+        <div class="nstat-num">5</div>
+        <div class="nstat-label">Domains in the composite,<br>geometric mean of percentile ranks</div>
+      </div>
+      <div class="nstat">
+        <div class="nstat-num">11</div>
+        <div class="nstat-label">Federal data sources tracked,<br>none proprietary</div>
+      </div>
+      <div class="nstat">
+        <div class="nstat-num">22</div>
+        <div class="nstat-label">Years of pooled mortality,<br>CDC WONDER 1999&ndash;2020</div>
       </div>
     </div>
   </section>
@@ -2055,6 +2068,49 @@ async function loadMap() {
     const tooltip = document.getElementById("tooltip");
     const g = svg.append("g");
 
+    let pinnedGeoid = null;
+
+    function renderTooltipHTML(d) {
+      const geoid = d.properties.GEOID;
+      const c = compByGeoid.get(geoid);
+      const dom = domainsByGeoid.get(geoid) || {};
+      const name = d.properties.NAME || geoid;
+      const stateAbbr = STATE_ABBR[geoid.slice(0, 2)] || "";
+      let html = `<div class="county-name">${name}${stateAbbr ? `, ${stateAbbr}` : ""}</div>`;
+      for (const [key, label] of DOMAIN_ORDER) {
+        const cls = currentView === key ? "score-row row-active" : "score-row";
+        html += `<div class="${cls}"><span class="domain-label">${label}</span><span class="domain-pct">${fmtPct(dom[key])}</span></div>`;
+      }
+      if (c && c.composite != null) {
+        const cls = currentView === "composite" ? "score-row composite-row row-active" : "score-row composite-row";
+        html += `<div class="${cls}"><span class="domain-label">Composite (${c.domains_available}/5)</span><span class="domain-pct">${c.composite.toFixed(1)}</span></div>`;
+      } else if (c) {
+        html += `<div class="gray-note composite-row">Insufficient data (${c.domains_available}/5 domains)</div>`;
+      } else {
+        html += `<div class="gray-note composite-row">No data for this county code in this release</div>`;
+      }
+      return html;
+    }
+
+    function positionTooltip(event) {
+      const t = tooltip.getBoundingClientRect();
+      const margin = 8;
+      let x = event.clientX - t.width / 2;
+      let y = event.clientY - t.height - 12;
+      if (x < margin) x = margin;
+      if (x + t.width > window.innerWidth - margin) x = window.innerWidth - t.width - margin;
+      if (y < margin) y = event.clientY + 16;
+      tooltip.style.left = x + "px";
+      tooltip.style.top  = y + "px";
+    }
+
+    function unpin() {
+      if (!pinnedGeoid) return;
+      pinnedGeoid = null;
+      tooltip.classList.remove("visible", "pinned");
+      countyPaths.classed("pinned", false);
+    }
+
     const countyPaths = g.append("g")
       .selectAll("path")
       .data(counties.features)
@@ -2062,37 +2118,35 @@ async function loadMap() {
       .attr("class", "county")
       .attr("d", path)
       .on("mousemove", (event, d) => {
-        const geoid = d.properties.GEOID;
-        const c = compByGeoid.get(geoid);
-        const dom = domainsByGeoid.get(geoid) || {};
-        const name = d.properties.NAME || geoid;
-        const stateAbbr = STATE_ABBR[geoid.slice(0, 2)] || "";
-        let html = `<div class="county-name">${name}${stateAbbr ? `, ${stateAbbr}` : ""}</div>`;
-        for (const [key, label] of DOMAIN_ORDER) {
-          const cls = currentView === key ? "score-row row-active" : "score-row";
-          html += `<div class="${cls}"><span class="domain-label">${label}</span><span class="domain-pct">${fmtPct(dom[key])}</span></div>`;
-        }
-        if (c && c.composite != null) {
-          const cls = currentView === "composite" ? "score-row composite-row row-active" : "score-row composite-row";
-          html += `<div class="${cls}"><span class="domain-label">Composite (${c.domains_available}/5)</span><span class="domain-pct">${c.composite.toFixed(1)}</span></div>`;
-        } else if (c) {
-          html += `<div class="gray-note composite-row">Insufficient data (${c.domains_available}/5 domains)</div>`;
-        } else {
-          html += `<div class="gray-note composite-row">No data for this county code in this release</div>`;
-        }
-        tooltip.innerHTML = html;
+        if (pinnedGeoid) return;
+        tooltip.innerHTML = renderTooltipHTML(d);
         tooltip.classList.add("visible");
-        const t = tooltip.getBoundingClientRect();
-        const margin = 8;
-        let x = event.clientX - t.width / 2;
-        let y = event.clientY - t.height - 12;
-        if (x < margin) x = margin;
-        if (x + t.width > window.innerWidth - margin) x = window.innerWidth - t.width - margin;
-        if (y < margin) y = event.clientY + 16;
-        tooltip.style.left = x + "px";
-        tooltip.style.top  = y + "px";
+        positionTooltip(event);
       })
-      .on("mouseleave", () => tooltip.classList.remove("visible"));
+      .on("mouseleave", () => {
+        if (pinnedGeoid) return;
+        tooltip.classList.remove("visible");
+      })
+      .on("click", (event, d) => {
+        event.stopPropagation();
+        pinnedGeoid = d.properties.GEOID;
+        countyPaths.classed("pinned", x => x.properties.GEOID === pinnedGeoid);
+        tooltip.innerHTML = renderTooltipHTML(d);
+        tooltip.classList.add("visible", "pinned");
+        positionTooltip(event);
+      });
+
+    // Click anywhere outside a county (on the SVG background, the page itself,
+    // or another county) clears the pin. The county click handler stops
+    // propagation, so re-clicking a different county re-pins instead of clearing.
+    svg.on("click", unpin);
+    document.addEventListener("click", (e) => {
+      if (!pinnedGeoid) return;
+      if (!e.target.closest(".map-stage")) unpin();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") unpin();
+    });
 
     g.append("g")
       .selectAll("path")
