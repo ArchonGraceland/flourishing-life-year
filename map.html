@@ -88,6 +88,33 @@
   .meta-row .label { color: var(--ink-soft); opacity: 0.7; }
   .meta-row .value { color: var(--ink); font-weight: 500; }
 
+  .domain-selector {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .domain-selector button {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 8px 14px;
+    background: var(--paper); color: var(--ink-soft);
+    border: 1px solid var(--rule); border-radius: 2px;
+    cursor: pointer;
+    transition: background 100ms, color 100ms, border-color 100ms;
+  }
+  .domain-selector button:hover { background: var(--paper-warm); color: var(--ink); }
+  .domain-selector button.active {
+    background: var(--ink); color: var(--paper); border-color: var(--ink);
+  }
+  .domain-selector .selector-label {
+    align-self: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-soft); opacity: 0.7;
+    margin-right: 8px;
+  }
+
+  #tooltip .row-active .domain-label,
+  #tooltip .row-active .domain-pct { color: var(--paper); font-weight: 600; }
+
   .map-stage {
     background: var(--paper-warm);
     border: 1px solid var(--rule);
@@ -221,7 +248,17 @@
     <div><span class="label">Release</span><span class="value">v2026.04-dev</span></div>
     <div><span class="label">Counties scored</span><span class="value" id="meta-scored">…</span></div>
     <div><span class="label">Counties gray</span><span class="value" id="meta-gray">…</span></div>
-    <div><span class="label">Composite range</span><span class="value" id="meta-range">…</span></div>
+    <div><span class="label" id="meta-range-label">Composite range</span><span class="value" id="meta-range">…</span></div>
+  </div>
+
+  <div class="domain-selector" role="tablist" aria-label="Color the map by">
+    <span class="selector-label">View</span>
+    <button data-view="composite" class="active" role="tab" aria-selected="true">Composite</button>
+    <button data-view="purchasing_power" role="tab">Purchasing power</button>
+    <button data-view="wealth"  role="tab">Wealth</button>
+    <button data-view="family"  role="tab">Family</button>
+    <button data-view="health"  role="tab">Health</button>
+    <button data-view="education" role="tab">Education</button>
   </div>
 
   <div class="map-stage">
@@ -242,7 +279,7 @@
   </div>
 
   <div class="legend-row">
-    <span class="value">Composite</span>
+    <span class="value" id="legend-label">Composite</span>
     <div>
       <div class="legend-bar" aria-hidden="true"></div>
       <div class="legend-ticks">
@@ -282,6 +319,12 @@ const DOMAIN_ORDER = [
   ["health",            "Health"],
   ["education",         "Education"],
 ];
+const VIEW_LABEL = {
+  composite: "Composite",
+  purchasing_power: "Purchasing power",
+  wealth: "Wealth", family: "Family",
+  health: "Health", education: "Education",
+};
 
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
@@ -330,13 +373,16 @@ async function main() {
       domainsByGeoid.get(r.geoid)[r.domain] = r.percentile;
     }
 
-    const scored = composites.filter(r => r.composite != null);
-    const gray = composites.length - scored.length;
-    const minC = d3.min(scored, r => r.composite);
-    const maxC = d3.max(scored, r => r.composite);
-    document.getElementById("meta-scored").textContent = scored.length.toLocaleString();
-    document.getElementById("meta-gray").textContent = gray.toLocaleString();
-    document.getElementById("meta-range").textContent = `${minC.toFixed(1)} – ${maxC.toFixed(1)}`;
+    let currentView = "composite";
+
+    function getValue(geoid, view) {
+      if (view === "composite") {
+        const c = compByGeoid.get(geoid);
+        return c && c.composite != null ? c.composite : null;
+      }
+      const dom = domainsByGeoid.get(geoid);
+      return dom && dom[view] != null ? dom[view] : null;
+    }
 
     const counties = topology.counties;
     const states = topology.states;
@@ -359,17 +405,12 @@ async function main() {
     // Wrap all geography in a single <g> that gets transformed by zoom/pan.
     const g = svg.append("g");
 
-    g.append("g")
+    const countyPaths = g.append("g")
       .selectAll("path")
       .data(counties.features)
       .join("path")
       .attr("class", "county")
       .attr("d", path)
-      .attr("fill", d => {
-        const c = compByGeoid.get(d.properties.GEOID);
-        if (!c || c.composite == null) return "#c9bfa8";  /* gray */
-        return color(c.composite);
-      })
       .on("mousemove", (event, d) => {
         const geoid = d.properties.GEOID;
         const c = compByGeoid.get(geoid);
@@ -379,10 +420,12 @@ async function main() {
         const stateAbbr = STATE_ABBR[stateFips] || "";
         let html = `<div class="county-name">${name}${stateAbbr ? `, ${stateAbbr}` : ""}</div>`;
         for (const [key, label] of DOMAIN_ORDER) {
-          html += `<div class="score-row"><span class="domain-label">${label}</span><span class="domain-pct">${fmtPct(dom[key])}</span></div>`;
+          const cls = currentView === key ? "score-row row-active" : "score-row";
+          html += `<div class="${cls}"><span class="domain-label">${label}</span><span class="domain-pct">${fmtPct(dom[key])}</span></div>`;
         }
         if (c && c.composite != null) {
-          html += `<div class="score-row composite-row"><span class="domain-label">Composite (${c.domains_available}/5)</span><span class="domain-pct">${c.composite.toFixed(1)}</span></div>`;
+          const cls = currentView === "composite" ? "score-row composite-row row-active" : "score-row composite-row";
+          html += `<div class="${cls}"><span class="domain-label">Composite (${c.domains_available}/5)</span><span class="domain-pct">${c.composite.toFixed(1)}</span></div>`;
         } else if (c) {
           html += `<div class="gray-note composite-row">Insufficient data (${c.domains_available}/5 domains)</div>`;
         } else {
@@ -409,6 +452,38 @@ async function main() {
       .join("path")
       .attr("class", "state-line")
       .attr("d", path);
+
+    function applyView() {
+      countyPaths.attr("fill", d => {
+        const v = getValue(d.properties.GEOID, currentView);
+        return v == null ? "#c9bfa8" : color(v);
+      });
+      let scored = 0, gray = 0, vmin = Infinity, vmax = -Infinity;
+      for (const f of counties.features) {
+        const v = getValue(f.properties.GEOID, currentView);
+        if (v == null) gray++;
+        else { scored++; if (v < vmin) vmin = v; if (v > vmax) vmax = v; }
+      }
+      document.getElementById("meta-scored").textContent = scored.toLocaleString();
+      document.getElementById("meta-gray").textContent = gray.toLocaleString();
+      document.getElementById("meta-range").textContent =
+        scored ? `${(+vmin).toFixed(1)} – ${(+vmax).toFixed(1)}` : "—";
+      const label = VIEW_LABEL[currentView];
+      document.getElementById("meta-range-label").textContent = `${label} range`;
+      document.getElementById("legend-label").textContent = label;
+    }
+    applyView();
+
+    document.querySelectorAll(".domain-selector button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".domain-selector button").forEach(b => {
+          b.classList.remove("active"); b.setAttribute("aria-selected", "false");
+        });
+        btn.classList.add("active"); btn.setAttribute("aria-selected", "true");
+        currentView = btn.dataset.view;
+        applyView();
+      });
+    });
 
     // Zoom and pan. Strokes scale inversely so they don't get heavy when zoomed in.
     const zoom = d3.zoom()
