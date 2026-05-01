@@ -1140,12 +1140,31 @@
     max-width: 720px;
   }
   .balance-headline-strip {
-    display: inline; font-family: 'Fraunces', serif; font-style: italic;
-    color: var(--ink); font-size: 18px;
+    display: flex; flex-wrap: wrap; gap: 28px 44px;
+    margin-top: 18px; padding: 18px 22px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--ink);
+    border-radius: 4px;
   }
-  .balance-headline-strip .delta-up   { color: #2d5a4a; }
-  .balance-headline-strip .delta-down { color: var(--accent); }
-  .balance-headline-strip .delta-flat { color: var(--ink-soft); }
+  .balance-headline-strip:empty { display: none; }
+  .balance-headline-figure {
+    display: flex; flex-direction: column; gap: 4px;
+    min-width: 0;
+  }
+  .balance-headline-figure .bh-num {
+    font-family: 'Fraunces', serif; font-weight: 500;
+    font-size: 38px; line-height: 1.05; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .balance-headline-figure .bh-unit {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.04em; color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .balance-headline-figure .delta-up   { color: #2d5a4a; }
+  .balance-headline-figure .delta-down { color: var(--accent); }
+  .balance-headline-figure .delta-flat { color: var(--ink-soft); }
 
   .balance-chart-card {
     background: var(--paper);
@@ -1757,7 +1776,7 @@
         </div>
       </div>
       <div class="eq-rollup-caption">
-        County Flourishing Life Years sum to state totals, and state totals sum to the national figure — the same additive structure as GDP. The 287M figure above is illustrative of the additive structure; the index's actual frozen-baseline accounting starts in <a href="#balance">§ The national balance</a> below, anchored at 2019 = 100.
+        County Flourishing Life Years sum to state totals, and state totals sum to the national figure — the same additive structure as GDP. Most-recent national total: <strong><span id="eq-rollup-current">—</span></strong> Flourishing Life Years. The frozen-baseline accounting (anchored at 2019 = 100) is in <a href="#balance">§ The national balance</a> below.
       </div>
     </div>
   </section>
@@ -1769,8 +1788,9 @@
       <div class="balance-header">
         <h2>National FLY, year over year. <em>2019 = 100.</em></h2>
         <p class="balance-lede">
-          The county map is cross-sectional — one snapshot per release. To answer "is national flourishing moving up or down?" we anchor at 2019 (the last full pre-COVID year) and track the index forward in real terms. <span class="balance-headline-strip" id="balance-headline-strip"></span>
+          The county map is cross-sectional — one snapshot per release. To answer "is national flourishing moving up or down?" we anchor at 2019 (the last full pre-COVID year) and track the index forward in real terms.
         </p>
+        <div class="balance-headline-strip" id="balance-headline-strip"></div>
       </div>
 
       <div class="balance-chart-card balance-primary">
@@ -2707,7 +2727,7 @@ async function loadBalance() {
   try {
     const rows = await fetchSupa(
       `/rest/v1/national_trend?release_version=eq.${RELEASE}` +
-      `&select=year,composite_index,per_domain_breakdown&order=year`
+      `&select=year,composite_index,per_domain_breakdown,total_fly&order=year`
     );
     if (!rows.length) {
       section.querySelector(".balance-headline-strip").textContent =
@@ -2715,14 +2735,42 @@ async function loadBalance() {
       return;
     }
 
-    // Headline: delta from 2019 to most recent year (as percent change).
+    // Headline: delta from 2019 to most recent year — both as percent change
+    // and as absolute FLY-years (total_fly column) created vs the 2019 anchor.
     const first = rows[0];
     const last = rows.at(-1);
     const delta = (last.composite_index - first.composite_index);
     const dCls = delta > 0.2 ? "delta-up" : delta < -0.2 ? "delta-down" : "delta-flat";
     const dSign = delta > 0 ? "+" : "";
-    document.getElementById("balance-headline-strip").innerHTML =
-      `As of ${last.year}: <span class="${dCls}">${dSign}${delta.toFixed(1)}% vs 2019</span>.`;
+    const fmtMillions = (n) => {
+      if (n == null) return "—";
+      const m = n / 1e6;
+      return (m >= 100 ? m.toFixed(1) : m.toFixed(2)) + "M";
+    };
+    const totalLast = last.total_fly;
+    const totalFirst = first.total_fly;
+    const totalDelta = (totalLast != null && totalFirst != null) ? (totalLast - totalFirst) : null;
+    const tdSign = (totalDelta != null && totalDelta > 0) ? "+" : "";
+    const headlineHTML =
+      `<span class="balance-headline-figure">` +
+        `<span class="bh-num">${fmtMillions(totalLast)}</span>` +
+        `<span class="bh-unit">Flourishing Life Years produced in ${last.year}</span>` +
+      `</span>` +
+      (totalDelta != null
+        ? `<span class="balance-headline-figure">` +
+            `<span class="bh-num ${dCls}">${tdSign}${fmtMillions(Math.abs(totalDelta))}</span>` +
+            `<span class="bh-unit">vs 2019 (<span class="${dCls}">${dSign}${delta.toFixed(1)}%</span> composite)</span>` +
+          `</span>`
+        : "");
+    document.getElementById("balance-headline-strip").innerHTML = headlineHTML;
+
+    // Also write the most-recent year's absolute FLY count into §02's caption,
+    // replacing the placeholder so the rollup arithmetic ends with a real number.
+    const eq02 = document.getElementById("eq-rollup-current");
+    if (eq02 && totalLast != null) {
+      eq02.textContent = fmtMillions(totalLast);
+      eq02.dataset.year = last.year;
+    }
 
     // Primary chart: composite only
     const compositeSeries = {
@@ -2768,13 +2816,9 @@ async function loadBalance() {
   }
 }
 
-const balanceSection = document.getElementById("balance");
-if (balanceSection && "IntersectionObserver" in window) {
-  const obs = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) { obs.disconnect(); loadBalance(); }
-  }, { rootMargin: "400px" });
-  obs.observe(balanceSection);
-} else if (balanceSection) {
+// Fire eagerly: the fetch is 5 rows and the result is needed by both
+// §balance (charts + headline) and §02 (eq-rollup-current caption number).
+if (document.getElementById("balance")) {
   loadBalance();
 }
 

@@ -57,6 +57,21 @@ CPI_BY_YEAR = {
     2022: 292.655, 2023: 304.702,
 }
 
+# US population mid-year estimates (Census Vintage 2024 release, NST-EST2024).
+# Used for total-FLY computation: the index treats the 2019 anchor as composite
+# percentile 50 (= 0.50 FLY-per-capita), so total FLY in year T is
+#   total_fly_T = (composite_index_T / 100) * 0.50 * population_T
+# At 2019 by construction: 1.00 × 0.50 × 328.2M = 164.1M FLY.
+US_POPULATION_BY_YEAR = {
+    2019: 328_239_523,
+    2020: 331_511_512,
+    2021: 332_031_554,
+    2022: 333_287_557,
+    2023: 334_914_895,
+}
+# Anchor: 2019 composite_percentile = 50, so FLY-per-capita anchor = 0.50.
+FLY_PER_CAPITA_ANCHOR = 0.50
+
 # NCHS NVSS national life expectancy at birth, both sexes, all races.
 # Source: CDC NCHS National Vital Statistics annual reports (NVSR Vol 72 No 12,
 # Dec 2024 for 2022; provisional for 2023 from NCHS Data Brief No. 521 noted
@@ -162,13 +177,23 @@ def main() -> int:
             composite_index = round(geomean * 100, 2)
         else:
             composite_index = None
+        # Total FLY produced in year T = (composite_index/100) × FLY-per-capita anchor × US pop
+        pop = US_POPULATION_BY_YEAR.get(year)
+        total_fly = (
+            round((composite_index / 100.0) * FLY_PER_CAPITA_ANCHOR * pop, 0)
+            if (composite_index is not None and pop) else None
+        )
         rows.append({
             "release_version": release,
             "year": year,
             "composite_index": composite_index,
             "per_domain_breakdown": per_domain,
+            "total_fly": total_fly,
         })
-        print(f"[trend]   {year}: composite_index={composite_index}", file=sys.stderr)
+        print(f"[trend]   {year}: composite_index={composite_index}  "
+              f"total_fly={total_fly:,.0f}" if total_fly is not None
+              else f"[trend]   {year}: composite_index={composite_index}",
+              file=sys.stderr)
 
     # Write to Supabase national_trend
     print("[trend] clearing prior trend rows for this release…", file=sys.stderr)
