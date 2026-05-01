@@ -1581,7 +1581,7 @@
     <div class="hero-cta-row fade-in d4">
       <a href="/assessment" class="cta-primary">
         <span class="cta-label">Take the assessment</span>
-        <span class="cta-meta">11 questions · 3 minutes · nothing saved</span>
+        <span class="cta-meta">13 questions · ~4 minutes · nothing saved</span>
       </a>
       <a href="#mission" class="cta-secondary">
         Learn how it works
@@ -1924,10 +1924,10 @@
           </div>
           <h3 class="domain-title">Can people build something that lasts?</h3>
           <p class="domain-desc">
-            A proxy stack for household balance-sheet position: homeownership rate, median home value, and the share of county adjusted gross income that comes from dividends and capital gains. There is no federal wealth survey at county level — these three together form the most defensible substitute.
+            A proxy stack for household balance-sheet position: homeownership rate, median home value, the share of county adjusted gross income that comes from dividends and capital gains, and (per Q8.5, in v0.7) the share of households making active long-term-savings contributions via IRS SOI retirement-deduction data. There is no federal wealth survey at county level — these proxies together form the most defensible substitute. Three are <em>stocks</em> (what you've accumulated); the fourth is the <em>flow</em> (whether you're still adding). Q8.5 requires both.
           </p>
           <div class="domain-viz">
-            <div class="domain-viz-label">Three wealth proxies, percentile rank (illustrative county)</div>
+            <div class="domain-viz-label">Three stock proxies, percentile rank (illustrative county) — Q8.5 savings-flow proxy ships v0.7</div>
             <svg viewBox="0 0 440 150" width="100%" height="150" role="img" aria-label="Horizontal bar indicators for the three wealth proxies: homeownership rate, median home value, and capital-asset income share">
               <!-- Label column: 0-170. Bar column: 180-400. Value column: 410-440 -->
               <!-- Bar width formula: width = value * 220/100 = value * 2.2 -->
@@ -2085,7 +2085,7 @@
           </div>
           <h3 class="domain-title">Does schooling lead somewhere?</h3>
           <p class="domain-desc">
-            Education here means human capital, not academic credentialism. Two components, multiplied: the share of adults with a post-secondary credential (associate's or bachelor's-and-above) and the share employed in skilled trades — construction, installation, maintenance, repair. The master electrician and the BA count equally.
+            Education here means human capital, not academic credentialism. Two components, multiplied: the share of adults with a post-secondary credential (associate's or bachelor's-and-above) and the share employed in skilled trades — construction, installation, maintenance, repair. The master electrician and the BA count equally. Per Q8.3 (in v0.7), the personal-assessment read additionally requires the credential to be <em>used</em> in current employment — "meaningfully employed," not merely "credentialed." County-map version of the conjunction (B23025 × B24010) ships v0.7.
           </p>
           <div class="domain-viz">
             <div class="domain-viz-label">Two-component education score, percentile rank (illustrative county)</div>

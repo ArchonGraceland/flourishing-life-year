@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Assessment · The Flourishing Life Year Index</title>
 
-<meta name="description" content="Your Flourishing Score: a percentile rank against your peers nationally, by state, and by county. 11 questions, three minutes, computed in your browser.">
+<meta name="description" content="Your Flourishing Read: a categorical assessment per domain against the average for Americans your age. 13 questions, about four minutes, computed in your browser.">
 <meta name="theme-color" content="#f4efe6">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Flourishing Life Year — Personal Assessment">
-<meta property="og:description" content="Your Flourishing Score, against your peers nationally and locally. 11 questions, three minutes.">
+<meta property="og:description" content="Your Flourishing Score, against your peers nationally and locally. 13 questions, about four minutes.">
 <meta property="og:url" content="https://www.flourishinglifeyear.com/assessment">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -339,11 +339,11 @@
     <div class="eyebrow">Personal Assessment · v0.5</div>
     <h1>How are you doing, <em>measurably?</em></h1>
     <p class="lede">
-      Eleven questions. Your inputs run through the same five domains the county map uses, against the <a href="/#mission">five conditions of a Flourishing Life Year</a>. Each domain returns a <em>read</em> — strong, adequate, below cohort, or (under age 30, for family only) stage-neutral. Where a read is below cohort, you'll get a brief factual note about what tends to shift it. Nothing's saved; everything's computed in your browser.
+      Thirteen questions. Your inputs run through the same five domains the county map uses, against the <a href="/#mission">five conditions of a Flourishing Life Year</a>. Each domain returns a <em>read</em> — strong, adequate, below cohort, or (under age 30, for family only) stage-neutral. Where a read is below cohort, you'll get a brief factual note about what tends to shift it. Nothing's saved; everything's computed in your browser.
     </p>
 
     <div class="intro-points">
-      <div><strong>11 questions</strong><br>~3 minutes</div>
+      <div><strong>13 questions</strong><br>~4 minutes</div>
       <div><strong>Nothing saved</strong><br>computed in your browser, never sent to a server</div>
       <div><strong>Reproducible</strong><br>every reference value is in a public federal dataset</div>
     </div>
@@ -482,9 +482,23 @@
         <div class="q-help">Construction, extraction, installation, maintenance, or repair occupations (SOC 47-XXXX or 49-XXXX). Master electrician, plumber, mechanic, welder, etc.</div>
       </div>
 
-      <!-- Q12 Investment income -->
+      <!-- Q12 Q8.3 employment match — uses credential -->
       <div class="question">
-        <div class="q-label"><span class="qnum">11</span>Wealth</div>
+        <div class="q-label"><span class="qnum">11</span>Education</div>
+        <div class="q-prompt">Are you currently employed in work that uses your education or trade?</div>
+        <div class="radio-row">
+          <label><input type="radio" name="employment_match" value="yes" required><span>Yes</span></label>
+          <label><input type="radio" name="employment_match" value="no"><span>No</span></label>
+          <label><input type="radio" name="employment_match" value="na"><span>Not applicable</span></label>
+        </div>
+        <div class="q-help">
+          Q8.3 ("meaningfully employed"): the index reads strong when you both <em>hold</em> a credential and <em>currently use</em> it. A bachelor's holder driving for a rideshare → "No." A licensed electrician working as an electrician → "Yes." A nurse working in nursing → "Yes." Choose "Not applicable" if you're retired, a full-time student, a homemaker, or otherwise not in the labor force — the domain reads on credential alone in those cases.
+        </div>
+      </div>
+
+      <!-- Q13 Investment income -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">12</span>Wealth</div>
         <div class="q-prompt">Do you receive investment income (dividends, capital gains, rents)?</div>
         <div class="radio-row">
           <label><input type="radio" name="investment_income" value="yes" required><span>Yes</span></label>
@@ -492,6 +506,19 @@
         </div>
         <div class="q-help">
           Brokerage accounts that pay dividends or capital gains, taxable mutual funds, rental property income, REIT distributions. Retirement accounts (401k, IRA) where you haven't yet started distributions don't count. Even small amounts ($50/year) count as "Yes."
+        </div>
+      </div>
+
+      <!-- Q14 Q8.5 savings flow — active practice -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">13</span>Wealth</div>
+        <div class="q-prompt">In the last year, did you contribute to retirement, an investment account, or other long-term savings?</div>
+        <div class="radio-row">
+          <label><input type="radio" name="savings_flow" value="yes" required><span>Yes</span></label>
+          <label><input type="radio" name="savings_flow" value="no"><span>No</span></label>
+        </div>
+        <div class="q-help">
+          Q8.5 ("able to save and actively engaged in saving"): any non-zero contribution counts — 401(k) or 403(b) at work, a Roth or traditional IRA, an HSA, a 529 for a child, employer match alone (if you're enrolled), brokerage deposits, or comparable long-term savings. Pension accruals through your employer count. Paying down a mortgage principal counts. Building an emergency fund in a savings account does <em>not</em> count for this question — that's liquidity, not long-term savings.
         </div>
       </div>
 
@@ -516,7 +543,7 @@
     <div class="result-disclosure">
       <h3>How this is read</h3>
       <p>
-        Each of the five domains gets a status — <em>strong</em>, <em>adequate</em>, or <em>below cohort</em> — based on a fixed threshold against the average for Americans your age. Family is age-conditional per Q8.6: below age 30 the domain is stage-neutral (family formation is not yet the expectation); age 30 and above, the index treats stable married-couple households as the family-domain criterion. The methodology page states the editorial position openly.
+        Each of the five domains gets a status — <em>strong</em>, <em>adequate</em>, or <em>below cohort</em> — based on a fixed threshold against the average for Americans your age. Education applies the Q8.3 conjunction: holding a credential AND being employed in work that uses it. Wealth applies the Q8.5 four-proxy rule: homeownership + above-median home value + investment income + active long-term savings flow. Family is age-conditional per Q8.6: below age 30 the domain is stage-neutral (family formation is not yet the expectation); age 30 and above, the index treats stable married-couple households as the family-domain criterion. The methodology page states the editorial position openly.
       </p>
       <p>
         The thresholds are deliberately coarse. A continuous percentile rank like "you're at p67" pretends to a precision the underlying ACS data doesn't actually have at the granularity of a single household. The bucketed status — and the suggestion notes that follow — are honest at the resolution the data supports.
@@ -650,30 +677,60 @@ function readPurchasingPower(curves, income, age) {
   return { status, badge, reading, suggestion };
 }
 
-function readWealth(ownsHome, homeValue, hasInvestment) {
+// Q8.5 — wealth domain is now four proxies (was three): homeownership, home
+// value above national median, investment income, AND active savings flow.
+// Composition rule per Q8.5: strong if owns home + savings flow + (high home
+// value OR investment income); adequate if any 2 of 4; below if 0 or 1.
+function readWealth(ownsHome, homeValue, hasInvestment, savingsFlow) {
   const owns = ownsHome === "yes";
   const inv  = hasInvestment === "yes";
+  const flow = savingsFlow === "yes";
   const aboveMedianHome = (owns && homeValue != null && homeValue >= 340000);
-  let status, badge, reading;
-  if (owns && (aboveMedianHome || inv)) {
+  const proxyCount = (owns ? 1 : 0) + (aboveMedianHome ? 1 : 0) + (inv ? 1 : 0) + (flow ? 1 : 0);
+
+  // Q8.5 strong criterion: owns + flow + (high value OR investment income).
+  const strongCriterion = owns && flow && (aboveMedianHome || inv);
+
+  let status, badge, reading, suggestion = null;
+  if (strongCriterion) {
     status = "strong"; badge = "strong";
-    reading = aboveMedianHome && inv
-      ? "You own your home (above the national median value), and report investment income. You're building wealth across multiple proxies."
-      : aboveMedianHome
-        ? "You own your home, and its value is above the national median. Strong primary-asset position."
-        : "You own your home and have investment income on the side. That's the building-blocks combination this domain looks for.";
-  } else if (owns || inv) {
+    if (aboveMedianHome && inv) {
+      reading = "You own your home (above national median value), report investment income, AND are actively saving for the long term. The Q8.5 wealth read — capacity (the stocks) plus active practice (the flow) — is met across all four proxies.";
+    } else if (aboveMedianHome) {
+      reading = "You own your home (above national median value) AND are actively saving for the long term. The Q8.5 read combines wealth stock with active savings practice — strong.";
+    } else {
+      reading = "You own your home, you report investment income, AND you're actively contributing to long-term savings. The Q8.5 wealth read — owning + saving + investment activity — is met.";
+    }
+  } else if (proxyCount >= 2) {
     status = "adequate"; badge = "adequate";
-    reading = owns
-      ? "You own your home — that's the largest single wealth lever for most American households. Investment income on top would shift this domain into 'strong'."
-      : "You're renting but receive investment income. That's an unusual mix — you're accumulating wealth in a different form than the typical homeowner.";
+    if (owns && flow) {
+      reading = "You own your home and are actively saving for the long term. The Q8.5 read needs one more proxy (above-median home value OR investment income) to land at strong, but two of the four is adequate.";
+    } else if (owns && inv) {
+      reading = "You own your home and report investment income. Adding active long-term savings contributions would meet the Q8.5 strong criterion.";
+    } else if (owns && aboveMedianHome) {
+      reading = "You own your home and its value is above the national median. Adding active long-term savings contributions would meet the Q8.5 strong criterion.";
+    } else if (flow && inv) {
+      reading = "You're actively saving for the long term and report investment income. Renting keeps you below the Q8.5 strong criterion (which anchors on homeownership), but you're accumulating wealth in stock + flow forms.";
+    } else if (flow) {
+      reading = "You're actively saving for the long term — that's the Q8.5 flow indicator. With renting and no investment income, the domain reads adequate; homeownership or investment-income exposure would shift it.";
+    } else {
+      reading = "Two wealth proxies present out of four. Adequate on Q8.5 — strong reads require homeownership + savings flow + (high value OR investment income).";
+    }
   } else {
     status = "below"; badge = "below";
-    reading = "You don't currently own a home and don't report investment income. Wealth-by-proxy here is below typical for any age cohort.";
+    if (proxyCount === 1) {
+      reading = owns
+        ? "You own your home — the single largest wealth lever for most American households — but no other Q8.5 proxy is present (above-median value, investment income, or active savings flow). The domain reads below; one more proxy would lift it."
+        : flow
+          ? "You're actively saving for the long term — the Q8.5 flow indicator — but no other proxy is present (homeownership, above-median home value, or investment income). The domain reads below; the most common move from here is the homeownership lever."
+          : inv
+            ? "You report investment income but no other Q8.5 wealth proxy. The domain reads below; homeownership or active long-term savings would shift it."
+            : "You have one wealth proxy. The domain reads below until at least two are present.";
+    } else {
+      reading = "None of the four Q8.5 wealth proxies is present — homeownership, above-median home value, investment income, or active long-term savings flow. The domain reads below.";
+    }
+    suggestion = "Q8.5 ('able to save AND actively engaged in saving') treats long-term-savings flow as the fourth proxy. The flow lever is often the most movable: even small, automated retirement-account contributions count toward the strong read once paired with the other proxies.";
   }
-  const suggestion = (status === "below")
-    ? "First-time-homebuyer programs vary by state; HUD's HomePath and state-level downpayment-assistance lists are the standard starting points. Investment-income compounding starts small."
-    : null;
   return { status, badge, reading, suggestion };
 }
 
@@ -748,32 +805,94 @@ function readHealth(selfRated) {
   };
 }
 
-function readEducation(degree, skilledTrade) {
+// Q8.3 — education domain is now a conjunction: credential AND meaningful
+// employment in work that uses it. employment_match === "na" (retired, student,
+// homemaker, otherwise out of labor force) reverts the read to credential-only,
+// since "currently employed" isn't the right question for those situations.
+function readEducation(degree, skilledTrade, employmentMatch) {
   const hasBachelor = !!DEGREE_HAS_BACHELOR[degree];
   const hasAssociate = !!DEGREE_HAS_ASSOC[degree];
   const someCollege = degree === "some_college";
   const trade = skilledTrade === "yes";
-  if (hasBachelor || trade) {
+  const hasCredential = hasBachelor || hasAssociate || trade;
+  const usesCredential = employmentMatch === "yes";
+  const employmentNA = employmentMatch === "na";
+
+  // Base credential read (no employment dimension).
+  const credentialStrong = hasBachelor || trade;
+  const credentialAdequate = !credentialStrong && (hasAssociate || someCollege);
+
+  if (employmentNA) {
+    // Out of labor force — read credential alone.
+    if (credentialStrong) {
+      return {
+        status: "strong", badge: "strong",
+        reading: trade && hasBachelor
+          ? "You have a bachelor's-level credential AND skilled-trade experience. With employment-match not applicable (retired, student, homemaker, etc.), the index reads on credential alone — and yours is strong on both axes."
+          : trade
+            ? "You work in a skilled trade and aren't currently in the labor force on a traditional schedule. The index reads credential alone in that case — your trade credential keeps this domain strong."
+            : "You hold a bachelor's degree or higher and aren't currently in the labor force on a traditional schedule. The index reads credential alone in that case — strong.",
+      };
+    }
+    if (credentialAdequate) {
+      return {
+        status: "adequate", badge: "adequate",
+        reading: hasAssociate
+          ? "You have an associate's degree and aren't currently in the labor force on a traditional schedule. The index reads credential alone — adequate."
+          : "You have some college without a degree and aren't currently in the labor force. The index reads credential alone — adequate; a finished credential would shift this to strong.",
+      };
+    }
+    return {
+      status: "below", badge: "below",
+      reading: "You report no post-secondary credential and aren't currently in the labor force. The index reads credential alone in that case — below the criterion.",
+      suggestion: "Q8.3 in the methodology page treats credential PLUS meaningful use as the strong read; for citizens out of the labor force, credential alone carries the domain.",
+    };
+  }
+
+  // In the labor force — Q8.3 conjunction applies.
+  if (credentialStrong && usesCredential) {
     return {
       status: "strong", badge: "strong",
       reading: trade && hasBachelor
-        ? "You have a bachelor's-level credential AND skilled-trade experience. The index treats skilled trades and academic credentials as equally valuable."
+        ? "You hold a bachelor's-level credential AND skilled-trade experience, and you're employed in work that uses your credential. The Q8.3 conjunction — hold AND use — reads strong."
         : trade
-          ? "You work in a skilled trade. The methodology rejects the bachelor's-only framing of education — your domain reads 'strong' regardless of degree."
-          : "You hold a bachelor's degree or higher. Above-cohort credential.",
+          ? "You work in a skilled trade and your current job uses that credential. Q8.3's 'meaningfully employed' threshold — hold AND use — is met, and the index reads strong."
+          : "You hold a bachelor's degree or higher and your current job uses that credential. Q8.3's 'meaningfully employed' threshold reads strong.",
     };
   }
-  if (hasAssociate || someCollege) {
+  if (credentialStrong && !usesCredential) {
+    // Q8.3: a credentialed worker not employed in matching work.
+    return {
+      status: "adequate", badge: "adequate",
+      reading: trade
+        ? "You hold a skilled-trade credential but report you're not currently employed in work that uses it. Q8.3 treats credential-without-use as adequate, not strong — the educational investment isn't producing the kind of life flourishing the index measures until it's deployed."
+        : "You hold a bachelor's-level credential but report you're not currently employed in work that uses it. Q8.3 treats credential-without-use as adequate, not strong — a four-year degree spent in unrelated work is real but isn't the 'meaningfully employed' read.",
+      suggestion: "Hold AND use is the Q8.3 conjunction. Credential alone reads adequate; deploying it in work moves this domain to strong.",
+    };
+  }
+  if (credentialAdequate && usesCredential) {
     return {
       status: "adequate", badge: "adequate",
       reading: hasAssociate
-        ? "You have an associate's degree. The index counts this domain as 'strong' once you add a skilled-trade credential or a four-year degree."
-        : "You have some college without a degree. A finished credential — academic or skilled-trade — would shift this domain.",
+        ? "You have an associate's degree and report you're employed in work that uses it. The index counts associate-level-with-use as adequate; a four-year degree or skilled-trade credential employed in matching work would shift this to strong."
+        : "You have some college without a degree, working in matching employment. The index counts this as adequate; a finished credential — academic or skilled-trade — would shift this domain to strong.",
     };
   }
+  if (credentialAdequate && !usesCredential) {
+    return {
+      status: "below", badge: "below",
+      reading: hasAssociate
+        ? "You have an associate's degree but aren't employed in work that uses it. Q8.3 reads credential-with-no-use as below: neither the strong (hold AND use) nor the adequate (hold-only when out of the labor force) bar is met."
+        : "You have some college without a degree, and you're not employed in work that uses it. Q8.3 reads this as below the criterion.",
+      suggestion: "Q8.3 in the methodology states the conjunction explicitly: credential AND deployment. Either finishing the credential or deploying the existing coursework in a matching role would shift this domain.",
+    };
+  }
+  // No credential.
   return {
     status: "below", badge: "below",
-    reading: "You report no post-secondary credential and not a skilled-trade occupation. This domain reads below typical for working-age cohorts.",
+    reading: usesCredential
+      ? "You report no post-secondary credential. Q8.3 anchors on credential as the gating fact; without one the domain reads below typical regardless of current employment."
+      : "You report no post-secondary credential and not employed in credentialed work. The domain reads below typical for working-age cohorts.",
     suggestion: "Workforce credentials in skilled trades shift this domain the same as four-year degrees — and community-college and trade programs are typically the fastest movers.",
   };
 }
@@ -781,10 +900,10 @@ function readEducation(degree, skilledTrade) {
 function scoreAssessment(inputs, curves) {
   const reads = {
     purchasing_power: readPurchasingPower(curves, inputs.income, inputs.age),
-    wealth:           readWealth(inputs.owns_home, inputs.home_value, inputs.investment_income),
+    wealth:           readWealth(inputs.owns_home, inputs.home_value, inputs.investment_income, inputs.savings_flow),
     family:           readFamily(inputs.marital, inputs.kids, inputs.age),
     health:           readHealth(inputs.health),
-    education:        readEducation(inputs.degree, inputs.skilled_trade),
+    education:        readEducation(inputs.degree, inputs.skilled_trade, inputs.employment_match),
   };
   // Tally for the headline. Family is descriptive — excluded from the count.
   const evaluatable = ["purchasing_power", "wealth", "health", "education"];
@@ -834,13 +953,13 @@ const DOMAIN_LABELS = {
   purchasing_power: { label: "Purchasing power", color: "var(--domain-1)",
                       sub: "Real household income vs. cohort" },
   wealth:           { label: "Wealth",           color: "var(--domain-2)",
-                      sub: "Ownership + home value + investment income" },
+                      sub: "Ownership + home value + investment + savings flow" },
   family:           { label: "Family",           color: "var(--domain-3)",
                       sub: "Marital status × children at home" },
   health:           { label: "Health",           color: "var(--domain-4)",
                       sub: "Self-rated, NHIS five-level scale" },
   education:        { label: "Education",        color: "var(--domain-5)",
-                      sub: "Bachelor or skilled trade" },
+                      sub: "Credential AND meaningful use (Q8.3)" },
 };
 const BADGE_TEXT = {
   strong:      "Strong",
@@ -908,7 +1027,9 @@ form.addEventListener("submit", async (e) => {
     health: fd.get("health"),
     degree: fd.get("degree"),
     skilled_trade: fd.get("skilled_trade"),
+    employment_match: fd.get("employment_match"),
     investment_income: fd.get("investment_income"),
+    savings_flow: fd.get("savings_flow"),
   };
 
   // Light validation
