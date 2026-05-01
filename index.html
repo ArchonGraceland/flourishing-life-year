@@ -102,6 +102,11 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .logo:hover .logo-mark {
+    box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--accent);
   }
   .logo-mark {
     width: 22px;
@@ -1377,10 +1382,10 @@
 
 <nav>
   <div class="nav-inner">
-    <div class="logo">
+    <a href="/" class="logo">
       <div class="logo-mark"></div>
       <span>The Flourishing Life Year Index</span>
-    </div>
+    </a>
     <div class="nav-links">
       <a href="#mission">How it works</a>
       <a href="#domains">Five Domains</a>
