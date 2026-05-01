@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/map.html", "destination": "/#map", "permanent": true }
+  ]
+}
