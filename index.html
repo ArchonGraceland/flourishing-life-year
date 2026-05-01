@@ -2649,11 +2649,23 @@ async function loadLiveVintages() {
       `/rest/v1/source_vintages?release_version=eq.${RELEASE}` +
       `&select=source_key,vintage,access_date&order=source_key`
     );
-    list.innerHTML = rows.map(r =>
+    // Group rows that share the same (vintage, access_date). The Census API
+    // pulls 7 separate ACS tables for one release — listing all 7 with the
+    // same "ACS 5-yr 2020-2024" string is just noise. One line per vintage,
+    // with the source_keys as a comma-separated list, is the readable form.
+    const groups = new Map();
+    for (const r of rows) {
+      const key = `${r.vintage} ${r.access_date}`;
+      if (!groups.has(key)) {
+        groups.set(key, { vintage: r.vintage, access_date: r.access_date, keys: [] });
+      }
+      groups.get(key).keys.push(r.source_key);
+    }
+    list.innerHTML = [...groups.values()].map(g =>
       `<li>` +
-      `<span class="source-key">${r.source_key}</span>` +
-      `<span class="source-vintage">${r.vintage}</span>` +
-      `<span class="source-accessed">accessed ${r.access_date}</span>` +
+      `<span class="source-key">${g.keys.join(", ")}</span>` +
+      `<span class="source-vintage">${g.vintage}</span>` +
+      `<span class="source-accessed">accessed ${g.access_date}</span>` +
       `</li>`
     ).join("");
   } catch (e) {
