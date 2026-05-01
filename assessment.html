@@ -339,7 +339,7 @@
     <div class="eyebrow">Personal Assessment · v0.5</div>
     <h1>How are you doing, <em>measurably?</em></h1>
     <p class="lede">
-      Eleven questions. Your inputs run through the same five domains the county map uses. Each domain returns a <em>read</em> — strong, adequate, below cohort, or (for family) descriptive — against the average for Americans your age. Where a read is below cohort, you'll get a brief, factual note about what tends to shift it. Nothing's saved; everything's computed in your browser.
+      Eleven questions. Your inputs run through the same five domains the county map uses, against the <a href="/#mission">five conditions of a Flourishing Life Year</a>. Each domain returns a <em>read</em> — strong, adequate, below cohort, or (under age 30, for family only) stage-neutral. Where a read is below cohort, you'll get a brief factual note about what tends to shift it. Nothing's saved; everything's computed in your browser.
     </p>
 
     <div class="intro-points">
@@ -516,7 +516,7 @@
     <div class="result-disclosure">
       <h3>How this is read</h3>
       <p>
-        Each of the five domains gets a status — <em>strong</em>, <em>adequate</em>, or <em>below your cohort</em> — based on a fixed threshold against the average for Americans your age. Family is shown descriptively rather than as "above" or "below" because the index does not put a value judgment on household structure.
+        Each of the five domains gets a status — <em>strong</em>, <em>adequate</em>, or <em>below cohort</em> — based on a fixed threshold against the average for Americans your age. Family is age-conditional per Q8.6: below age 30 the domain is stage-neutral (family formation is not yet the expectation); age 30 and above, the index treats stable married-couple households as the family-domain criterion. The methodology page states the editorial position openly.
       </p>
       <p>
         The thresholds are deliberately coarse. A continuous percentile rank like "you're at p67" pretends to a precision the underlying ACS data doesn't actually have at the granularity of a single household. The bucketed status — and the suggestion notes that follow — are honest at the resolution the data supports.
@@ -614,24 +614,38 @@ function inverseLookup(buckets, target) {
 // status ∈ "strong" | "adequate" | "below" | "descriptive" — used for the
 // composite headline tally.
 
+// Q8.4 — middle-class floor = 60% of national median household income.
+// 2024 national median (ACS 1-yr) ≈ $81,604; floor ≈ $48,962.
+// Cost-of-living adjustment via county RPP arrives in v0.7 with the ZIP→county
+// pipeline; for now the floor is unadjusted national.
+const MIDDLE_CLASS_FLOOR_USD = 48962;
+
 function readPurchasingPower(curves, income, age) {
   const cohort = ageBucketContaining(curves.domains.purchasing_power.buckets, age);
   const median = cohort.value;
-  const ratio = median > 0 ? income / median : 1;
   const fmt$ = v => "$" + Math.round(v).toLocaleString();
-  let badge, status, reading;
-  if (ratio >= 1.25) {
-    badge = "strong"; status = "strong";
-    reading = `Your household income is well above the typical American your age. Median income for ages ${cohort.min_age}–${cohort.max_age} is ${fmt$(median)}; you're at ${fmt$(income)} — ${(ratio*100).toFixed(0)}% of the median.`;
-  } else if (ratio >= 0.8) {
-    badge = "adequate"; status = "adequate";
-    reading = `Your household income is roughly typical for your age. Median for ages ${cohort.min_age}–${cohort.max_age} is ${fmt$(median)}; you're at ${fmt$(income)}.`;
+  // Q8.4 — primary criterion is the middle-class floor.
+  const floor = MIDDLE_CLASS_FLOOR_USD;
+  const aboveFloor = income >= floor;
+  const nearFloor  = !aboveFloor && income >= floor * 0.90;
+  const wellAbove  = income >= floor * 1.5;
+
+  let status, badge, reading;
+  if (wellAbove) {
+    status = "strong"; badge = "strong";
+    reading = `Your household income (${fmt$(income)}) is well above the middle-class floor — 60% of national median, $${floor.toLocaleString()}. Your cohort (ages ${cohort.min_age}–${cohort.max_age}) median is ${fmt$(median)}.`;
+  } else if (aboveFloor) {
+    status = "adequate"; badge = "adequate";
+    reading = `Your household income (${fmt$(income)}) clears the middle-class floor of $${floor.toLocaleString()} (60% of national median). Cohort median for ages ${cohort.min_age}–${cohort.max_age} is ${fmt$(median)}.`;
+  } else if (nearFloor) {
+    status = "below"; badge = "below";
+    reading = `Your household income (${fmt$(income)}) sits just below the middle-class floor of $${floor.toLocaleString()} (60% of national median). Within 10% of the threshold.`;
   } else {
-    badge = "below"; status = "below";
-    reading = `Your household income is below typical for your age. Median for ages ${cohort.min_age}–${cohort.max_age} is ${fmt$(median)}; you're at ${fmt$(income)} — ${(ratio*100).toFixed(0)}% of the median.`;
+    status = "below"; badge = "below";
+    reading = `Your household income (${fmt$(income)}) is below the middle-class floor of $${floor.toLocaleString()} (60% of national median). Cohort median for ages ${cohort.min_age}–${cohort.max_age} is ${fmt$(median)}.`;
   }
   const suggestion = (status === "below")
-    ? "Cost of living varies sharply by county. Check the county map — purchasing power is income deflated by your local price level, so the same dollar buys different lives in different places."
+    ? "Cost of living varies sharply by county; the floor here uses the unadjusted national figure. v0.7 will deflate by your local RPP — the same $48k that's tight in the Bay Area is comfortable in much of the South. Check the county map for your area's real purchasing power."
     : null;
   return { status, badge, reading, suggestion };
 }
@@ -663,23 +677,50 @@ function readWealth(ownsHome, homeValue, hasInvestment) {
   return { status, badge, reading, suggestion };
 }
 
-function readFamily(marital, hasKids) {
-  // Descriptive only — no value judgment. The index is neutral on household structure.
+function readFamily(marital, hasKids, age) {
+  // Q8.6 — age-conditional family criterion. Below age 30: descriptive (stage-neutral).
+  // Age 30+: stable married-couple household with children at home OR adult children
+  // launched from a stable household = "stage-fit family." All other configurations
+  // past 30 = "below the family criterion." See Q8.6 in methodology_spec.md.
   const married = (marital === "married");
-  const marriedAbsent = (marital === "married_absent");
   const kids = (hasKids === "yes");
+
+  // Below age 30 — Q8.6 says family formation is not yet expected; report descriptively.
+  if (age < 30) {
+    let reading;
+    if (married && kids)              reading = "You're married with children at home. Past age 30 the index would call this stage-fit family; below 30 it's reported descriptively — family formation is not yet the expectation.";
+    else if (married)                 reading = "You're married, no children at home. Below age 30 the family domain is descriptive; past 30 the index treats married-with-children as the criterion.";
+    else if (kids)                    reading = "You have children at home. Below age 30 the family domain is descriptive; past 30 the index would read this as below the criterion (which requires a married-couple household).";
+    else                              reading = "Single, no children at home. Below age 30 the index treats this as stage-neutral — family formation is not yet expected.";
+    return { status: "descriptive", badge: "descriptive", reading };
+  }
+
+  // Age 30 and above — Q8.6 criterion applies.
+  if (married && kids) {
+    return {
+      status: "strong", badge: "strong",
+      reading: "Stage-fit family. You're past 30 in a married-couple household with children at home — the configuration the index treats as flourishing on this domain.",
+    };
+  }
+  if (married && !kids) {
+    return {
+      status: "strong", badge: "strong",
+      reading: "Stage-fit family (post-launch). You're past 30, married, with no children at home. The index treats stable married-couple households whose children have launched as flourishing on this domain — same criterion, post-children phase.",
+    };
+  }
+  // Past 30 without a married-couple household: below the Q8.6 criterion.
   let reading;
-  if (married && kids)        reading = "You're married, spouse present, with children under 18 in the household.";
-  else if (married)           reading = "You're married, spouse present, no children under 18 in the household.";
-  else if (marriedAbsent)     reading = "You're married with spouse absent" + (kids ? ", children under 18 in the household." : ", no children under 18 in the household.");
-  else if (marital === "separated") reading = "You're separated" + (kids ? ", with children under 18 in the household." : ", no children under 18 in the household.");
-  else if (marital === "divorced")  reading = "You're divorced" + (kids ? ", with children under 18 in the household." : ", no children under 18 in the household.");
-  else if (marital === "widowed")   reading = "You're widowed" + (kids ? ", with children under 18 in the household." : ", no children under 18 in the household.");
-  else                              reading = "You've never married" + (kids ? ", with children under 18 in the household." : ", no children under 18 in the household.");
+  if (marital === "married_absent")    reading = "You're married with spouse absent — past age 30, the index reads this as below the family criterion (which anchors on stable married-couple structure with both partners present).";
+  else if (marital === "separated")    reading = "You're separated — past age 30, the index reads this as below the family criterion (which anchors on stable married-couple structure).";
+  else if (marital === "divorced")     reading = "You're divorced — past age 30, the index reads this as below the family criterion. The framework registers the configuration, not the path that led there.";
+  else if (marital === "widowed")      reading = "You're widowed — past age 30, the index reads this as below the family criterion. The framework registers configuration, not circumstance.";
+  else if (marital === "never")        reading = "You've never married — past age 30, the index reads this as below the family criterion. Q8.6 in the methodology page states the editorial position openly.";
+  else                                  reading = "Past age 30 without a stable married-couple household — below the family criterion. See Q8.6 for the editorial position.";
   return {
-    status: "descriptive",
-    badge: "descriptive",
+    status: "below",
+    badge: "below",
     reading,
+    suggestion: "The index's family-domain criterion is a stated normative position (Q8.6), not a neutral observation. People who flourish outside this configuration are real and not failing — the framework simply does not register their household structure as flourishing on this single domain. The other four domains carry their own weight in the overall read.",
   };
 }
 
@@ -741,7 +782,7 @@ function scoreAssessment(inputs, curves) {
   const reads = {
     purchasing_power: readPurchasingPower(curves, inputs.income, inputs.age),
     wealth:           readWealth(inputs.owns_home, inputs.home_value, inputs.investment_income),
-    family:           readFamily(inputs.marital, inputs.kids),
+    family:           readFamily(inputs.marital, inputs.kids, inputs.age),
     health:           readHealth(inputs.health),
     education:        readEducation(inputs.degree, inputs.skilled_trade),
   };

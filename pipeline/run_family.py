@@ -28,10 +28,16 @@ DOMAIN = "family"
 
 # B09005 — Household Type for Children Under 18 Years (post-2019 schema).
 #   _001 total | _002 married-couple | _003 cohabiting couple
-#   _004/_005 = single parent. "Two parents" = _002 + _003.
+#   _004/_005 = single parent.
+# Q8.6 (2026-05-01): family-domain numerator is married-couple ONLY (B09005_002).
+# This reverses the Q2 third amendment's inclusion of cohabiting couples (_003).
+# Per Q8.1.5 the index anchors family-domain flourishing on stable married-couple
+# household structure; cohabiting two-parent households are not counted toward
+# the criterion. Cohabiting-couple data is still pulled (visible in raw extract)
+# for transparency and for any future analysis, but does NOT enter the indicator.
 ACS_VARS = ["B09005_001E", "B09005_001M",
             "B09005_002E", "B09005_002M",
-            "B09005_003E", "B09005_003M"]
+            "B09005_003E", "B09005_003M"]   # _003 retained in raw for transparency
 
 
 def fetch_acs(api_key: str) -> list[dict]:
@@ -56,22 +62,21 @@ def fetch_acs(api_key: str) -> list[dict]:
 def compute_indicator(rec: dict) -> tuple[float | None, float | None, str | None]:
     """Return (estimate, moe, suppression_reason).
 
-    Uses Census Handbook proportion-MOE formula since numerator (two-parent kids)
-    is a subset of denominator (all kids). If the radicand goes negative, fall
-    back to the ratio formula (Handbook's documented escape).
+    Q8.6 indicator: married-couple share of children under 18 (B09005_002 / B09005_001).
+    Cohabiting-couple households (B09005_003) are NOT included — Q8.1.5 anchors family-domain
+    flourishing on stable married-couple household structure.
+
+    Uses Census Handbook proportion-MOE formula since numerator (married-couple kids) is
+    a subset of denominator (all kids).
     """
     total = rec["B09005_001E"]
     married = rec["B09005_002E"]
-    cohab = rec["B09005_003E"]
-    if total is None or total <= 0 or married is None or cohab is None:
+    if total is None or total <= 0 or married is None:
         return None, None, "acs_missing"
-    num = married + cohab
-    if num <= 0:
+    if married <= 0:
         return None, None, "acs_missing"
-    p = num / total
-    m_married = rec["B09005_002M"] or 0
-    m_cohab = rec["B09005_003M"] or 0
-    m_num = math.sqrt(m_married ** 2 + m_cohab ** 2)  # MOE for sum of two estimates
+    p = married / total
+    m_num = rec["B09005_002M"] or 0
     m_total = rec["B09005_001M"] or 0
     radicand = m_num ** 2 - (p ** 2) * (m_total ** 2)
     if radicand >= 0:

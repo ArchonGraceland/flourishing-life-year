@@ -357,6 +357,41 @@
     letter-spacing: -0.025em;
   }
   .mission-title em { font-family: 'Source Serif 4', serif; font-style: italic; color: var(--accent); font-weight: 400; }
+
+  /* Q8.1 — Definition block in §01 */
+  .definition-block {
+    margin: 28px 0 24px;
+    padding: 26px 32px 24px;
+    background: var(--paper-warm);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+  }
+  .definition-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px;
+  }
+  .definition-lead {
+    font-family: 'Fraunces', serif; font-size: 18px; font-weight: 400;
+    color: var(--ink); margin-bottom: 14px !important;
+  }
+  .definition-lead em {
+    font-family: 'Source Serif 4', serif; font-style: italic;
+  }
+  .definition-list {
+    margin: 0 0 16px 22px;
+    padding: 0;
+    font-size: 15.5px; line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .definition-list li { margin-bottom: 10px; }
+  .definition-list li strong { color: var(--ink); font-weight: 500; }
+  .definition-tail {
+    font-size: 13px !important;
+    color: var(--ink-soft);
+    font-style: italic;
+    margin: 0 !important;
+  }
   .mission-body p {
     font-size: 18px;
     line-height: 1.65;
@@ -819,6 +854,13 @@
   }
   .method-table-note em { color: var(--ink); font-style: italic; }
   .method-table-note strong { color: var(--ink); font-weight: 500; font-style: normal; }
+  .method-table-stance {
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    background: var(--paper-warm);
+    margin: 16px 0;
+    border-radius: 0 3px 3px 0;
+  }
   .method-table-footnote {
     margin-top: 16px;
     font-size: 13px;
@@ -1626,10 +1668,28 @@
           A Flourishing Life Year is the amount of human flourishing produced in one year, benchmarked against a national reference. It's the unit we use to describe places and people with the same math — the same federal data, the same five domains, the same arithmetic.
         </p>
         <p>
-          The idea borrows from the Quality-Adjusted Life Year used in health economics, and generalizes it. A year in which earnings, savings, family, health, and education all meet a national reference counts as one Flourishing Life Year. A year that falls short is discounted. A year that exceeds the reference scores above 1.0.
+          The definition is normative — a positional claim about what makes a year of American life worth counting as flourishing — and the index states it explicitly rather than smuggling it in through the mechanics:
         </p>
+
+        <div class="definition-block">
+          <div class="definition-eyebrow">The five conditions of a Flourishing Life Year</div>
+          <p class="definition-lead">
+            <em>A Flourishing Life Year is a year in which a citizen is:</em>
+          </p>
+          <ol class="definition-list">
+            <li><strong>Healthy</strong> — possessed of functional physical and mental health, not merely the absence of acute disease.</li>
+            <li><strong>Sufficiently educated as to be meaningfully employed</strong> — holding a credential (academic or skilled-trade) and currently working in employment that uses that credential.</li>
+            <li><strong>Able to save money and actively engaged in saving money</strong> — surplus household income above expenses, and practiced savings behavior.</li>
+            <li><strong>Capable of paying their bills that supports a comfortable middle-class American life</strong> — household income at or above 60% of the national median, adjusted for local cost of living.</li>
+            <li><strong>Married with children, at an age when that makes sense</strong> — past age 30, in a stable married-couple household with children at home or with adult children whose stable launch the household supported.</li>
+          </ol>
+          <p class="definition-tail">
+            The methodology page documents the empirical grounds for each condition — and, for the family condition specifically, the editorial position the index is taking.
+          </p>
+        </div>
+
         <p>
-          Applied to a county, it produces a map of how well places sustain flourishing lives. Applied to a person, it produces a Flourishing Read — a categorical assessment per domain (strong, adequate, or below cohort) against the average for Americans your age. <em>Same five domains. Same federal data. Same honesty.</em>
+          Applied to a county, the index produces a map of how well places sustain flourishing lives by this definition. Applied to a person, it produces a Flourishing Read — a categorical assessment per domain against the average for Americans your age. <em>Same five conditions. Same federal data. Same honesty.</em>
         </p>
       </div>
     </div>
@@ -1898,7 +1958,7 @@
           </div>
           <h3 class="domain-title">Can families start and stay?</h3>
           <p class="domain-desc">
-            One indicator: the share of children under 18 living with two parents. Family structure is the most direct, county-resolvable measure of the conditions in which children grow up.
+            The indicator is the share of children under 18 living with married parents. Per Q8.6 (Definition of Flourishing), the family domain anchors specifically on stable married-couple household structure — cohabiting two-parent households are not counted toward this indicator. The methodology section below states the editorial position openly. Family structure is the most direct, county-resolvable measure of the conditions in which children grow up.
           </p>
           <div class="domain-viz">
             <div class="domain-viz-label">Share of children with both parents, by county tertile</div>
@@ -2171,7 +2231,7 @@
         </div>
         <div class="mtable-row" style="--c: var(--domain-3)">
           <span class="mtable-d">Family</span>
-          <span>ACS B09005</span>
+          <span>ACS B09005 — married-couple share only (Q8.6)</span>
           <span>ACS 5-year</span>
           <span>MOE &gt; 30% flagged, not suppressed</span>
         </div>
@@ -2196,6 +2256,9 @@
       </div>
       <p class="method-table-note">
         A county's <em>composite</em> requires data on at least 4 of 5 domains. With one domain suppressed (structurally — see clarification below), the composite is computed from the four available and flagged on hover. With two or more suppressed, the county shows as gray on the map. High-noise survey estimates are <em>flagged for reliability</em>, not suppressed — they still contribute to the composite, but the map fades them and the tooltip shows the MOE so a reader can decide. <strong>No imputation, ever</strong> — no state averages, no nearest-neighbor fill, no modeled estimates. The number is either reproducible from federal data, or it isn't.
+      </p>
+      <p class="method-table-note method-table-footnote method-table-stance">
+        <strong>The family-domain editorial position (Q8.6).</strong> The index treats stable two-parent households with children as the family-domain definition of flourishing past age 30, on the empirical grounds that this household configuration produces the strongest measured outcomes on income, wealth accumulation, child educational attainment, and adult mortality. <em>This is a normative position, not a neutral observation.</em> People who flourish outside this configuration — never-married, divorced, child-free, single-parent, same-sex — are real and not failing; the index simply does not register their household structure as flourishing on this domain. The position is empirical, not moral; the moral question of whether American policy should support this configuration is downstream. The county-map indicator (married-couple share of children under 18) reverses the prior cohabiting-couple inclusion to anchor the indicator on the position the index actually takes.
       </p>
       <p class="method-table-note method-table-footnote">
         Three clarifications. <em>(1) ACS MOE: flagged, not suppressed</em> (revised v2026.05). Earlier drafts dropped any ACS estimate where the margin of error exceeded 30% of the estimate. That hid roughly 650 counties from the education domain alone — most of them rural, where the underlying populations are real but the survey samples are small. The current rule keeps the estimate, ranks it like everyone else's, and surfaces the MOE on the map (the county fades to ~65% opacity and the tooltip shows e.g. <em>±42% MOE</em>). Suppression is reserved for structural data gaps — denominator zero, source unavailable. <em>(2) Suppression vs. reliability for CDC WONDER.</em> WONDER itself suppresses death counts of 9 or fewer; the additional <strong>n &lt; 20</strong> rule is an additional rate-reliability threshold applied on top — different conceptually from the ACS MOE flag because mortality is rate-based, not survey-based. <em>(3) The county-RPP imputation</em> in the purchasing-power domain is our own deterministic rule (metro RPP for metro-attached counties; the state's overall RPP otherwise) — it is not a BEA product. BEA does not publish a per-state non-metropolitan RPP, only a single national non-metro figure, so the state-overall figure is the most local available signal for non-metro counties even though it is metro-weighted. Documented because it is the one place this methodology relaxes the no-imputation rule, and only because BEA does not publish below the metro level.
