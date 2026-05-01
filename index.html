@@ -1342,6 +1342,11 @@
   }
   #tooltip .row-active .domain-label,
   #tooltip .row-active .domain-pct { color: var(--paper); font-weight: 600; }
+  #tooltip .moe-flag {
+    font-style: italic; font-weight: 400; font-size: 11px;
+    color: rgba(244,239,230,0.62); margin-left: 8px;
+    letter-spacing: 0.02em;
+  }
 
   .legend-row {
     display: flex; align-items: center; gap: 20px;
@@ -1362,6 +1367,7 @@
     width: 14px; height: 14px; background: var(--rule);
     border: 1px solid var(--ink-soft); border-radius: 2px;
   }
+  .legend-flag-swatch { background: #7a8c5e; opacity: 0.65; border-color: var(--rule); }
 
   .map-loading {
     text-align: center; padding: 80px 0;
@@ -1494,6 +1500,10 @@
       <div class="legend-gray">
         <div class="legend-gray-swatch"></div>
         <span>Insufficient data</span>
+      </div>
+      <div class="legend-gray">
+        <div class="legend-gray-swatch legend-flag-swatch"></div>
+        <span>Reliability flag (MOE &gt; 30%)</span>
       </div>
     </div>
   </section>
@@ -1944,19 +1954,19 @@
           <span class="mtable-d">Purchasing</span>
           <span>ACS B19013 ÷ BEA metro RPP <em>(imputed to counties)</em></span>
           <span>ACS 5-year; BEA RPP annual</span>
-          <span>ACS MOE &gt; 30%</span>
+          <span>MOE &gt; 30% flagged, not suppressed</span>
         </div>
         <div class="mtable-row" style="--c: var(--domain-2)">
           <span class="mtable-d">Wealth</span>
           <span>ACS B25003, B25077 + IRS SOI county</span>
           <span>ACS 5-year, IRS SOI ~3-yr lag</span>
-          <span>MOE &gt; 30%; needs 2-of-3</span>
+          <span>MOE flagged; needs 2-of-3 components present</span>
         </div>
         <div class="mtable-row" style="--c: var(--domain-3)">
           <span class="mtable-d">Family</span>
           <span>ACS B09005</span>
           <span>ACS 5-year</span>
-          <span>ACS MOE &gt; 30%</span>
+          <span>MOE &gt; 30% flagged, not suppressed</span>
         </div>
         <div class="mtable-row" style="--c: var(--domain-4)">
           <span class="mtable-d">Health</span>
@@ -1968,7 +1978,7 @@
           <span class="mtable-d">Education</span>
           <span>ACS B15003 × ACS C24010</span>
           <span>ACS 5-year</span>
-          <span>MOE &gt; 30%; needs both components</span>
+          <span>MOE flagged; needs both components present</span>
         </div>
       </div>
       <div class="method-vintage-live" id="method-vintage-live">
@@ -1978,10 +1988,10 @@
         </ul>
       </div>
       <p class="method-table-note">
-        A county's <em>composite</em> requires data on at least 4 of 5 domains. With one domain suppressed, the composite is computed from the four available and flagged on hover. With two or more suppressed, the county shows as gray on the map. <strong>No imputation, ever</strong> — no state averages, no nearest-neighbor fill, no modeled estimates. The number is either reproducible from federal data, or it isn't.
+        A county's <em>composite</em> requires data on at least 4 of 5 domains. With one domain suppressed (structurally — see clarification below), the composite is computed from the four available and flagged on hover. With two or more suppressed, the county shows as gray on the map. High-noise survey estimates are <em>flagged for reliability</em>, not suppressed — they still contribute to the composite, but the map fades them and the tooltip shows the MOE so a reader can decide. <strong>No imputation, ever</strong> — no state averages, no nearest-neighbor fill, no modeled estimates. The number is either reproducible from federal data, or it isn't.
       </p>
       <p class="method-table-note method-table-footnote">
-        Two clarifications. <em>(1) Suppression vs reliability.</em> CDC WONDER itself suppresses death counts of 9 or fewer; our additional <strong>n &lt; 20</strong> rule is a reliability threshold applied on top, not a contradiction of WONDER's own publication policy. <em>(2) The county-RPP imputation</em> in the purchasing-power domain is our own deterministic rule (metro RPP for metro-attached counties; the state's overall RPP otherwise) — it is not a BEA product. BEA does not publish a per-state non-metropolitan RPP, only a single national non-metro figure, so the state-overall figure is the most local available signal for non-metro counties even though it is metro-weighted. Documented because it is the one place this methodology relaxes the no-imputation rule, and only because BEA does not publish below the metro level.
+        Three clarifications. <em>(1) ACS MOE: flagged, not suppressed</em> (revised v2026.05). Earlier drafts dropped any ACS estimate where the margin of error exceeded 30% of the estimate. That hid roughly 650 counties from the education domain alone — most of them rural, where the underlying populations are real but the survey samples are small. The current rule keeps the estimate, ranks it like everyone else's, and surfaces the MOE on the map (the county fades to ~65% opacity and the tooltip shows e.g. <em>±42% MOE</em>). Suppression is reserved for structural data gaps — denominator zero, source unavailable. <em>(2) Suppression vs. reliability for CDC WONDER.</em> WONDER itself suppresses death counts of 9 or fewer; the additional <strong>n &lt; 20</strong> rule is an additional rate-reliability threshold applied on top — different conceptually from the ACS MOE flag because mortality is rate-based, not survey-based. <em>(3) The county-RPP imputation</em> in the purchasing-power domain is our own deterministic rule (metro RPP for metro-attached counties; the state's overall RPP otherwise) — it is not a BEA product. BEA does not publish a per-state non-metropolitan RPP, only a single national non-metro figure, so the state-overall figure is the most local available signal for non-metro counties even though it is metro-weighted. Documented because it is the one place this methodology relaxes the no-imputation rule, and only because BEA does not publish below the metro level.
       </p>
       <p class="method-table-attribution">
         This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.
@@ -2219,16 +2229,19 @@ async function loadMap() {
     const [topology, composites, domains] = await Promise.all([
       fetch(TOPOLOGY_URL).then(r => r.json()),
       fetchAll(`/rest/v1/composite_scores?release_version=eq.${RELEASE}&select=geoid,composite,domains_available`),
-      fetchAll(`/rest/v1/domain_scores?release_version=eq.${RELEASE}&select=geoid,domain,percentile`),
+      fetchAll(`/rest/v1/domain_scores?release_version=eq.${RELEASE}&select=geoid,domain,percentile,moe_pct`),
     ]);
 
     const compByGeoid = new Map();
     for (const r of composites) compByGeoid.set(r.geoid, r);
 
+    // Q1 amendment: each (county, domain) carries a percentile AND a moe_pct.
+    // moe_pct > 0.30 → reliability flag (county is desaturated on the map and
+    // gets an italic MOE callout in the tooltip).
     const domainsByGeoid = new Map();
     for (const r of domains) {
       if (!domainsByGeoid.has(r.geoid)) domainsByGeoid.set(r.geoid, {});
-      domainsByGeoid.get(r.geoid)[r.domain] = r.percentile;
+      domainsByGeoid.get(r.geoid)[r.domain] = { pct: r.percentile, moe: r.moe_pct };
     }
 
     let currentView = "composite";
@@ -2239,7 +2252,17 @@ async function loadMap() {
         return c && c.composite != null ? c.composite : null;
       }
       const dom = domainsByGeoid.get(geoid);
-      return dom && dom[view] != null ? dom[view] : null;
+      return dom && dom[view] && dom[view].pct != null ? dom[view].pct : null;
+    }
+
+    function isFlagged(geoid, view) {
+      const dom = domainsByGeoid.get(geoid);
+      if (!dom) return false;
+      if (view === "composite") {
+        return Object.values(dom).some(d => d.moe != null && d.moe > 0.30);
+      }
+      const d = dom[view];
+      return d && d.moe != null && d.moe > 0.30;
     }
 
     const counties = topology.counties;
@@ -2269,7 +2292,13 @@ async function loadMap() {
       let html = `<div class="county-name">${name}${stateAbbr ? `, ${stateAbbr}` : ""}</div>`;
       for (const [key, label] of DOMAIN_ORDER) {
         const cls = currentView === key ? "score-row row-active" : "score-row";
-        html += `<div class="${cls}"><span class="domain-label">${label}</span><span class="domain-pct">${fmtPct(dom[key])}</span></div>`;
+        const e = dom[key];
+        const pct = e ? e.pct : null;
+        const flag = (e && e.moe != null && e.moe > 0.30)
+          ? `<span class="moe-flag">±${Math.round(e.moe * 100)}% MOE</span>`
+          : "";
+        html += `<div class="${cls}"><span class="domain-label">${label}</span>` +
+                `<span class="domain-pct">${fmtPct(pct)}${flag}</span></div>`;
       }
       if (c && c.composite != null) {
         const cls = currentView === "composite" ? "score-row composite-row row-active" : "score-row composite-row";
@@ -2346,10 +2375,18 @@ async function loadMap() {
       .attr("d", path);
 
     function applyView() {
-      countyPaths.attr("fill", d => {
-        const v = getValue(d.properties.GEOID, currentView);
-        return v == null ? "#c9bfa8" : color(v);
-      });
+      countyPaths
+        .attr("fill", d => {
+          const v = getValue(d.properties.GEOID, currentView);
+          return v == null ? "#c9bfa8" : color(v);
+        })
+        .attr("fill-opacity", d => {
+          // Reliability flag: 65% opacity if any used input had MOE > 30%.
+          // Suppressed (gray) counties still render at full opacity.
+          const v = getValue(d.properties.GEOID, currentView);
+          if (v == null) return 1.0;
+          return isFlagged(d.properties.GEOID, currentView) ? 0.65 : 1.0;
+        });
       let scored = 0, gray = 0, vmin = Infinity, vmax = -Infinity;
       for (const f of counties.features) {
         const v = getValue(f.properties.GEOID, currentView);

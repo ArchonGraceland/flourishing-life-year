@@ -78,8 +78,7 @@ def compute_indicator(rec: dict) -> tuple[float | None, float | None, str | None
         moe = math.sqrt(radicand) / total
     else:
         moe = math.sqrt(m_num ** 2 + (p ** 2) * (m_total ** 2)) / total
-    if p > 0 and (moe / p) > 0.30:
-        return p, moe, "acs_moe_gt_30pct"
+    # Q1 amendment: high MOE no longer suppresses; surfaced as moe_pct instead.
     return p, moe, None
 
 
@@ -105,9 +104,11 @@ def main() -> int:
     print(f"[family] fetched {len(raw)} county rows")
 
     estimates: dict[str, float] = {}
+    moe_pcts: dict[str, float] = {}
     suppressed: list[dict] = []
+    flagged = 0
     for rec in raw:
-        est, _moe, reason = compute_indicator(rec)
+        est, moe, reason = compute_indicator(rec)
         if reason:
             suppressed.append({
                 "release_version": release,
@@ -118,13 +119,19 @@ def main() -> int:
             })
         else:
             estimates[rec["geoid"]] = est
+            if est is not None and est > 0 and moe is not None:
+                mp = moe / est
+                moe_pcts[rec["geoid"]] = mp
+                if mp > 0.30:
+                    flagged += 1
 
-    print(f"[family] usable={len(estimates)} suppressed={len(suppressed)}")
+    print(f"[family] usable={len(estimates)} suppressed={len(suppressed)}; MOE>30% flagged={flagged}")
 
     ranks = percentile_rank(estimates)
     domain_rows = [
         {"release_version": release, "geoid": g, "domain": DOMAIN,
-         "percentile": ranks[g], "raw_value": estimates[g]}
+         "percentile": ranks[g], "raw_value": estimates[g],
+         "moe_pct": moe_pcts.get(g)}
         for g in estimates
     ]
 

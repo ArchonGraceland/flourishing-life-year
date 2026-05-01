@@ -138,9 +138,13 @@ def main() -> int:
     county_to_cbsa = load_county_to_cbsa(os.path.join(here, OMB_CROSSWALK))
     print(f"[pp] {len(county_to_cbsa)} metropolitan counties (micropolitan/non-metro fall through to state RPP)")
 
+    # Q1 amendment: MOE > 30% no longer suppresses; we keep the row and
+    # surface the moe_pct alongside it. Suppress only on structural missingness.
     estimates: dict[str, float] = {}
+    moe_pcts: dict[str, float] = {}
     suppressed: list[dict] = []
     no_rpp = 0
+    flagged = 0
 
     for rec in acs:
         geoid = rec["geoid"]
@@ -149,10 +153,6 @@ def main() -> int:
         if income is None or income <= 0:
             suppressed.append({"release_version": release, "geoid": geoid, "domain": DOMAIN,
                                "reason": "acs_missing", "source_key": "acs_b19013"})
-            continue
-        if moe is not None and (moe / income) > 0.30:
-            suppressed.append({"release_version": release, "geoid": geoid, "domain": DOMAIN,
-                               "reason": "acs_moe_gt_30pct", "source_key": "acs_b19013"})
             continue
 
         # impute county RPP
@@ -173,13 +173,19 @@ def main() -> int:
 
         real_income = income * 100.0 / rpp  # US average = 100
         estimates[geoid] = real_income
+        if moe is not None and income > 0:
+            mp = moe / income
+            moe_pcts[geoid] = mp
+            if mp > 0.30:
+                flagged += 1
 
-    print(f"[pp] usable={len(estimates)} suppressed={len(suppressed)} (no_rpp={no_rpp})")
+    print(f"[pp] usable={len(estimates)} suppressed={len(suppressed)} (no_rpp={no_rpp}); MOE>30% flagged={flagged}")
 
     ranks = percentile_rank(estimates)
     domain_rows = [
         {"release_version": release, "geoid": g, "domain": DOMAIN,
-         "percentile": ranks[g], "raw_value": estimates[g]}
+         "percentile": ranks[g], "raw_value": estimates[g],
+         "moe_pct": moe_pcts.get(g)}
         for g in estimates
     ]
 

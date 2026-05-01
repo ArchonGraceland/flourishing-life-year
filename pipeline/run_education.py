@@ -93,30 +93,27 @@ def combined_moe(moes: list[float]) -> float:
 
 
 def compute_components(rec: dict):
-    """Return (c1, c1_status, c2, c2_status) where status is None or a reason string."""
+    """Return (c1, c1_moe_pct, c1_status, c2, c2_moe_pct, c2_status).
+
+    Q1 amendment: high MOE no longer suppresses; only structural missingness
+    (denom <= 0, num missing) sets a status. Otherwise status is None and
+    moe_pct surfaces the noisiness.
+    """
     # Component 1: associate-or-higher share among pop 25+
     num1 = sum((rec[v] or 0) for v in B15003_NUM) if all(rec[v] is not None for v in B15003_NUM) else None
     moe_num1 = combined_moe([rec[v] for v in B15003_NUM_M])
     c1, c1_moe = proportion_with_moe(num1, moe_num1, rec[B15003_DENOM], rec[B15003_DENOM_M])
-    if c1 is None:
-        c1_status = "acs_missing"
-    elif c1 > 0 and (c1_moe / c1) > 0.30:
-        c1_status = "acs_moe_gt_30pct"
-    else:
-        c1_status = None
+    c1_status = "acs_missing" if c1 is None else None
+    c1_moe_pct = (c1_moe / c1) if (c1 is not None and c1 > 0 and c1_moe is not None) else None
 
     # Component 2: skilled-trade share among employed civilians 16+
     num2 = sum((rec[v] or 0) for v in C24010_NUM) if all(rec[v] is not None for v in C24010_NUM) else None
     moe_num2 = combined_moe([rec[v] for v in C24010_NUM_M])
     c2, c2_moe = proportion_with_moe(num2, moe_num2, rec[C24010_DENOM], rec[C24010_DENOM_M])
-    if c2 is None:
-        c2_status = "acs_missing"
-    elif c2 > 0 and (c2_moe / c2) > 0.30:
-        c2_status = "acs_moe_gt_30pct"
-    else:
-        c2_status = None
+    c2_status = "acs_missing" if c2 is None else None
+    c2_moe_pct = (c2_moe / c2) if (c2 is not None and c2 > 0 and c2_moe is not None) else None
 
-    return c1, c1_status, c2, c2_status
+    return c1, c1_moe_pct, c1_status, c2, c2_moe_pct, c2_status
 
 
 def main() -> int:
@@ -134,17 +131,23 @@ def main() -> int:
 
     c1_values: dict[str, float] = {}
     c2_values: dict[str, float] = {}
+    c1_moe_pcts: dict[str, float] = {}
+    c2_moe_pcts: dict[str, float] = {}
     suppressed: list[dict] = []
 
     for rec in acs:
         geoid = rec["geoid"]
-        c1, c1_status, c2, c2_status = compute_components(rec)
+        c1, c1_mp, c1_status, c2, c2_mp, c2_status = compute_components(rec)
         if c1_status is None:
             c1_values[geoid] = c1
+            if c1_mp is not None:
+                c1_moe_pcts[geoid] = c1_mp
         if c2_status is None:
             c2_values[geoid] = c2
+            if c2_mp is not None:
+                c2_moe_pcts[geoid] = c2_mp
         if c1_status or c2_status:
-            # Q6: domain suppressed if either component fails. Record the first failing component.
+            # Q6: domain suppressed only when a component is structurally missing.
             failed_source = "acs_b15003" if c1_status else "acs_c24010"
             failed_reason = c1_status or c2_status
             suppressed.append({
@@ -152,23 +155,34 @@ def main() -> int:
                 "reason": failed_reason, "source_key": failed_source,
             })
 
-    print(f"[edu] c1 usable={len(c1_values)} c2 usable={len(c2_values)} suppressed={len(suppressed)}")
+    flagged_c1 = sum(1 for mp in c1_moe_pcts.values() if mp > 0.30)
+    flagged_c2 = sum(1 for mp in c2_moe_pcts.values() if mp > 0.30)
+    print(f"[edu] c1 usable={len(c1_values)} (MOE>30% flagged={flagged_c1}); "
+          f"c2 usable={len(c2_values)} (MOE>30% flagged={flagged_c2}); "
+          f"suppressed={len(suppressed)}")
 
     c1_ranks = percentile_rank(c1_values)
     c2_ranks = percentile_rank(c2_values)
 
     domain_rows = []
+    domain_flagged = 0
     for geoid in c1_ranks:
         if geoid not in c2_ranks:
             continue
         # Geometric mean of the two component percentiles, floor 1, cap 100.
         combined = math.sqrt(c1_ranks[geoid] * c2_ranks[geoid])
         pct = max(1, min(100, round(combined)))
+        # Domain reliability = max of available component MOEs (worst component drives the flag).
+        mp = max(c1_moe_pcts.get(geoid, 0), c2_moe_pcts.get(geoid, 0)) or None
+        if mp and mp > 0.30:
+            domain_flagged += 1
         domain_rows.append({
             "release_version": release, "geoid": geoid, "domain": DOMAIN,
-            "percentile": pct, "raw_value": None,  # composite — no single headline number
+            "percentile": pct, "raw_value": None,
+            "moe_pct": mp,
         })
-    print(f"[edu] domain_scores={len(domain_rows)} (counties with both components usable)")
+    print(f"[edu] domain_scores={len(domain_rows)} (both components present); "
+          f"MOE>30% flagged={domain_flagged}")
 
     # Raw extract: a single combined CSV is fine; both tables share the same call.
     print("[edu] uploading raw extract…")

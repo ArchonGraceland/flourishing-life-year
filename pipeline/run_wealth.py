@@ -121,9 +121,11 @@ def main() -> int:
     soi_blob, soi = fetch_irs_soi()
     print(f"[wealth] {len(soi)} SOI county aggregates")
 
-    c1: dict[str, float] = {}  # homeownership rate
-    c2: dict[str, float] = {}  # median home value
-    c3: dict[str, float] = {}  # investment income share
+    c1: dict[str, float] = {}      # homeownership rate
+    c2: dict[str, float] = {}      # median home value
+    c3: dict[str, float] = {}      # investment income share
+    c1_moe: dict[str, float] = {}  # homeownership-rate MOE/estimate
+    c2_moe: dict[str, float] = {}  # median home-value MOE/estimate
     suppression_by_county: dict[str, list[tuple[str, str]]] = {}
 
     def mark(geoid: str, source: str, reason: str) -> None:
@@ -131,35 +133,37 @@ def main() -> int:
 
     for rec in acs:
         geoid = rec["geoid"]
-        # Component 1: homeownership rate
+        # Component 1: homeownership rate (Q1 amendment: high MOE no longer suppresses)
         own_rate, own_moe = proportion_with_moe(
             rec["B25003_002E"], rec["B25003_002M"],
             rec["B25003_001E"], rec["B25003_001M"])
         if own_rate is None:
             mark(geoid, "acs_b25003", "acs_missing")
-        elif own_rate > 0 and (own_moe / own_rate) > 0.30:
-            mark(geoid, "acs_b25003", "acs_moe_gt_30pct")
         else:
             c1[geoid] = own_rate
+            if own_rate > 0 and own_moe is not None:
+                c1_moe[geoid] = own_moe / own_rate
 
-        # Component 2: median home value (single estimate)
+        # Component 2: median home value
         mhv = rec["B25077_001E"]
         mhv_moe = rec["B25077_001M"]
         if mhv is None or mhv <= 0:
             mark(geoid, "acs_b25077", "acs_missing")
-        elif mhv_moe is not None and (mhv_moe / mhv) > 0.30:
-            mark(geoid, "acs_b25077", "acs_moe_gt_30pct")
         else:
             c2[geoid] = float(mhv)
+            if mhv > 0 and mhv_moe is not None:
+                c2_moe[geoid] = mhv_moe / mhv
 
-        # Component 3: investment income share (IRS SOI, source-default suppression)
+        # Component 3: investment income share (IRS SOI; source-default suppression — no MOE)
         s = soi.get(geoid)
         if s is None or s["agi"] <= 0:
             mark(geoid, "irs_soi", "soi_unavailable_or_negative_agi")
         else:
             c3[geoid] = (s["div"] + s["cap"]) / s["agi"]
 
-    print(f"[wealth] usable c1={len(c1)} c2={len(c2)} c3={len(c3)}")
+    print(f"[wealth] usable c1={len(c1)} c2={len(c2)} c3={len(c3)} "
+          f"(c1 MOE>30% flagged={sum(1 for m in c1_moe.values() if m > 0.30)}, "
+          f"c2 MOE>30% flagged={sum(1 for m in c2_moe.values() if m > 0.30)})")
 
     r1 = percentile_rank(c1)
     r2 = percentile_rank(c2)
@@ -168,14 +172,25 @@ def main() -> int:
     domain_rows = []
     suppressed: list[dict] = []
     geoids = {r["geoid"] for r in acs}
+    domain_flagged = 0
     for geoid in geoids:
-        ranks = [x for x in (r1.get(geoid), r2.get(geoid), r3.get(geoid)) if x is not None]
-        if len(ranks) >= 2:  # Q6: need ≥ 2 of 3
+        present = []
+        if geoid in r1: present.append(("c1", r1[geoid], c1_moe.get(geoid)))
+        if geoid in r2: present.append(("c2", r2[geoid], c2_moe.get(geoid)))
+        if geoid in r3: present.append(("c3", r3[geoid], None))  # IRS SOI: no MOE
+        if len(present) >= 2:  # Q6: need ≥ 2 of 3
+            ranks = [p[1] for p in present]
             geo = math.exp(sum(math.log(x) for x in ranks) / len(ranks))
+            # Domain reliability: max MOE across the ACS components actually used.
+            mp_vals = [p[2] for p in present if p[2] is not None]
+            mp = max(mp_vals) if mp_vals else None
+            if mp and mp > 0.30:
+                domain_flagged += 1
             domain_rows.append({
                 "release_version": release, "geoid": geoid, "domain": DOMAIN,
                 "percentile": max(1, min(100, round(geo))),
                 "raw_value": None,
+                "moe_pct": mp,
             })
         else:
             # < 2 components -> domain suppressed. Record one flag with the most informative reason.
@@ -187,7 +202,8 @@ def main() -> int:
                 "reason": reason, "source_key": source,
             })
 
-    print(f"[wealth] domain_scores={len(domain_rows)} suppressed={len(suppressed)}")
+    print(f"[wealth] domain_scores={len(domain_rows)} (MOE>30% flagged={domain_flagged}) "
+          f"suppressed={len(suppressed)}")
 
     print("[wealth] uploading raw extracts…")
     buf = io.StringIO()
