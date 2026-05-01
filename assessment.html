@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assessment · The Flourishing Life Year Index</title>
+
+<meta name="description" content="Your Flourishing Score: a percentile rank against your peers nationally, by state, and by county. 11 questions, three minutes, computed in your browser.">
+<meta name="theme-color" content="#f4efe6">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Flourishing Life Year — Personal Assessment">
+<meta property="og:description" content="Your Flourishing Score, against your peers nationally and locally. 11 questions, three minutes.">
+<meta property="og:url" content="https://www.flourishinglifeyear.com/assessment">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Source+Serif+4:ital,opsz,wght@1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  :root {
+    --ink: #1a1814;
+    --ink-soft: #3d3830;
+    --paper: #f4efe6;
+    --paper-warm: #ece5d6;
+    --paper-dark: #e0d8c4;
+    --rule: #c9bfa8;
+    --accent: #c8371d;
+    --domain-1: #2d5a4a;
+    --domain-2: #8b6b2c;
+    --domain-3: #a64238;
+    --domain-4: #355878;
+    --domain-5: #5c3a5c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    background: var(--paper); color: var(--ink);
+    font-feature-settings: "ss01", "ss02";
+    line-height: 1.5;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(244, 239, 230, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+  }
+  .logo { display: flex; align-items: center; gap: 12px;
+          font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
+          color: var(--ink); text-decoration: none; }
+  .logo-mark {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--accent) 0%, #8a2515 70%, #4a1308 100%);
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    color: var(--ink-soft); text-decoration: none; font-size: 14px;
+    font-weight: 500; letter-spacing: 0.01em;
+  }
+  .nav-links a:hover, .nav-links a.current { color: var(--accent); }
+  .nav-cta {
+    color: var(--ink); text-decoration: none; font-size: 14px;
+    font-weight: 500; padding: 10px 18px; border: 1px solid var(--ink);
+    border-radius: 2px;
+  }
+  .nav-cta:hover { background: var(--ink); color: var(--paper); }
+
+  .wrap { max-width: 880px; margin: 0 auto; padding: 56px 40px 80px; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 16px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(34px, 4.5vw, 56px); line-height: 1.05;
+    letter-spacing: -0.015em; margin-bottom: 18px;
+  }
+  h1 em { font-family: 'Source Serif 4', serif; font-style: italic;
+          color: var(--accent); font-weight: 400; }
+  .lede {
+    font-size: 17px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 640px; margin-bottom: 36px;
+  }
+  .intro-points {
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    padding: 16px 0; margin-bottom: 40px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    color: var(--ink-soft); letter-spacing: 0.04em;
+  }
+  .intro-points strong { color: var(--ink); font-weight: 500; }
+
+  /* Form */
+  form { display: grid; gap: 28px; }
+  .question {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 22px 24px;
+    background: var(--paper);
+    transition: border-color 100ms;
+  }
+  .question:focus-within { border-color: var(--ink); }
+  .q-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 4px;
+  }
+  .q-label .qnum { color: var(--ink-soft); opacity: 0.6; margin-right: 8px; }
+  .q-prompt {
+    font-family: 'Fraunces', serif; font-size: 19px; font-weight: 400;
+    line-height: 1.3; color: var(--ink); margin-bottom: 14px;
+  }
+  .q-help { font-size: 13px; color: var(--ink-soft); margin-top: 6px; line-height: 1.45; }
+
+  input[type="text"], input[type="number"], select {
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 16px;
+    padding: 10px 12px; border: 1px solid var(--rule); border-radius: 3px;
+    background: var(--paper-warm); color: var(--ink);
+    width: 100%; max-width: 320px;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--ink); }
+
+  .radio-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .radio-row label {
+    display: inline-flex; align-items: center; cursor: pointer;
+    padding: 8px 14px; border: 1px solid var(--rule); border-radius: 3px;
+    font-size: 14px; background: var(--paper);
+    transition: background 80ms, border-color 80ms;
+  }
+  .radio-row label:hover { background: var(--paper-warm); }
+  .radio-row input[type="radio"] { display: none; }
+  .radio-row input[type="radio"]:checked + span {
+    color: var(--paper);
+  }
+  .radio-row label:has(input:checked) {
+    background: var(--ink); border-color: var(--ink); color: var(--paper);
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr; gap: 14px; align-items: end; }
+  .currency-input { position: relative; }
+  .currency-input::before {
+    content: "$"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--ink-soft); font-size: 16px; pointer-events: none;
+  }
+  .currency-input input { padding-left: 24px; }
+
+  .conditional { display: none; padding-top: 14px; border-top: 1px dashed var(--rule); margin-top: 14px; }
+  .conditional.visible { display: block; }
+
+  .submit-row {
+    margin-top: 12px; padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap;
+  }
+  .submit-btn {
+    background: var(--accent); color: var(--paper);
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 16px; font-weight: 500;
+    border: none; border-radius: 2px;
+    padding: 16px 28px; cursor: pointer;
+    transition: background 100ms;
+  }
+  .submit-btn:hover { background: #8a2515; }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .submit-meta {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.04em;
+  }
+  .form-error {
+    color: var(--accent); font-size: 13px; margin-top: 14px;
+    padding: 12px 14px; border-left: 2px solid var(--accent);
+    background: var(--paper-warm); border-radius: 0 3px 3px 0;
+  }
+  .form-error.hidden { display: none; }
+
+  /* Result section */
+  .result { display: none; }
+  .result.visible { display: block; animation: fadeIn 280ms ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .result-headline {
+    text-align: center;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    padding: 48px 24px 56px;
+    margin-bottom: 36px;
+  }
+  .result-headline-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px;
+  }
+  .result-overall {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(48px, 7vw, 80px); line-height: 1.05;
+    margin-bottom: 14px; letter-spacing: -0.02em;
+  }
+  .result-overall.tier-great    { color: #2d5a4a; }
+  .result-overall.tier-strong   { color: #2d5a4a; }
+  .result-overall.tier-mixed    { color: #8b6b2c; }
+  .result-overall.tier-gaps     { color: var(--accent); }
+  .result-summary {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 19px; color: var(--ink-soft);
+    max-width: 620px; margin: 0 auto;
+    line-height: 1.45;
+  }
+
+  /* Status cards (one per domain) */
+  .status-cards {
+    display: grid; gap: 14px;
+    grid-template-columns: 1fr;
+    margin-bottom: 36px;
+  }
+  .status-card {
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--c, var(--accent));
+    border-radius: 4px;
+    padding: 22px 26px;
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    gap: 24px; align-items: start;
+  }
+  .status-card .domain-block h3 {
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px;
+    color: var(--ink); margin: 0 0 4px;
+  }
+  .status-card .domain-block .domain-sub {
+    font-family: 'IBM Plex Sans'; font-size: 12.5px;
+    color: var(--ink-soft); line-height: 1.4;
+  }
+  .status-card .reading {
+    color: var(--ink); line-height: 1.5; font-size: 15px;
+  }
+  .status-card .reading .reading-context {
+    display: block; margin-top: 8px;
+    font-size: 13px; color: var(--ink-soft); font-style: italic;
+  }
+  .status-card .reading .suggestion {
+    display: block; margin-top: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--ink-soft); letter-spacing: 0.02em;
+    line-height: 1.55;
+    padding-left: 12px; border-left: 2px solid var(--rule);
+  }
+  .status-card .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 5px 10px; border-radius: 2px;
+    white-space: nowrap; align-self: start;
+    border: 1px solid currentColor;
+  }
+  .status-card .badge.strong   { color: #2d5a4a; background: rgba(45,90,74,0.06); }
+  .status-card .badge.adequate { color: #8b6b2c; background: rgba(139,107,44,0.06); }
+  .status-card .badge.below    { color: var(--accent); background: rgba(200,55,29,0.06); }
+  .status-card .badge.descriptive {
+    color: var(--ink-soft); background: var(--paper-warm);
+    border-color: var(--rule);
+  }
+  .status-card .badge.attention {
+    color: var(--accent); background: rgba(200,55,29,0.10);
+  }
+
+  @media (max-width: 720px) {
+    .status-card {
+      grid-template-columns: 1fr;
+      gap: 12px; padding: 18px 20px;
+    }
+    .status-card .badge { justify-self: start; }
+  }
+
+  .result-disclosure {
+    background: var(--paper-warm); padding: 24px 28px;
+    border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0;
+    font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+    max-width: 760px;
+  }
+  .result-disclosure h3 {
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
+    color: var(--ink); margin: 0 0 8px;
+  }
+  .result-disclosure p + p { margin-top: 10px; }
+  .result-disclosure em { color: var(--ink); font-style: italic; }
+
+  .result-cta-row {
+    margin-top: 36px;
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .result-cta-row a {
+    text-decoration: none; padding: 14px 24px; border-radius: 2px;
+    font-size: 15px; font-weight: 500;
+  }
+  .result-cta-row .cta-primary { background: var(--ink); color: var(--paper); }
+  .result-cta-row .cta-primary:hover { background: var(--accent); }
+  .result-cta-row .cta-secondary { color: var(--ink); border: 1px solid var(--ink); }
+  .result-cta-row .cta-secondary:hover { background: var(--ink); color: var(--paper); }
+
+  .loading { text-align: center; padding: 80px 0; color: var(--ink-soft);
+             font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 32px 20px 60px; }
+    .nav-inner { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .intro-points { grid-template-columns: 1fr; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <div class="logo-mark"></div>
+      <span>The Flourishing Life Year Index</span>
+    </a>
+    <div class="nav-links">
+      <a href="/#mission">How it works</a>
+      <a href="/#domains">Five Domains</a>
+      <a href="/#method">Methodology</a>
+      <a href="/#map">Map</a>
+    </div>
+    <a href="/" class="nav-cta">Back to home ↗</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- INTRO -->
+  <div id="intro">
+    <div class="eyebrow">Personal Assessment · v0.5</div>
+    <h1>How are you doing, <em>measurably?</em></h1>
+    <p class="lede">
+      Eleven questions. Your inputs run through the same five domains the county map uses. Each domain returns a <em>read</em> — strong, adequate, below cohort, or (for family) descriptive — against the average for Americans your age. Where a read is below cohort, you'll get a brief, factual note about what tends to shift it. Nothing's saved; everything's computed in your browser.
+    </p>
+
+    <div class="intro-points">
+      <div><strong>11 questions</strong><br>~3 minutes</div>
+      <div><strong>Nothing saved</strong><br>computed in your browser, never sent to a server</div>
+      <div><strong>Reproducible</strong><br>every reference value is in a public federal dataset</div>
+    </div>
+
+    <form id="assessment-form">
+
+      <!-- Q1 Age -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">01</span>Demographics</div>
+        <div class="q-prompt">How old are you?</div>
+        <input type="number" name="age" min="18" max="100" step="1" required placeholder="years" />
+      </div>
+
+      <!-- Q2 Sex -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">02</span>Demographics</div>
+        <div class="q-prompt">Sex</div>
+        <div class="radio-row">
+          <label><input type="radio" name="sex" value="F" required><span>Female</span></label>
+          <label><input type="radio" name="sex" value="M"><span>Male</span></label>
+        </div>
+        <div class="q-help">Used in v0.6 for sex × income-quartile stratification of the curves. Not used in v0.5.</div>
+      </div>
+
+      <!-- Q3 ZIP -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">03</span>Demographics</div>
+        <div class="q-prompt">ZIP code (optional)</div>
+        <input type="text" name="zip" pattern="[0-9]{5}" maxlength="5" placeholder="5 digits" />
+        <div class="q-help">Used in v0.6 to deflate income by your county's regional price parity. Ignored in v0.5.</div>
+      </div>
+
+      <!-- Q4 Household income -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">04</span>Purchasing power</div>
+        <div class="q-prompt">Total household income last year</div>
+        <div class="currency-input">
+          <input type="number" name="income" min="0" step="1000" required placeholder="dollars" />
+        </div>
+        <div class="q-help">
+          Pre-tax, including all earners in the household.
+          <strong>If you live with parents and they pay your rent/food</strong>, use their household income (you're in their household economically). <strong>If you live independently</strong> (you pay rent and food yourself), count yours plus any spouse or roommate-with-shared-finances. Don't count student loans (debt, not income) or scholarships and need-based aid (transfers, not income). Roommates whose finances you don't share don't count.
+        </div>
+      </div>
+
+      <!-- Q5/Q6 Homeownership + value -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">05</span>Wealth</div>
+        <div class="q-prompt">Do you own your home?</div>
+        <div class="radio-row" data-controls="own-followup">
+          <label><input type="radio" name="owns_home" value="yes" required><span>Yes</span></label>
+          <label><input type="radio" name="owns_home" value="no"><span>No (rent or other)</span></label>
+        </div>
+        <div class="q-help">
+          About the place where you currently live. <strong>If you live with parents who own the home</strong>, that's their property, not yours — answer "No." Renting an apartment, dorm, or other unit is "No." Owning a condo, co-op, or house you occupy yourself is "Yes."
+        </div>
+        <div class="conditional" id="own-followup">
+          <div class="q-prompt" style="font-size: 16px; margin-top: 6px;">Approximate home value</div>
+          <div class="currency-input">
+            <input type="number" name="home_value" min="0" step="10000" placeholder="dollars" />
+          </div>
+          <div class="q-help">Rough estimate is fine — what it would sell for today, not what you paid. Zillow's "Zestimate" or your last property-tax assessment are good shortcuts.</div>
+        </div>
+      </div>
+
+      <!-- Q7 Marital -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">06</span>Family</div>
+        <div class="q-prompt">Marital status</div>
+        <select name="marital" required>
+          <option value="" disabled selected>Choose…</option>
+          <option value="married">Married, spouse present</option>
+          <option value="married_absent">Married, spouse absent</option>
+          <option value="separated">Separated</option>
+          <option value="divorced">Divorced</option>
+          <option value="widowed">Widowed</option>
+          <option value="never">Never married</option>
+        </select>
+      </div>
+
+      <!-- Q8 Kids -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">07</span>Family</div>
+        <div class="q-prompt">Are there children under 18 in your household?</div>
+        <div class="radio-row">
+          <label><input type="radio" name="kids" value="yes" required><span>Yes</span></label>
+          <label><input type="radio" name="kids" value="no"><span>No</span></label>
+        </div>
+        <div class="q-help">
+          Children currently living with you most of the time. Younger siblings of a college student living at home don't count — the question is about your own dependents, not housemates. Step-children and foster children count.
+        </div>
+      </div>
+
+      <!-- Q9 Self-rated health -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">08</span>Health</div>
+        <div class="q-prompt">In general, how would you rate your health?</div>
+        <div class="radio-row">
+          <label><input type="radio" name="health" value="excellent" required><span>Excellent</span></label>
+          <label><input type="radio" name="health" value="very_good"><span>Very good</span></label>
+          <label><input type="radio" name="health" value="good"><span>Good</span></label>
+          <label><input type="radio" name="health" value="fair"><span>Fair</span></label>
+          <label><input type="radio" name="health" value="poor"><span>Poor</span></label>
+        </div>
+        <div class="q-help">The same five-level scale CDC asks in the National Health Interview Survey.</div>
+      </div>
+
+      <!-- Q10 Education -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">09</span>Education</div>
+        <div class="q-prompt">Highest degree completed</div>
+        <select name="degree" required>
+          <option value="" disabled selected>Choose…</option>
+          <option value="none">No high school diploma</option>
+          <option value="hs">High school diploma / GED</option>
+          <option value="some_college">Some college, no degree</option>
+          <option value="associate">Associate's degree</option>
+          <option value="bachelor">Bachelor's degree</option>
+          <option value="master">Master's degree</option>
+          <option value="professional">Professional degree (JD, MD)</option>
+          <option value="doctorate">Doctorate</option>
+        </select>
+        <div class="q-help">
+          The highest degree you've actually <em>completed</em>, not what you're currently working toward. A college junior with a high-school diploma should choose "Some college, no degree." A current PhD student with a master's chooses "Master's." Trade certificates without a degree → "Some college, no degree" + answer "Yes" on the next question.
+        </div>
+      </div>
+
+      <!-- Q11 Skilled trade -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">10</span>Education</div>
+        <div class="q-prompt">Do you work in a skilled trade?</div>
+        <div class="radio-row">
+          <label><input type="radio" name="skilled_trade" value="yes" required><span>Yes</span></label>
+          <label><input type="radio" name="skilled_trade" value="no"><span>No</span></label>
+        </div>
+        <div class="q-help">Construction, extraction, installation, maintenance, or repair occupations (SOC 47-XXXX or 49-XXXX). Master electrician, plumber, mechanic, welder, etc.</div>
+      </div>
+
+      <!-- Q12 Investment income -->
+      <div class="question">
+        <div class="q-label"><span class="qnum">11</span>Wealth</div>
+        <div class="q-prompt">Do you receive investment income (dividends, capital gains, rents)?</div>
+        <div class="radio-row">
+          <label><input type="radio" name="investment_income" value="yes" required><span>Yes</span></label>
+          <label><input type="radio" name="investment_income" value="no"><span>No</span></label>
+        </div>
+        <div class="q-help">
+          Brokerage accounts that pay dividends or capital gains, taxable mutual funds, rental property income, REIT distributions. Retirement accounts (401k, IRA) where you haven't yet started distributions don't count. Even small amounts ($50/year) count as "Yes."
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button class="submit-btn" type="submit">See where you stand →</button>
+        <span class="submit-meta">Computed in your browser · nothing sent to a server</span>
+      </div>
+      <div class="form-error hidden" id="form-error"></div>
+    </form>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result" id="result">
+    <div class="result-headline">
+      <div class="result-headline-eyebrow">Your Flourishing Read</div>
+      <div class="result-overall" id="result-overall">—</div>
+      <div class="result-summary" id="result-summary">—</div>
+    </div>
+
+    <div class="status-cards" id="status-cards"></div>
+
+    <div class="result-disclosure">
+      <h3>How this is read</h3>
+      <p>
+        Each of the five domains gets a status — <em>strong</em>, <em>adequate</em>, or <em>below your cohort</em> — based on a fixed threshold against the average for Americans your age. Family is shown descriptively rather than as "above" or "below" because the index does not put a value judgment on household structure.
+      </p>
+      <p>
+        The thresholds are deliberately coarse. A continuous percentile rank like "you're at p67" pretends to a precision the underlying ACS data doesn't actually have at the granularity of a single household. The bucketed status — and the suggestion notes that follow — are honest at the resolution the data supports.
+      </p>
+      <p>
+        v0.5 reads you against your <em>national</em> age cohort. State and county (PUMA-approximated) reads ship with v0.6 once the ACS PUMS pipeline is built.
+      </p>
+    </div>
+
+    <div class="result-cta-row">
+      <a href="#" class="cta-secondary" id="restart-link">Take it again with different inputs</a>
+      <a href="/#map" class="cta-primary">See the country map →</a>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+const CURVES_URL = "/national_age_curves.json";
+
+const DEGREE_HAS_ASSOC = {
+  none: 0, hs: 0, some_college: 0,
+  associate: 1, bachelor: 1, master: 1, professional: 1, doctorate: 1,
+};
+const DEGREE_HAS_BACHELOR = {
+  none: 0, hs: 0, some_college: 0, associate: 0,
+  bachelor: 1, master: 1, professional: 1, doctorate: 1,
+};
+
+function ageBucketContaining(buckets, age) {
+  for (const b of buckets) {
+    if (age >= b.min_age && age <= b.max_age) return b;
+  }
+  if (age < buckets[0].min_age) return buckets[0];
+  return buckets[buckets.length - 1];
+}
+
+// ----- helpers ------------------------------------------------------------
+
+function bucketMidpoint(b) {
+  return (b.min_age + b.max_age) / 2;
+}
+
+// Clamp x into [lo, hi].
+const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+
+// Find the bucket containing age. Returns the matching bucket or the closest end.
+function bucketContaining(buckets, age) {
+  for (const b of buckets) {
+    if (age >= b.min_age && age <= b.max_age) return b;
+  }
+  if (age < buckets[0].min_age) return buckets[0];
+  return buckets[buckets.length - 1];
+}
+
+// Inverse-lookup: find the age where curve(age) ≈ target_value.
+// Buckets are treated as anchored at their midpoints; we linearly interpolate
+// between adjacent midpoints. If the curve is non-monotonic and target_value
+// is hit twice, we prefer the LOWER age — interpreted as the "achievement age."
+function inverseLookup(buckets, target) {
+  const usable = buckets.filter(b => b.value != null);
+  if (!usable.length || target == null) return null;
+
+  // Build (age, value) anchors at bucket midpoints.
+  const pts = usable.map(b => ({ age: bucketMidpoint(b), value: b.value }));
+
+  // If target is at or beyond an endpoint, snap.
+  const minVal = Math.min(...pts.map(p => p.value));
+  const maxVal = Math.max(...pts.map(p => p.value));
+  if (target <= minVal) {
+    // pick the age at the lowest-value point. Prefer lower age (achievement).
+    return pts.filter(p => p.value === minVal).sort((a, b) => a.age - b.age)[0].age;
+  }
+  if (target >= maxVal) {
+    return pts.filter(p => p.value === maxVal).sort((a, b) => a.age - b.age)[0].age;
+  }
+
+  // Find every (age) where the curve crosses target between adjacent points.
+  const crossings = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1];
+    if ((a.value - target) * (b.value - target) <= 0) {
+      // crosses between a and b
+      const t = (target - a.value) / (b.value - a.value);
+      crossings.push(a.age + t * (b.age - a.age));
+    }
+  }
+  if (!crossings.length) return null;
+  return Math.min(...crossings);  // achievement age — lower preferred
+}
+
+// ----- per-domain status ---------------------------------------------------
+// Each domain returns { status, badge, reading, context, suggestion }
+// where badge ∈ "strong" | "adequate" | "below" | "descriptive" | "attention".
+// status ∈ "strong" | "adequate" | "below" | "descriptive" — used for the
+// composite headline tally.
+
+function readPurchasingPower(curves, income, age) {
+  const cohort = ageBucketContaining(curves.domains.purchasing_power.buckets, age);
+  const median = cohort.value;
+  const ratio = median > 0 ? income / median : 1;
+  const fmt$ = v => "$" + Math.round(v).toLocaleString();
+  let badge, status, reading;
+  if (ratio >= 1.25) {
+    badge = "strong"; status = "strong";
+    reading = `Your household income is well above the typical American your age. Median income for ages ${cohort.min_age}–${cohort.max_age} is ${fmt$(median)}; you're at ${fmt$(income)} — ${(ratio*100).toFixed(0)}% of the median.`;
+  } else if (ratio >= 0.8) {
+    badge = "adequate"; status = "adequate";
+    reading = `Your household income is roughly typical for your age. Median for ages ${cohort.min_age}–${cohort.max_age} is ${fmt$(median)}; you're at ${fmt$(income)}.`;
+  } else {
+    badge = "below"; status = "below";
+    reading = `Your household income is below typical for your age. Median for ages ${cohort.min_age}–${cohort.max_age} is ${fmt$(median)}; you're at ${fmt$(income)} — ${(ratio*100).toFixed(0)}% of the median.`;
+  }
+  const suggestion = (status === "below")
+    ? "Cost of living varies sharply by county. Check the county map — purchasing power is income deflated by your local price level, so the same dollar buys different lives in different places."
+    : null;
+  return { status, badge, reading, suggestion };
+}
+
+function readWealth(ownsHome, homeValue, hasInvestment) {
+  const owns = ownsHome === "yes";
+  const inv  = hasInvestment === "yes";
+  const aboveMedianHome = (owns && homeValue != null && homeValue >= 340000);
+  let status, badge, reading;
+  if (owns && (aboveMedianHome || inv)) {
+    status = "strong"; badge = "strong";
+    reading = aboveMedianHome && inv
+      ? "You own your home (above the national median value), and report investment income. You're building wealth across multiple proxies."
+      : aboveMedianHome
+        ? "You own your home, and its value is above the national median. Strong primary-asset position."
+        : "You own your home and have investment income on the side. That's the building-blocks combination this domain looks for.";
+  } else if (owns || inv) {
+    status = "adequate"; badge = "adequate";
+    reading = owns
+      ? "You own your home — that's the largest single wealth lever for most American households. Investment income on top would shift this domain into 'strong'."
+      : "You're renting but receive investment income. That's an unusual mix — you're accumulating wealth in a different form than the typical homeowner.";
+  } else {
+    status = "below"; badge = "below";
+    reading = "You don't currently own a home and don't report investment income. Wealth-by-proxy here is below typical for any age cohort.";
+  }
+  const suggestion = (status === "below")
+    ? "First-time-homebuyer programs vary by state; HUD's HomePath and state-level downpayment-assistance lists are the standard starting points. Investment-income compounding starts small."
+    : null;
+  return { status, badge, reading, suggestion };
+}
+
+function readFamily(marital, hasKids) {
+  // Descriptive only — no value judgment. The index is neutral on household structure.
+  const married = (marital === "married");
+  const marriedAbsent = (marital === "married_absent");
+  const kids = (hasKids === "yes");
+  let reading;
+  if (married && kids)        reading = "You're married, spouse present, with children under 18 in the household.";
+  else if (married)           reading = "You're married, spouse present, no children under 18 in the household.";
+  else if (marriedAbsent)     reading = "You're married with spouse absent" + (kids ? ", children under 18 in the household." : ", no children under 18 in the household.");
+  else if (marital === "separated") reading = "You're separated" + (kids ? ", with children under 18 in the household." : ", no children under 18 in the household.");
+  else if (marital === "divorced")  reading = "You're divorced" + (kids ? ", with children under 18 in the household." : ", no children under 18 in the household.");
+  else if (marital === "widowed")   reading = "You're widowed" + (kids ? ", with children under 18 in the household." : ", no children under 18 in the household.");
+  else                              reading = "You've never married" + (kids ? ", with children under 18 in the household." : ", no children under 18 in the household.");
+  return {
+    status: "descriptive",
+    badge: "descriptive",
+    reading,
+  };
+}
+
+function readHealth(selfRated) {
+  if (selfRated === "excellent" || selfRated === "very_good") {
+    return {
+      status: "strong", badge: "strong",
+      reading: selfRated === "excellent"
+        ? "You rate your health as excellent. Self-rated health is one of the strongest single predictors of mortality — a hard signal to fake to yourself."
+        : "You rate your health as very good. Above the national majority, who say 'good.'",
+    };
+  }
+  if (selfRated === "good") {
+    return {
+      status: "adequate", badge: "adequate",
+      reading: "You rate your health as good — the modal answer Americans give. Adequate but not standout.",
+    };
+  }
+  return {
+    status: "below", badge: "attention",
+    reading: selfRated === "fair"
+      ? "You rate your health as fair. Below typical, and self-rated 'fair' has been linked in NHIS follow-ups to elevated mortality risk."
+      : "You rate your health as poor. The strongest signal in this assessment that's worth acting on.",
+    suggestion: "Self-rated health is a strong predictor of mortality independent of measured factors. If you haven't had a primary-care visit recently, that's a high-value step.",
+  };
+}
+
+function readEducation(degree, skilledTrade) {
+  const hasBachelor = !!DEGREE_HAS_BACHELOR[degree];
+  const hasAssociate = !!DEGREE_HAS_ASSOC[degree];
+  const someCollege = degree === "some_college";
+  const trade = skilledTrade === "yes";
+  if (hasBachelor || trade) {
+    return {
+      status: "strong", badge: "strong",
+      reading: trade && hasBachelor
+        ? "You have a bachelor's-level credential AND skilled-trade experience. The index treats skilled trades and academic credentials as equally valuable."
+        : trade
+          ? "You work in a skilled trade. The methodology rejects the bachelor's-only framing of education — your domain reads 'strong' regardless of degree."
+          : "You hold a bachelor's degree or higher. Above-cohort credential.",
+    };
+  }
+  if (hasAssociate || someCollege) {
+    return {
+      status: "adequate", badge: "adequate",
+      reading: hasAssociate
+        ? "You have an associate's degree. The index counts this domain as 'strong' once you add a skilled-trade credential or a four-year degree."
+        : "You have some college without a degree. A finished credential — academic or skilled-trade — would shift this domain.",
+    };
+  }
+  return {
+    status: "below", badge: "below",
+    reading: "You report no post-secondary credential and not a skilled-trade occupation. This domain reads below typical for working-age cohorts.",
+    suggestion: "Workforce credentials in skilled trades shift this domain the same as four-year degrees — and community-college and trade programs are typically the fastest movers.",
+  };
+}
+
+function scoreAssessment(inputs, curves) {
+  const reads = {
+    purchasing_power: readPurchasingPower(curves, inputs.income, inputs.age),
+    wealth:           readWealth(inputs.owns_home, inputs.home_value, inputs.investment_income),
+    family:           readFamily(inputs.marital, inputs.kids),
+    health:           readHealth(inputs.health),
+    education:        readEducation(inputs.degree, inputs.skilled_trade),
+  };
+  // Tally for the headline. Family is descriptive — excluded from the count.
+  const evaluatable = ["purchasing_power", "wealth", "health", "education"];
+  let strong = 0, adequate = 0, below = 0;
+  for (const dom of evaluatable) {
+    const s = reads[dom].status;
+    if (s === "strong") strong++;
+    else if (s === "adequate") adequate++;
+    else if (s === "below") below++;
+  }
+  let tier, headline;
+  if (strong >= 4)          { tier = "great";   headline = "Doing great"; }
+  else if (strong >= 3)     { tier = "strong";  headline = "Strong overall"; }
+  else if (strong + adequate >= 3) { tier = "mixed"; headline = "Mixed picture"; }
+  else                       { tier = "gaps";    headline = "Significant gaps"; }
+  return { reads, strong, adequate, below, tier, headline };
+}
+
+// ----- UI wiring ----------------------------------------------------------
+
+const form = document.getElementById("assessment-form");
+const errorBox = document.getElementById("form-error");
+const result = document.getElementById("result");
+const intro = document.getElementById("intro");
+
+let curvesPromise = null;
+function getCurves() {
+  if (!curvesPromise) curvesPromise = fetch(CURVES_URL).then(r => r.json());
+  return curvesPromise;
+}
+// Prefetch curves while user is filling the form (cheap, ~3 KB).
+getCurves();
+
+// Conditional reveal: home_value question shows only when owns_home = yes.
+document.querySelectorAll('[data-controls]').forEach(group => {
+  const targetId = group.dataset.controls;
+  const target = document.getElementById(targetId);
+  if (!target) return;
+  group.addEventListener("change", () => {
+    const checked = group.querySelector("input[type=radio]:checked");
+    target.classList.toggle("visible", checked && checked.value === "yes");
+  });
+});
+
+const DOMAINS = ["purchasing_power", "wealth", "family", "health", "education"];
+const DOMAIN_LABELS = {
+  purchasing_power: { label: "Purchasing power", color: "var(--domain-1)",
+                      sub: "Real household income vs. cohort" },
+  wealth:           { label: "Wealth",           color: "var(--domain-2)",
+                      sub: "Ownership + home value + investment income" },
+  family:           { label: "Family",           color: "var(--domain-3)",
+                      sub: "Marital status × children at home" },
+  health:           { label: "Health",           color: "var(--domain-4)",
+                      sub: "Self-rated, NHIS five-level scale" },
+  education:        { label: "Education",        color: "var(--domain-5)",
+                      sub: "Bachelor or skilled trade" },
+};
+const BADGE_TEXT = {
+  strong:      "Strong",
+  adequate:    "Adequate",
+  below:       "Below cohort",
+  descriptive: "Descriptive",
+  attention:   "Needs attention",
+};
+
+function renderResult(scored) {
+  // Headline
+  const overall = document.getElementById("result-overall");
+  overall.textContent = scored.headline;
+  overall.className = "result-overall tier-" + scored.tier;
+
+  // Summary line — describe the tally
+  const summaryParts = [];
+  if (scored.strong)   summaryParts.push(`${scored.strong} domain${scored.strong === 1 ? "" : "s"} strong`);
+  if (scored.adequate) summaryParts.push(`${scored.adequate} adequate`);
+  if (scored.below)    summaryParts.push(`${scored.below} below cohort`);
+  const summaryLine = summaryParts.join(" · ") + ". Family is shown descriptively.";
+  document.getElementById("result-summary").textContent = summaryLine;
+
+  // Status cards
+  const grid = document.getElementById("status-cards");
+  grid.innerHTML = "";
+  for (const dom of DOMAINS) {
+    const d = DOMAIN_LABELS[dom];
+    const r = scored.reads[dom];
+    const suggestionHTML = r.suggestion
+      ? `<span class="suggestion">${r.suggestion}</span>`
+      : "";
+    const card = document.createElement("div");
+    card.className = "status-card";
+    card.style.setProperty("--c", d.color);
+    card.innerHTML = `
+      <div class="domain-block">
+        <h3>${d.label}</h3>
+        <div class="domain-sub">${d.sub}</div>
+      </div>
+      <div class="reading">
+        ${r.reading}
+        ${suggestionHTML}
+      </div>
+      <div class="badge ${r.badge}">${BADGE_TEXT[r.badge]}</div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  errorBox.classList.add("hidden");
+
+  const fd = new FormData(form);
+  const inputs = {
+    age: Number(fd.get("age")),
+    sex: fd.get("sex"),
+    zip: fd.get("zip") || null,
+    income: Number(fd.get("income")),
+    owns_home: fd.get("owns_home"),
+    home_value: fd.get("home_value") ? Number(fd.get("home_value")) : null,
+    marital: fd.get("marital"),
+    kids: fd.get("kids"),
+    health: fd.get("health"),
+    degree: fd.get("degree"),
+    skilled_trade: fd.get("skilled_trade"),
+    investment_income: fd.get("investment_income"),
+  };
+
+  // Light validation
+  if (!inputs.age || inputs.age < 18 || inputs.age > 100) {
+    errorBox.textContent = "Please enter your age (18–100).";
+    errorBox.classList.remove("hidden"); return;
+  }
+  if (!inputs.income || inputs.income < 0) {
+    errorBox.textContent = "Please enter your household income (a number, in dollars).";
+    errorBox.classList.remove("hidden"); return;
+  }
+  if (inputs.owns_home === "yes" && (inputs.home_value == null || inputs.home_value < 0)) {
+    errorBox.textContent = "Please enter your approximate home value.";
+    errorBox.classList.remove("hidden"); return;
+  }
+
+  try {
+    const curves = await getCurves();
+    const scored = scoreAssessment(inputs, curves);
+    renderResult(scored);
+    intro.style.display = "none";
+    result.classList.add("visible");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (err) {
+    errorBox.textContent = `Couldn't compute: ${err.message}`;
+    errorBox.classList.remove("hidden");
+    console.error(err);
+  }
+});
+
+document.getElementById("restart-link").addEventListener("click", (e) => {
+  e.preventDefault();
+  result.classList.remove("visible");
+  intro.style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+</script>
+
+</body>
+</html>
