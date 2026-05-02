@@ -878,6 +878,262 @@
     line-height: 1.5;
   }
 
+  /* ————— § 05 THE COST ————— */
+  section.cost {
+    padding: 100px 0 100px;
+    border-top: 1px solid var(--rule);
+  }
+  .cost-inner { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+  .cost-header { max-width: 760px; margin-bottom: 48px; }
+  .cost-header h2 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(32px, 4vw, 48px); line-height: 1.05;
+    letter-spacing: -0.025em; margin-bottom: 18px;
+  }
+  .cost-header h2 em {
+    font-family: 'Source Serif 4', serif; font-style: italic;
+    color: var(--accent); font-weight: 400;
+  }
+  .cost-lede {
+    font-size: 17px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 700px;
+  }
+
+  .cost-viz {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 48px 56px;
+  }
+  .cost-rollup {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .cost-rollup-row {
+    display: grid;
+    grid-template-columns: 260px 1fr 120px;
+    align-items: center;
+    gap: 20px;
+    padding: 13px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .cost-rollup-label .cost-op {
+    color: var(--ink-soft);
+    font-weight: 500;
+    margin-right: 4px;
+    display: inline-block;
+    width: 0.8em;
+    text-align: center;
+  }
+  .cost-rollup-label em {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 11px;
+    opacity: 0.75;
+  }
+  .cost-rollup-bar {
+    height: 8px;
+    background: var(--paper-warm);
+    border-radius: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cost-rollup-bar span {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    display: block;
+    border-radius: 1px;
+  }
+  .cost-rollup-val {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+    text-align: right;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .cost-rollup-row.cost-rollup-subtract .cost-rollup-val { color: var(--ink-soft); }
+  .cost-rollup-row.cost-rollup-sum {
+    border-top: 1px solid var(--ink);
+    margin-top: 4px;
+    padding-top: 18px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .cost-rollup-row.cost-rollup-sum .cost-rollup-val {
+    font-size: 22px;
+  }
+  .cost-rollup-row.cost-rollup-divisor .cost-rollup-val {
+    color: var(--ink);
+    font-size: 18px;
+  }
+
+  .cost-divide {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: 760px;
+    margin: 18px auto 14px;
+  }
+  .cost-divide-line {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+  .cost-divide-symbol {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--accent);
+  }
+
+  .cost-result {
+    margin: 32px auto 0;
+    padding: 32px 32px 28px;
+    max-width: 760px;
+    background: var(--accent);
+    color: var(--paper);
+    text-align: center;
+    border-radius: 2px;
+  }
+  .cost-result-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-bottom: 14px;
+  }
+  .cost-result-val {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(48px, 7vw, 72px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cost-result-meta {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 14px;
+    opacity: 0.85;
+    line-height: 1.4;
+    margin-bottom: 18px;
+  }
+  .cost-result-borrowed {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(244, 239, 230, 0.25);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    opacity: 0.95;
+    line-height: 1.5;
+  }
+  .cost-result-borrowed-val {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 0 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cost-result-real {
+    margin-top: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    opacity: 0.8;
+    line-height: 1.5;
+  }
+  .cost-result-real-val {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 0 2px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.95;
+  }
+
+  .cost-footnotes {
+    margin-top: 36px;
+    max-width: 880px;
+  }
+  .cost-footnote {
+    font-size: 13px; line-height: 1.6; color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .cost-footnote strong { color: var(--ink); font-weight: 500; }
+  .cost-footnote em { color: var(--ink); font-style: italic; }
+  .cost-footnote-vintage {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    line-height: 1.55;
+  }
+
+  /* §05 cost-trend chart card — mirrors balance-chart-card visually */
+  .cost-trend-card {
+    margin: 36px auto 0;
+    max-width: 880px;
+    padding: 24px 28px 20px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--ink);
+    border-radius: 4px;
+  }
+  .cost-trend-card h3 {
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px;
+    color: var(--ink); margin: 0 0 4px;
+  }
+  .cost-trend-sublabel {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.04em;
+    margin-bottom: 18px; line-height: 1.5;
+  }
+  .cost-trend-svg { display: block; width: 100%; height: auto; }
+  .cost-trend-legend {
+    margin-top: 10px;
+    display: flex; flex-wrap: wrap; gap: 8px 22px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--ink-soft); letter-spacing: 0.04em;
+  }
+  .cost-trend-legend-row {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .cost-trend-legend-row::before {
+    content: ""; display: inline-block; width: 16px; height: 2.5px;
+    background: var(--c, var(--ink));
+  }
+  .cost-trend-legend-row.real { color: var(--ink); font-weight: 600; }
+  .cost-trend-legend-row.real::before { background: var(--ink); height: 3.5px; }
+  .cost-trend-summary {
+    margin-top: 14px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--ink-soft);
+    border-top: 1px dashed var(--rule); padding-top: 12px;
+    line-height: 1.6;
+  }
+  .cost-trend-summary .yr {
+    font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500;
+    margin-right: 4px;
+  }
+  /* Higher cost-per-FLY is bad: red for up, green for down. Inverted from balance. */
+  .cost-trend-summary .delta-cost-up   { color: var(--accent); font-weight: 600; }
+  .cost-trend-summary .delta-cost-down { color: #2d5a4a; font-weight: 600; }
+  .cost-trend-summary .delta-cost-flat { color: var(--ink-soft); }
+  .cost-trend-verdict {
+    display: block; margin-top: 6px;
+    font-family: 'Source Serif 4', serif; font-style: italic;
+    font-size: 14px; color: var(--ink); line-height: 1.5;
+  }
+
   /* ————— QUOTE ————— */
   section.quote-section {
     padding: 100px 0;
@@ -1111,6 +1367,18 @@
     .eq-result-val { font-size: 36px; }
     .eq-rollup-row { grid-template-columns: 1fr; gap: 8px; text-align: left; }
     .eq-rollup-val { text-align: left; }
+
+    /* §05 Cost — mobile */
+    section.cost { padding: 60px 0 60px; }
+    .cost-inner { padding: 0 24px; }
+    .cost-viz { padding: 28px 22px; }
+    .cost-rollup-row {
+      grid-template-columns: 1fr 100px;
+      gap: 6px 12px;
+    }
+    .cost-rollup-bar { display: none; }
+    .cost-rollup-val { font-size: 17px; }
+    .cost-result { padding: 24px 20px; }
 
     /* Closing CTA */
     .cta-primary-lg { padding: 18px 28px; }
@@ -1585,6 +1853,7 @@
       <a href="#balance">National balance</a>
       <a href="#domains">Five domains</a>
       <a href="#method">Methodology</a>
+      <a href="#cost">Cost</a>
     </div>
     <a href="/assessment" class="nav-cta">Take the assessment ↗</a>
   </div>
@@ -2341,6 +2610,103 @@
     </div>
   </section>
 
+  <!-- §05 — THE COST -->
+  <section class="cost" id="cost">
+    <div class="cost-inner">
+      <div class="section-label">§ 05 — The Cost</div>
+      <div class="cost-header">
+        <h2>How much does a Flourishing Life Year <em>cost?</em></h2>
+        <p class="cost-lede">
+          The economy measures what we make. The Flourishing Life Year measures how we're doing. Stack the second against the first — what every level of government spent in a year, divided by the flourishing the country produced — and the unit acquires a price.
+        </p>
+      </div>
+
+      <div class="cost-viz">
+        <div class="cost-rollup">
+          <div class="cost-rollup-row">
+            <span class="cost-rollup-label">Federal outlays</span>
+            <span class="cost-rollup-bar"><span style="width: 69%; background: var(--domain-1)"></span></span>
+            <span class="cost-rollup-val">$6.75T</span>
+          </div>
+          <div class="cost-rollup-row">
+            <span class="cost-rollup-label"><span class="cost-op">+</span>State direct spending</span>
+            <span class="cost-rollup-bar"><span style="width: 20%; background: var(--domain-2)"></span></span>
+            <span class="cost-rollup-val">$2.00T</span>
+          </div>
+          <div class="cost-rollup-row">
+            <span class="cost-rollup-label"><span class="cost-op">+</span>Local direct spending</span>
+            <span class="cost-rollup-bar"><span style="width: 22%; background: var(--domain-4)"></span></span>
+            <span class="cost-rollup-val">$2.20T</span>
+          </div>
+          <div class="cost-rollup-row cost-rollup-subtract">
+            <span class="cost-rollup-label"><span class="cost-op">−</span>Federal grants to state &amp; local <em>(double-counted above)</em></span>
+            <span class="cost-rollup-bar"><span style="width: 11%; background: var(--rule)"></span></span>
+            <span class="cost-rollup-val">−$1.10T</span>
+          </div>
+          <div class="cost-rollup-row cost-rollup-sum">
+            <span class="cost-rollup-label">= Consolidated public spending</span>
+            <span class="cost-rollup-bar"><span style="width: 100%; background: var(--ink)"></span></span>
+            <span class="cost-rollup-val">$9.85T</span>
+          </div>
+        </div>
+
+        <div class="cost-divide">
+          <div class="cost-divide-line"></div>
+          <span class="cost-divide-symbol">÷</span>
+          <div class="cost-divide-line"></div>
+        </div>
+
+        <div class="cost-rollup">
+          <div class="cost-rollup-row cost-rollup-divisor">
+            <span class="cost-rollup-label">Total Flourishing Life Years produced</span>
+            <span class="cost-rollup-bar"><span style="width: 100%; background: var(--accent-soft)"></span></span>
+            <span class="cost-rollup-val"><span id="cost-fly-divisor">~160M</span></span>
+          </div>
+        </div>
+
+        <div class="cost-result">
+          <div class="cost-result-label">= One Flourishing Life Year costs</div>
+          <div class="cost-result-val"><span id="cost-per-fly">~$62K</span></div>
+          <div class="cost-result-meta">at every level of government, taxes and borrowing combined</div>
+          <div class="cost-result-borrowed">
+            Of which <span class="cost-result-borrowed-val"><span id="cost-borrowed-per-fly">~$11K</span></span> was borrowed — the federal deficit, divided by FLY.
+          </div>
+          <div class="cost-result-real">
+            ≈ <span class="cost-result-real-val" id="cost-per-fly-real">~$46K</span> in constant 2019 dollars — comparable to the trend chart below.
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost-per-FLY over time -->
+      <div class="cost-trend-card">
+        <h3>Cost per FLY, year over year</h3>
+        <div class="cost-trend-sublabel">Consolidated public spending ÷ Flourishing Life Years produced. Two series: <strong>nominal</strong> (current-year dollars) and <strong>real</strong> (constant 2019 dollars, CPI-U deflated). Real is what the country is actually paying after stripping out inflation; nominal is the headline.</div>
+        <svg class="cost-trend-svg" id="cost-trend-svg" viewBox="0 0 880 240" role="img"
+             aria-label="Cost per Flourishing Life Year by year, nominal and real series."></svg>
+        <div class="cost-trend-legend" id="cost-trend-legend"></div>
+        <div class="cost-trend-summary" id="cost-trend-summary">Loading trend…</div>
+      </div>
+
+      <div class="cost-footnotes">
+        <p class="cost-footnote">
+          <strong>Of which $1.83T was borrowed.</strong> The federal deficit in FY2024 — the gap between what Washington collected and what it spent — is what the Treasury added to the national debt that year. State and local governments mostly balance their general funds by law, so at the consolidated level the borrowed share is essentially the federal deficit. We didn't pay for $11K of every flourishing life year produced; we promised future taxpayers would.
+        </p>
+        <p class="cost-footnote">
+          <strong>Why we subtract federal grants.</strong> Of the $6.75T in federal outlays, ~$1.1T flows to states and localities (Medicaid is by far the largest piece) and is then spent by them on direct services. Adding federal outlays to state and local direct spending without netting this out double-counts those dollars. Gross unconsolidated spending is ~$10.95T; the consolidated figure here is what taxpayers actually paid for.
+        </p>
+        <p class="cost-footnote">
+          <strong>What's outside the frame.</strong> This is public spending only — federal, state, and local government outlays. Private spending on the things that produce flourishing (employer-provided healthcare, household education spending, private retirement contributions, mortgage payments that build wealth) is not in the numerator. The cost-per-FLY here is therefore a lower bound on the total social cost — it's the public share, not the all-in cost.
+        </p>
+        <p class="cost-footnote">
+          <strong>What this number is and isn't.</strong> It's an average, not a marginal cost. It doesn't say what the next FLY costs to produce, or which dollars produced flourishing and which didn't. A per-domain attribution — federal health spending ÷ health-domain FLY, education spending ÷ education-domain FLY — is a plausible next cut, and a more demanding one. Keep this number in the spirit of <em>directional honesty:</em> the order of magnitude is the message.
+        </p>
+        <p class="cost-footnote cost-footnote-vintage">
+          <strong>Vintages.</strong> Federal: Treasury / CBO Monthly Budget Review FY2019–FY2024 finals (FY2024: $6.75T outlays, $1.83T deficit). Federal grants to state &amp; local: Office of Management and Budget / CBO (FY2024 ~$1.1T, of which $618B is Medicaid). State and local: Census Annual Survey of State and Local Government Finances through FY2022 (most recent comprehensive), grown forward to FY2024 at trend. CPI-U (BLS, all-urban consumers, calendar-year average) is used as the deflator for the trend chart, indexed to 2019 = 1.000. FLY divisor: most-recent year on this page, currently 2023 (NCHS-final mortality cutoff). The one-year offset between FY2024 spending and 2023 FLY is the price of using only audited federal data and only NCHS-final mortality.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- QUOTE -->
   <section class="quote-section">
     <blockquote>
@@ -2377,6 +2743,7 @@
         <a href="#balance">National balance</a>
         <a href="#domains">Five domains</a>
         <a href="#method">Methodology</a>
+        <a href="#cost">Cost</a>
       </div>
       <div class="footer-col">
         <h4>Data</h4>
@@ -2703,6 +3070,61 @@ function fmtIndexAsPct(indexValue) {
   return `${sign}${delta.toFixed(1)}%`;
 }
 
+function renderCostTrendSVG(svg, dataSeries) {
+  // dataSeries: [{name, color, points: [{year, value}], thick}]
+  // The thick (primary) series anchors the baseline. Y axis in $K.
+  const W = svg.viewBox.baseVal.width || 880;
+  const H = svg.viewBox.baseVal.height || 240;
+  const PL = 60, PR = 90, PT = 18, PB = 36;
+  const allYears = new Set();
+  const allVals = [];
+  for (const ser of dataSeries) {
+    for (const p of ser.points) {
+      allYears.add(p.year);
+      if (p.value != null) allVals.push(p.value);
+    }
+  }
+  const years = [...allYears].sort();
+  const minVal = Math.min(...allVals);
+  const maxVal = Math.max(...allVals);
+  const span = (maxVal - minVal) || (maxVal * 0.1);
+  const yMin = Math.floor((minVal - span * 0.2) / 1000) * 1000;
+  const yMax = Math.ceil((maxVal + span * 0.2) / 1000) * 1000;
+  const xOf = y => PL + (y - years[0]) / Math.max(1, years.at(-1) - years[0]) * (W - PL - PR);
+  const yOf = v => PT + (1 - (v - yMin) / (yMax - yMin)) * (H - PT - PB);
+  const fmtK = v => "$" + (v / 1000).toFixed(0) + "K";
+  const primary = dataSeries.find(s => s.thick) || dataSeries[0];
+  const baseline = primary.points[0].value;
+
+  let s = "";
+  s += `<line class="balance-baseline" x1="${PL}" x2="${W - PR}" y1="${yOf(baseline).toFixed(1)}" y2="${yOf(baseline).toFixed(1)}" />`;
+  for (const t of [yMin, baseline, yMax]) {
+    s += `<text class="balance-axis-text" x="${PL - 6}" y="${(yOf(t) + 3).toFixed(1)}" text-anchor="end">${fmtK(t)}</text>`;
+  }
+  s += `<line class="balance-axis" x1="${PL}" x2="${W - PR}" y1="${H - PB}" y2="${H - PB}" />`;
+  for (const yr of years) {
+    s += `<text class="balance-axis-text" x="${xOf(yr).toFixed(1)}" y="${H - PB + 16}" text-anchor="middle">${yr}</text>`;
+  }
+  for (const ser of dataSeries) {
+    const path = ser.points.filter(p => p.value != null)
+      .map(p => `${xOf(p.year).toFixed(1)},${yOf(p.value).toFixed(1)}`).join(" ");
+    const cls = ser.thick ? "balance-line balance-line-composite" : "balance-line balance-line-domain";
+    const stroke = ser.thick ? "" : ` stroke="${ser.color || "var(--ink-soft)"}"`;
+    s += `<polyline class="${cls}" points="${path}"${stroke} />`;
+    for (const p of ser.points) {
+      if (p.value == null) continue;
+      const fill = ser.thick ? "var(--ink)" : (ser.color || "var(--ink-soft)");
+      s += `<circle cx="${xOf(p.year).toFixed(1)}" cy="${yOf(p.value).toFixed(1)}" r="${ser.thick ? 3 : 2.5}" fill="${fill}" />`;
+    }
+    const lp = ser.points.at(-1);
+    if (lp && lp.value != null) {
+      const fill = ser.thick ? "var(--ink)" : (ser.color || "var(--ink-soft)");
+      s += `<text class="balance-axis-text" x="${(xOf(lp.year) + 8).toFixed(1)}" y="${(yOf(lp.value) + 4).toFixed(1)}" text-anchor="start" font-weight="${ser.thick ? 600 : 400}" fill="${fill}">${fmtK(lp.value)}</text>`;
+    }
+  }
+  svg.innerHTML = s;
+}
+
 function renderBalanceLineSVG(svg, dataSeries, opts = {}) {
   // dataSeries: array of {name, color, points: [{year, value}, ...], thick: bool}
   const W = svg.viewBox.baseVal.width || 880;
@@ -2874,6 +3296,88 @@ async function loadBalance() {
       eq02.dataset.year = last.year;
     }
 
+    // §05 The Cost — divide consolidated FY2024 spending by the same most-recent
+    // FLY total, so the cost-per-FLY moves with each release.
+    const COST_FY2024_TOTAL = 9.85e12;       // $6.75T fed + $2.0T state + $2.2T local − $1.1T grants
+    const COST_FY2024_DEFICIT = 1.83e12;     // federal deficit = borrowed share at consolidated level
+    const CPI_FY2024_VS_2019 = 1.227;        // BLS CPI-U cumulative 2019→2024
+    const fmtThousands = (n) => {
+      const k = n / 1000;
+      return "$" + (k >= 100 ? Math.round(k) : k.toFixed(1)) + "K";
+    };
+    const flyDivEl = document.getElementById("cost-fly-divisor");
+    const costPerFlyEl = document.getElementById("cost-per-fly");
+    const costBorrowedEl = document.getElementById("cost-borrowed-per-fly");
+    const costPerFlyRealEl = document.getElementById("cost-per-fly-real");
+    if (totalLast != null && totalLast > 0) {
+      if (flyDivEl) flyDivEl.textContent = fmtMillions(totalLast) + " FLY";
+      if (costPerFlyEl) costPerFlyEl.textContent = fmtThousands(COST_FY2024_TOTAL / totalLast);
+      if (costBorrowedEl) costBorrowedEl.textContent = fmtThousands(COST_FY2024_DEFICIT / totalLast);
+      if (costPerFlyRealEl) costPerFlyRealEl.textContent =
+        fmtThousands(COST_FY2024_TOTAL / CPI_FY2024_VS_2019 / totalLast);
+    }
+
+    // §05 cost-trend chart — $/FLY over time. Two series:
+    //   • nominal: spending in current-year dollars
+    //   • real:    spending deflated to constant 2019 dollars (CPI-U)
+    // nominal_T = consolidated public spending in $T (federal outlays + state +
+    // local direct − federal grants to state/local). cpi indexes BLS CPI-U
+    // calendar-year averages to 2019 = 1.000. Sources in §05 footnote.
+    const COST_TREND = [
+      { year: 2019, nominal_T: 7.027, cpi: 1.000 },
+      { year: 2020, nominal_T: 8.795, cpi: 1.013 },
+      { year: 2021, nominal_T: 9.342, cpi: 1.060 },
+      { year: 2022, nominal_T: 9.062, cpi: 1.143 },
+      { year: 2023, nominal_T: 9.145, cpi: 1.192 },
+    ];
+    const flyByYear = new Map(rows.map(r => [r.year, r.total_fly]));
+    const aligned = COST_TREND
+      .filter(c => flyByYear.has(c.year) && flyByYear.get(c.year) > 0)
+      .map(c => ({
+        year: c.year,
+        nominal: (c.nominal_T * 1e12) / flyByYear.get(c.year),
+        real:    ((c.nominal_T * 1e12) / c.cpi) / flyByYear.get(c.year),
+      }));
+    const trendSvg = document.getElementById("cost-trend-svg");
+    const legendEl = document.getElementById("cost-trend-legend");
+    const sumEl = document.getElementById("cost-trend-summary");
+    if (trendSvg && aligned.length >= 2) {
+      const realPoints    = aligned.map(a => ({ year: a.year, value: a.real }));
+      const nominalPoints = aligned.map(a => ({ year: a.year, value: a.nominal }));
+      renderCostTrendSVG(trendSvg, [
+        { name: "nominal", color: "var(--accent-soft)", points: nominalPoints, thick: false },
+        { name: "real", points: realPoints, thick: true },
+      ]);
+      if (legendEl) {
+        legendEl.innerHTML =
+          `<span class="cost-trend-legend-row real">Real (constant 2019 $)</span>` +
+          `<span class="cost-trend-legend-row" style="--c: var(--accent-soft)">Nominal (current $)</span>`;
+      }
+      const f = realPoints[0], l = realPoints.at(-1);
+      const change = ((l.value - f.value) / f.value) * 100;
+      const sign = change >= 0 ? "+" : "";
+      const cls = change > 1 ? "delta-cost-up" : change < -1 ? "delta-cost-down" : "delta-cost-flat";
+      let verdict;
+      if (change > 1) {
+        verdict = `Real spending per Flourishing Life Year is rising — the country is paying more for the same flourishing.`;
+      } else if (change < -1) {
+        verdict = `Real spending per Flourishing Life Year is falling — public spending is producing more flourishing per dollar.`;
+      } else {
+        verdict = `Real spending per Flourishing Life Year is roughly flat — the country is paying about the same in real terms for each FLY produced.`;
+      }
+      const nl = nominalPoints.at(-1);
+      if (sumEl) {
+        sumEl.innerHTML =
+          `<span class="yr">Real ${f.year}: ${fmtThousands(f.value)}</span>` +
+          `→ <span class="yr">${l.year}: ${fmtThousands(l.value)}</span> ` +
+          `<span class="${cls}">(${sign}${change.toFixed(1)}% real, 2019$)</span>` +
+          ` · <span class="yr">Nominal ${nl.year}: ${fmtThousands(nl.value)}</span>` +
+          `<span class="cost-trend-verdict">${verdict}</span>`;
+      }
+    } else if (sumEl) {
+      sumEl.textContent = "Trend data unavailable for this release.";
+    }
+
     // Primary chart: composite only
     const compositeSeries = {
       name: "composite",
@@ -2959,8 +3463,19 @@ async function loadMap() {
     const d3Module = await import("https://cdn.jsdelivr.net/npm/d3@7/+esm");
     const d3 = d3Module;
 
+    const fetchJSON = async (url, label) => {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`${label}: HTTP ${r.status} from ${url}`);
+      const ct = r.headers.get("content-type") || "";
+      const text = await r.text();
+      if (!ct.includes("json") && text.trimStart().startsWith("<")) {
+        throw new Error(`${label}: ${url} returned HTML, not JSON (host is likely serving an SPA fallback, or the file is missing from this deploy).`);
+      }
+      try { return JSON.parse(text); }
+      catch (e) { throw new Error(`${label}: parse failed for ${url} — ${e.message}`); }
+    };
     const [topology, composites, domains] = await Promise.all([
-      fetch(TOPOLOGY_URL).then(r => r.json()),
+      fetchJSON(TOPOLOGY_URL, "topology"),
       fetchAll(`/rest/v1/composite_scores?release_version=eq.${RELEASE}&select=geoid,composite,domains_available`),
       fetchAll(`/rest/v1/domain_scores?release_version=eq.${RELEASE}&select=geoid,domain,percentile,moe_pct`),
     ]);
