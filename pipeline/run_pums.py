@@ -165,17 +165,27 @@ def parse_float(v):
 def score_state_year(records: list[dict], year: int, state_fips: str) -> dict:
     """Run all 5 domain scores over PUMS records, return weighted aggregates.
 
+    v0.9 children-inherit-HH-average rule:
+      - Adults (age 18+) are scored normally on the 5 domains; per-domain
+        breakdowns are computed from adults only.
+      - Children inherit the weighted-mean person_FLY of the adults in
+        their household. They do NOT get individual tier ratings, so
+        domain shares stay adult-only.
+      - Group-quarters children (foster care, juvenile detention,
+        institutional placement) score 0 — institutional placement is
+        a family-domain failure by the framework's own logic.
+      - HHs with kids and no adults: kids score 0.
+
     Returns:
         {
-          "weighted_pop": float,
-          "weighted_fly": float,
-          "weighted_pop_scored": float,    # excludes <18 (not scored on family)
-          "weighted_fly_by_domain_strong":  {d: weight},
-          "weighted_fly_by_domain_adequate": {d: weight},
-          "weighted_fly_by_domain_below":    {d: weight},
+          "weighted_pop": float,             # everyone (incl. kids)
+          "weighted_adults": float,          # 18+ only — denominator for breakdown
+          "weighted_fly": float,             # adult FLY + inherited kid FLY
+          "domain_strong":   {d: weight},    # adult-only
+          "domain_adequate": {d: weight},    # adult-only
+          "domain_below":    {d: weight},    # adult-only
         }
     """
-    # First pass: group persons by SERIALNO so we can compute HH-level (NA, NC).
     by_hh = defaultdict(list)
     for rec in records:
         sn = rec.get("SERIALNO")
@@ -183,11 +193,10 @@ def score_state_year(records: list[dict], year: int, state_fips: str) -> dict:
             continue
         by_hh[sn].append(rec)
 
-    # Second pass: score each person.
     out = {
         "weighted_pop": 0.0,
+        "weighted_adults": 0.0,
         "weighted_fly": 0.0,
-        "weighted_pop_scored": 0.0,
         "domain_strong": defaultdict(float),
         "domain_adequate": defaultdict(float),
         "domain_below": defaultdict(float),
@@ -195,54 +204,73 @@ def score_state_year(records: list[dict], year: int, state_fips: str) -> dict:
 
     for sn, persons in by_hh.items():
         ages = [parse_int(p.get("AGEP")) for p in persons]
-        n_adults = sum(1 for a in ages if a is not None and a >= 18)
-        n_children = sum(1 for a in ages if a is not None and a < 18)
-        if n_adults == 0:
-            n_adults = 1  # safety: if everyone in HH is < 18, treat HH head as adult
+        n_adults_in_hh = sum(1 for a in ages if a is not None and a >= 18)
+        n_children_in_hh = sum(1 for a in ages if a is not None and a < 18)
 
-        # HH-level fields are replicated; pull from the first record.
         hh = persons[0]
         hh_income = parse_float(hh.get("HINCP"))
         valp = parse_float(hh.get("VALP"))
         tenure = parse_int(hh.get("TEN"))
+        # PP threshold uses HH composition. If a HH has 0 adults (rare;
+        # kid-headed HH), treat HH head as adult for the SPM equivalence calc.
+        pp_n_adults = n_adults_in_hh or 1
+        pp_tier = score_purchasing_power(hh_income, pp_n_adults, n_children_in_hh, year)
+        is_gq = "GQ" in sn  # group-quarters serial numbers contain "GQ"
 
-        pp_tier = score_purchasing_power(hh_income, n_adults, n_children, year)
-
-        for p in persons:
+        # Pass 1: score adults, collect (idx, weight, person_fly, tiers).
+        adult_scores = []
+        for idx, p in enumerate(persons):
             w = parse_float(p.get("PWGTP"))
             if w is None or w <= 0:
                 continue
             age = parse_int(p.get("AGEP"))
-            mar = parse_int(p.get("MAR"))
-            schl = parse_int(p.get("SCHL"))
-            esr = parse_int(p.get("ESR"))
-            dis = parse_int(p.get("DIS"))
-            disabled = (dis == 1)
-
-            # Children under 18 get accumulated into population but skip
-            # FLY scoring (they're not the "producing" set).
-            out["weighted_pop"] += w
             if age is None or age < 18:
                 continue
-
             tiers = {
                 "purchasing_power": pp_tier,
                 "wealth": score_wealth(tenure, valp, age, year),
-                "family": score_family(age, mar, parse_int(hh.get("NP"))),
-                "health": score_health(state_fips, disabled),
-                "education": score_education(schl, esr, age),
+                "family": score_family(
+                    age, parse_int(p.get("MAR")), parse_int(hh.get("NP"))),
+                "health": score_health(
+                    state_fips, parse_int(p.get("DIS")) == 1),
+                "education": score_education(
+                    parse_int(p.get("SCHL")), parse_int(p.get("ESR")), age),
             }
-
             person_fly = person_fly_from_tiers(tiers)
-            out["weighted_fly"] += w * person_fly
-            out["weighted_pop_scored"] += w
-            for d, t in tiers.items():
-                if t == "strong":
-                    out["domain_strong"][d] += w
-                elif t == "adequate":
-                    out["domain_adequate"][d] += w
-                else:
-                    out["domain_below"][d] += w
+            adult_scores.append((idx, w, person_fly, tiers))
+
+        # HH average adult FLY, weighted by PWGTP. 0 if no adults / GQ kids.
+        adult_w_sum = sum(s[1] for s in adult_scores)
+        hh_avg_adult_fly = (
+            sum(s[1] * s[2] for s in adult_scores) / adult_w_sum
+            if adult_w_sum > 0 else 0.0
+        )
+
+        # Pass 2: aggregate.
+        adult_idx_set = {s[0] for s in adult_scores}
+        adult_data_by_idx = {s[0]: s for s in adult_scores}
+        for idx, p in enumerate(persons):
+            w = parse_float(p.get("PWGTP"))
+            if w is None or w <= 0:
+                continue
+            age = parse_int(p.get("AGEP"))
+            out["weighted_pop"] += w
+            if age is not None and age >= 18 and idx in adult_idx_set:
+                _, _, person_fly, tiers = adult_data_by_idx[idx]
+                out["weighted_fly"] += w * person_fly
+                out["weighted_adults"] += w
+                for d, t in tiers.items():
+                    if t == "strong":
+                        out["domain_strong"][d] += w
+                    elif t == "adequate":
+                        out["domain_adequate"][d] += w
+                    else:
+                        out["domain_below"][d] += w
+            else:
+                # Child (or unscored adult, e.g., missing age) — inherit HH avg.
+                # GQ kids → 0 (institutional placement = family-domain failure).
+                kid_fly = 0.0 if is_gq else hh_avg_adult_fly
+                out["weighted_fly"] += w * kid_fly
 
     return out
 
@@ -252,7 +280,7 @@ def aggregate_year(year: int, api_key: str, verbose: bool = True) -> dict:
     nat = {
         "weighted_pop": 0.0,
         "weighted_fly": 0.0,
-        "weighted_pop_scored": 0.0,
+        "weighted_adults": 0.0,
         "domain_strong": defaultdict(float),
         "domain_adequate": defaultdict(float),
         "domain_below": defaultdict(float),
@@ -271,7 +299,7 @@ def aggregate_year(year: int, api_key: str, verbose: bool = True) -> dict:
         st_agg = score_state_year(records, year, st)
         nat["weighted_pop"] += st_agg["weighted_pop"]
         nat["weighted_fly"] += st_agg["weighted_fly"]
-        nat["weighted_pop_scored"] += st_agg["weighted_pop_scored"]
+        nat["weighted_adults"] += st_agg["weighted_adults"]
         for d in DOMAINS:
             nat["domain_strong"][d] += st_agg["domain_strong"].get(d, 0.0)
             nat["domain_adequate"][d] += st_agg["domain_adequate"].get(d, 0.0)
@@ -299,27 +327,28 @@ def main() -> int:
     for year in years:
         agg = aggregate_year(year, api_key)
         total_fly = round(agg["weighted_fly"])
-        avg_fly = agg["weighted_fly"] / agg["weighted_pop_scored"] if agg["weighted_pop_scored"] else None
+        # Per-capita FLY = total FLY (incl. inherited kid contributions) ÷ full pop.
+        avg_fly = agg["weighted_fly"] / agg["weighted_pop"] if agg["weighted_pop"] else None
         breakdown = {}
-        scored_pop = agg["weighted_pop_scored"] or 1.0
+        adult_pop = agg["weighted_adults"] or 1.0
         for d in DOMAINS:
             breakdown[d] = {
-                "strong_share": round(agg["domain_strong"][d] / scored_pop, 4),
-                "adequate_share": round(agg["domain_adequate"][d] / scored_pop, 4),
-                "below_share": round(agg["domain_below"][d] / scored_pop, 4),
+                "strong_share": round(agg["domain_strong"][d] / adult_pop, 4),
+                "adequate_share": round(agg["domain_adequate"][d] / adult_pop, 4),
+                "below_share": round(agg["domain_below"][d] / adult_pop, 4),
             }
         by_year[year] = {
             "year": year,
             "total_fly": total_fly,
             "weighted_pop": round(agg["weighted_pop"]),
-            "weighted_pop_scored": round(agg["weighted_pop_scored"]),
+            "weighted_adults": round(agg["weighted_adults"]),
             "avg_person_fly": round(avg_fly, 4) if avg_fly is not None else None,
             "per_domain_breakdown": breakdown,
         }
         print(f"\n[pums {year}] TOTAL FLY = {total_fly:,}  "
               f"avg_person_fly = {avg_fly:.4f}  "
               f"pop = {agg['weighted_pop']:,.0f}  "
-              f"scored_pop = {agg['weighted_pop_scored']:,.0f}\n", flush=True)
+              f"adults = {agg['weighted_adults']:,.0f}\n", flush=True)
 
     # Compute composite_index = total_fly[T] / total_fly[2019] × 100.
     fly_2019 = by_year.get(2019, {}).get("total_fly")

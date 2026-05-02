@@ -474,6 +474,19 @@
     color: var(--ink-soft);
     line-height: 1.3;
   }
+  .eq-tier {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--c);
+    line-height: 1;
+    margin: -4px 0 8px;
+    opacity: 0.85;
+  }
+  .eq-tier-adequate { opacity: 0.6; }
+  .eq-tier-below { opacity: 0.45; }
   .eq-op {
     font-family: 'Fraunces', serif;
     font-size: 28px;
@@ -2054,30 +2067,37 @@
     <h2 class="equation-heading">A Flourishing Life Year is what you get when you <em>add the five</em> together.</h2>
 
     <div class="equation-viz">
-      <!-- The five domain credits -->
+      <!-- The five domain credits. Sample reading: Strong on four domains,
+           Adequate on Wealth — i.e., the example reads 0.20 + 0.10 + 0.20 +
+           0.20 + 0.20 = 0.90 on a 0.00–1.00 scale. -->
       <div class="eq-domains">
         <div class="eq-domain" style="--c: var(--domain-1)">
           <div class="eq-val">0.20</div>
+          <div class="eq-tier">Strong</div>
           <div class="eq-name">Purchasing<br>power</div>
         </div>
         <div class="eq-op">+</div>
         <div class="eq-domain" style="--c: var(--domain-2)">
           <div class="eq-val">0.10</div>
+          <div class="eq-tier eq-tier-adequate">Adequate</div>
           <div class="eq-name">Wealth<br>accumulation</div>
         </div>
         <div class="eq-op">+</div>
         <div class="eq-domain" style="--c: var(--domain-3)">
           <div class="eq-val">0.20</div>
+          <div class="eq-tier">Strong</div>
           <div class="eq-name">Family<br>formation</div>
         </div>
         <div class="eq-op">+</div>
         <div class="eq-domain" style="--c: var(--domain-4)">
           <div class="eq-val">0.20</div>
+          <div class="eq-tier">Strong</div>
           <div class="eq-name">Healthy<br>lifespan</div>
         </div>
         <div class="eq-op">+</div>
         <div class="eq-domain" style="--c: var(--domain-5)">
           <div class="eq-val">0.20</div>
+          <div class="eq-tier">Strong</div>
           <div class="eq-name">Useful<br>education</div>
         </div>
         <div class="eq-op eq-equals">=</div>
@@ -2088,7 +2108,7 @@
       </div>
 
       <div class="eq-caption">
-        Each of the five domains is scored against an absolute, frozen-2019 bar — Strong, Adequate, or Below. Strong contributes <strong>0.20</strong> of a flourishing year. Adequate contributes <strong>0.10</strong>. Below contributes <strong>nothing</strong>. A person's FLY is the sum of the five, range <strong>0.00–1.00</strong>. The same arithmetic adds up across people: a county's FLY is the sum of its residents, the country's FLY is the sum of every American.
+        Every domain is worth the same — up to <strong>0.20</strong> of a flourishing year. Each is scored against an absolute, frozen-2019 bar: <strong>Strong</strong> earns the full <strong>0.20</strong>, <strong>Adequate</strong> earns half (<strong>0.10</strong>), <strong>Below</strong> earns <strong>0</strong>. A person's FLY is the sum of the five, range <strong>0.00–1.00</strong>. The example above shows Strong on four domains and Adequate on one — not a different weight for Wealth, just half-credit on that domain.
       </div>
 
       <!-- The national rollup -->
@@ -2148,7 +2168,7 @@
         <strong>2020 gap.</strong> Census did not release a 2020 ACS 1-year PUMS due to COVID-era survey-response quality concerns. The trend interpolates visually across the gap; no synthetic 2020 estimate is published.
       </p>
       <p class="balance-footnote">
-        <strong>Methodology (v0.8).</strong> Every PUMS person record is scored Strong / Adequate / Below across the five domains using absolute 2019-frozen thresholds. Person FLY = 0.20 × #Strong + 0.10 × #Adequate (range 0.00–1.00). National total FLY is the PWGTP-weighted sum across the full US population. The thresholds are the same across years — so an increase in the index means more Americans clearing the 2019 bar, not just outranking each other. Population is the Census Vintage 2024 NST-EST2024 mid-year estimate.
+        <strong>Methodology (v0.9).</strong> Every adult (18+) in PUMS is scored Strong / Adequate / Below across the five domains using absolute 2019-frozen thresholds. Adult FLY = 0.20 × #Strong + 0.10 × #Adequate (range 0.00–1.00). <em>Children inherit the weighted-mean adult FLY of their household</em> — a 5-year-old in a Strong-flourishing home is flourishing; her score is the average of the adults raising her. Group-quarters children (foster care, juvenile detention, institutional placement) score 0, since institutional placement is, by the framework's own logic, a family-domain failure. National total FLY is the PWGTP-weighted sum across the full US population. The thresholds are the same across years — so an increase in the index means more Americans clearing the 2019 bar, not just outranking each other.
       </p>
       <p class="balance-footnote">
         <strong>Most-recent-year cutoff:</strong> the trend extends to 2024, the most recent year with ACS 1-year PUMS published. The 2025 number arrives in fall 2026.
