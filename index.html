@@ -3252,10 +3252,15 @@ function renderCostProjectionSVG(svg, dataSeries, opts) {
     s += `<text class="balance-axis-text" x="${PL - 6}" y="${(yOf(t) + 3).toFixed(1)}" text-anchor="end">${fmtPct(t)}</text>`;
   }
 
-  // X-axis line + ticks every 10 years (plus first/last)
+  // X-axis line + ticks: first year, last year, and decade marks at least 5
+  // years away from each end so labels never crowd.
   s += `<line class="balance-axis" x1="${PL}" x2="${(W - PR).toFixed(1)}" y1="${(H - PB).toFixed(1)}" y2="${(H - PB).toFixed(1)}" />`;
+  const firstYr = years[0], lastYr = years.at(-1);
   const tickYears = years.filter(yr =>
-    yr === years[0] || yr === years.at(-1) || yr % 10 === 0);
+    yr === firstYr ||
+    yr === lastYr ||
+    (yr % 10 === 0 && yr - firstYr >= 5 && lastYr - yr >= 5)
+  );
   for (const yr of tickYears) {
     s += `<text class="balance-axis-text" x="${xOf(yr).toFixed(1)}" y="${(H - PB + 16).toFixed(1)}" text-anchor="middle">${yr}</text>`;
   }
