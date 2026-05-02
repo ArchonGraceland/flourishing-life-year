@@ -1134,6 +1134,48 @@
     font-size: 14px; color: var(--ink); line-height: 1.5;
   }
 
+  /* ————— § ABOUT ————— */
+  section.about {
+    padding: 80px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper-warm);
+  }
+  .about-inner { max-width: 880px; margin: 0 auto; padding: 0 32px; }
+  .about-body { max-width: 720px; margin-top: 28px; }
+  .about-body h2 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(28px, 3.4vw, 40px); line-height: 1.1;
+    letter-spacing: -0.02em; margin-bottom: 22px;
+  }
+  .about-body h2 em {
+    font-family: 'Source Serif 4', serif; font-style: italic;
+    color: var(--accent); font-weight: 400;
+  }
+  .about-lede {
+    font-size: 17px; line-height: 1.6; color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .about-detail {
+    font-size: 15px; line-height: 1.6; color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+  .about-contact {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    margin-top: 24px;
+  }
+  .about-contact a {
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--accent-soft);
+  }
+  .about-contact a:hover { color: var(--ink); }
+  @media (max-width: 720px) {
+    section.about { padding: 50px 0; }
+    .about-inner { padding: 0 24px; }
+  }
+
   /* ————— QUOTE ————— */
   section.quote-section {
     padding: 100px 0;
@@ -1854,6 +1896,7 @@
       <a href="#domains">Five domains</a>
       <a href="#method">Methodology</a>
       <a href="#cost">Cost</a>
+      <a href="#about">About</a>
     </div>
     <a href="/assessment" class="nav-cta">Take the assessment ↗</a>
   </div>
@@ -2008,66 +2051,66 @@
   <!-- THE EQUATION -->
   <section class="equation-section">
     <div class="section-label">§ 02 — The Arithmetic</div>
-    <h2 class="equation-heading">A Flourishing Life Year is what you get when you <em>multiply the five</em> together.</h2>
+    <h2 class="equation-heading">A Flourishing Life Year is what you get when you <em>add the five</em> together.</h2>
 
     <div class="equation-viz">
-      <!-- The five domain weights -->
+      <!-- The five domain credits -->
       <div class="eq-domains">
         <div class="eq-domain" style="--c: var(--domain-1)">
-          <div class="eq-val">0.94</div>
+          <div class="eq-val">0.20</div>
           <div class="eq-name">Purchasing<br>power</div>
         </div>
-        <div class="eq-op">×</div>
+        <div class="eq-op">+</div>
         <div class="eq-domain" style="--c: var(--domain-2)">
-          <div class="eq-val">0.88</div>
+          <div class="eq-val">0.10</div>
           <div class="eq-name">Wealth<br>accumulation</div>
         </div>
-        <div class="eq-op">×</div>
+        <div class="eq-op">+</div>
         <div class="eq-domain" style="--c: var(--domain-3)">
-          <div class="eq-val">0.79</div>
+          <div class="eq-val">0.20</div>
           <div class="eq-name">Family<br>formation</div>
         </div>
-        <div class="eq-op">×</div>
+        <div class="eq-op">+</div>
         <div class="eq-domain" style="--c: var(--domain-4)">
-          <div class="eq-val">0.91</div>
+          <div class="eq-val">0.20</div>
           <div class="eq-name">Healthy<br>lifespan</div>
         </div>
-        <div class="eq-op">×</div>
+        <div class="eq-op">+</div>
         <div class="eq-domain" style="--c: var(--domain-5)">
-          <div class="eq-val">0.82</div>
+          <div class="eq-val">0.20</div>
           <div class="eq-name">Useful<br>education</div>
         </div>
         <div class="eq-op eq-equals">=</div>
         <div class="eq-result">
-          <div class="eq-result-val">0.87</div>
+          <div class="eq-result-val">0.90</div>
           <div class="eq-result-label">Flourishing Life Years / person</div>
         </div>
       </div>
 
       <div class="eq-caption">
-        The same arithmetic applies to a person or a place. Each domain score is a national percentile rank — where this entity stands relative to all U.S. counties (or all Americans) on that domain, scaled to [0.01, 1.00]. The composite is the geometric mean across the five (the fifth root of the product) — a deficit in any one domain pulls the whole result down, because flourishing isn't additive.
+        Each of the five domains is scored against an absolute, frozen-2019 bar — Strong, Adequate, or Below. Strong contributes <strong>0.20</strong> of a flourishing year. Adequate contributes <strong>0.10</strong>. Below contributes <strong>nothing</strong>. A person's FLY is the sum of the five, range <strong>0.00–1.00</strong>. The same arithmetic adds up across people: a county's FLY is the sum of its residents, the country's FLY is the sum of every American.
       </div>
 
       <!-- The national rollup -->
       <div class="eq-rollup">
         <div class="eq-rollup-row">
-          <span class="eq-rollup-label">Flourishing Life Years / person</span>
-          <span class="eq-rollup-bar"><span style="width: 87%; background: var(--domain-3)"></span></span>
-          <span class="eq-rollup-val">0.87</span>
+          <span class="eq-rollup-label">Average Flourishing Life Year per American</span>
+          <span class="eq-rollup-bar"><span style="width: 73%; background: var(--domain-3)"></span></span>
+          <span class="eq-rollup-val">0.73</span>
         </div>
         <div class="eq-rollup-row">
-          <span class="eq-rollup-label">× County population</span>
-          <span class="eq-rollup-bar"><span style="width: 18%; background: var(--ink-soft)"></span></span>
-          <span class="eq-rollup-val">142,000</span>
+          <span class="eq-rollup-label">× US population</span>
+          <span class="eq-rollup-bar"><span style="width: 100%; background: var(--ink-soft)"></span></span>
+          <span class="eq-rollup-val">340M</span>
         </div>
         <div class="eq-rollup-row eq-rollup-sum">
           <span class="eq-rollup-label">= Total Flourishing Life Years</span>
-          <span class="eq-rollup-bar"><span style="width: 68%; background: var(--accent)"></span></span>
-          <span class="eq-rollup-val">123,540</span>
+          <span class="eq-rollup-bar"><span style="width: 100%; background: var(--accent)"></span></span>
+          <span class="eq-rollup-val">~196M</span>
         </div>
       </div>
       <div class="eq-rollup-caption">
-        County Flourishing Life Years sum to state totals, and state totals sum to the national figure — the same additive structure as GDP. Most-recent national total: <strong><span id="eq-rollup-current">—</span></strong> Flourishing Life Years. The frozen-baseline accounting (anchored at 2019 = 100) is in <a href="#balance">§ The national balance</a> below.
+        Person-level FLY sums to county totals, county to state, state to national — the same additive structure as GDP. Most-recent national total: <strong><span id="eq-rollup-current">—</span></strong> Flourishing Life Years. The frozen-2019 accounting (anchored at 2019 = 100) is in <a href="#balance">§ The national balance</a> below.
       </div>
     </div>
   </section>
@@ -2086,29 +2129,29 @@
       </div>
 
       <div class="balance-chart-card balance-primary">
-        <h3>National FLY composite index</h3>
-        <div class="balance-sublabel">Geometric mean of the five domain ratios versus 2019. Real (CPI-deflated) income; rates and life expectancy in their natural units.</div>
+        <h3>National FLY index</h3>
+        <div class="balance-sublabel">Total Flourishing Life Years produced each year, expressed as percent of 2019. Person-level scoring against absolute 2019 thresholds; nominal-dollar inputs are CPI-deflated to constant 2019 dollars.</div>
         <svg class="balance-chart-svg" data-which="composite" viewBox="0 0 880 260" role="img"
-             aria-label="National FLY composite index by year, 2019 baseline."></svg>
+             aria-label="National FLY index by year, 2019 baseline."></svg>
         <div class="balance-summary" id="balance-summary-primary">—</div>
       </div>
 
       <div class="balance-chart-card balance-secondary">
         <h3>By domain, each anchored at 2019 = 100</h3>
-        <div class="balance-sublabel">Five per-domain ratio lines plus the composite, on a shared axis. Watch the 2020–2022 health dip — that's the COVID era.</div>
+        <div class="balance-sublabel">Per-domain FLY contribution per year, plus the composite, on a shared axis. Each line is the share of Americans clearing that domain's 2019 bar — Strong + half-credit-Adequate — indexed to 2019 = 100.</div>
         <svg class="balance-chart-svg" data-which="per_domain" viewBox="0 0 880 320" role="img"
-             aria-label="Per-domain FLY index by year, 5 lines plus composite."></svg>
+             aria-label="Per-domain FLY contribution by year, 5 lines plus composite."></svg>
         <div class="balance-legend" id="balance-legend"></div>
       </div>
 
       <p class="balance-footnote">
-        <strong>2020–2022 health dip:</strong> the COVID era. The index counts the ~1.1 million excess deaths of those years as a loss of flourishing life years — that's what the health domain measures and that's what the trend reflects. We don't seasonally adjust, smooth, or otherwise soften the dip. The number you're reading is what the framework reads.
+        <strong>2020 gap.</strong> Census did not release a 2020 ACS 1-year PUMS due to COVID-era survey-response quality concerns. The trend interpolates visually across the gap; no synthetic 2020 estimate is published.
       </p>
       <p class="balance-footnote">
-        <strong>ACS 5-year overlap caveat:</strong> the four ACS-driven domains (purchasing power, wealth, family, education) use ACS 5-year releases, which overlap by 4 years from one release to the next. Year-to-year changes in these domains on this chart are smoothed by that rolling-sample design — a true year-of-event change shows up as a 5-year ramp. Mortality (NCHS NVSS final, single-year) responds in real time, which is why the COVID dip is sharper than any ACS-driven movement.
+        <strong>Methodology (v0.8).</strong> Every PUMS person record is scored Strong / Adequate / Below across the five domains using absolute 2019-frozen thresholds. Person FLY = 0.20 × #Strong + 0.10 × #Adequate (range 0.00–1.00). National total FLY is the PWGTP-weighted sum across the full US population. The thresholds are the same across years — so an increase in the index means more Americans clearing the 2019 bar, not just outranking each other. Population is the Census Vintage 2024 NST-EST2024 mid-year estimate.
       </p>
       <p class="balance-footnote">
-        <strong>Most-recent-year cutoff:</strong> the trend extends to 2023, the most recent year with NCHS-final mortality. The 2024 number arrives in late 2026 when NVSS final 2024 is published. Provisional WONDER mortality is available but not used here — provisional data is subject to revision, and the index's "if you can't reproduce our number, it's a bug" promise requires final data only.
+        <strong>Most-recent-year cutoff:</strong> the trend extends to 2024, the most recent year with ACS 1-year PUMS published. The 2025 number arrives in fall 2026.
       </p>
     </div>
   </section>
@@ -2701,7 +2744,26 @@
           <strong>What this number is and isn't.</strong> It's an average, not a marginal cost. It doesn't say what the next FLY costs to produce, or which dollars produced flourishing and which didn't. A per-domain attribution — federal health spending ÷ health-domain FLY, education spending ÷ education-domain FLY — is a plausible next cut, and a more demanding one. Keep this number in the spirit of <em>directional honesty:</em> the order of magnitude is the message.
         </p>
         <p class="cost-footnote cost-footnote-vintage">
-          <strong>Vintages.</strong> Federal: Treasury / CBO Monthly Budget Review FY2019–FY2024 finals (FY2024: $6.75T outlays, $1.83T deficit). Federal grants to state &amp; local: Office of Management and Budget / CBO (FY2024 ~$1.1T, of which $618B is Medicaid). State and local: Census Annual Survey of State and Local Government Finances through FY2022 (most recent comprehensive), grown forward to FY2024 at trend. CPI-U (BLS, all-urban consumers, calendar-year average) is used as the deflator for the trend chart, indexed to 2019 = 1.000. FLY divisor: most-recent year on this page, currently 2023 (NCHS-final mortality cutoff). The one-year offset between FY2024 spending and 2023 FLY is the price of using only audited federal data and only NCHS-final mortality.
+          <strong>Vintages.</strong> Federal: Treasury / CBO Monthly Budget Review FY2019–FY2024 finals (FY2024: $6.75T outlays, $1.83T deficit). Federal grants to state &amp; local: Office of Management and Budget / CBO (FY2024 ~$1.1T, of which $618B is Medicaid). State and local: Census Annual Survey of State and Local Government Finances through FY2022 (most recent comprehensive), grown forward to FY2024 at trend. CPI-U (BLS, all-urban consumers, calendar-year average) is used as the deflator, indexed to 2019 = 1.000. FLY divisor: ACS 1-year PUMS, most-recent year currently 2024. Census did not publish a 2020 ACS 1-year PUMS due to COVID-era survey-quality issues, so the trend chart shows a gap there.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §ABOUT -->
+  <section class="about" id="about">
+    <div class="about-inner">
+      <div class="section-label">§ About</div>
+      <div class="about-body">
+        <h2>One person, asking <em>how we're doing.</em></h2>
+        <p class="about-lede">
+          David Verchere built the Flourishing Life Year Index to better understand how the United States is doing as a nation — county by county, year over year, against a measure that isn't GDP. The economy is what we produce. The Flourishing Life Year is how we're living.
+        </p>
+        <p class="about-detail">
+          The framework is reproducible from public federal data; the code, sources, and methodology are open. If a number on this page is wrong, it can be checked. If the methodology has a flaw, it can be argued with on the merits.
+        </p>
+        <p class="about-contact">
+          Questions, corrections, collaborations — <a href="mailto:dverchere@gmail.com">dverchere@gmail.com</a> · <a href="https://github.com/ArchonGraceland/flourishing-life-year">GitHub</a>.
         </p>
       </div>
     </div>
@@ -2744,19 +2806,7 @@
         <a href="#domains">Five domains</a>
         <a href="#method">Methodology</a>
         <a href="#cost">Cost</a>
-      </div>
-      <div class="footer-col">
-        <h4>Data</h4>
-        <a href="#">Sources</a>
-        <a href="#">Codebook</a>
-        <a href="#">Download</a>
-        <a href="#">API</a>
-      </div>
-      <div class="footer-col">
-        <h4>Follow</h4>
-        <a href="#">Newsletter</a>
-        <a href="#">GitHub</a>
-        <a href="#">Contact</a>
+        <a href="#about">About</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -3210,11 +3260,18 @@ async function loadBalance() {
     // judge whether the country is "flourishing faster than it's growing."
     //   1. Total FLY in the most recent year.
     //   2. ΔFLY from 2019 (with composite-index pct delta as a check).
-    //   3. ΔPopulation from 2019 — the question is whether ΔFLY exceeds ΔPop × 0.50,
-    //      i.e. whether each new American on average brought more than the
-    //      baseline 0.50-FLY-per-person.
-    // Population is back-derived from total_fly = (composite/100) × 0.5 × pop.
-    const FLY_PER_CAP_ANCHOR = 0.50;
+    //   3. ΔPopulation from 2019 — the question is whether each new American
+    //      brought more or less flourishing than the average 2019 American did.
+    //
+    // Under the v0.8 PUMS methodology, total FLY is computed at the person
+    // level (Σ over PUMS records of PWGTP × person_FLY where person_FLY ∈
+    // [0,1]). It does not back-derive from a 0.50-per-capita anchor. Population
+    // by year is the PWGTP-weighted PUMS sum, hardcoded here from the pipeline
+    // run output (Census Vintage 2024, NST-EST2024).
+    const US_POP_BY_YEAR = {
+      2019: 328_239_523, 2021: 331_893_745, 2022: 333_287_562,
+      2023: 334_914_896, 2024: 340_110_990,
+    };
     const first = rows[0];
     const last = rows.at(-1);
     const delta = (last.composite_index - first.composite_index);
@@ -3225,9 +3282,7 @@ async function loadBalance() {
       const m = n / 1e6;
       return (m >= 100 ? m.toFixed(1) : m.toFixed(2)) + "M";
     };
-    const popOf = (r) => (r.total_fly != null && r.composite_index)
-      ? r.total_fly / ((r.composite_index / 100) * FLY_PER_CAP_ANCHOR)
-      : null;
+    const popOf = (r) => US_POP_BY_YEAR[r.year] || null;
     const popLast = popOf(last);
     const popFirst = popOf(first);
     const popDelta = (popLast != null && popFirst != null) ? (popLast - popFirst) : null;
@@ -3238,8 +3293,11 @@ async function loadBalance() {
     const totalDeltaPct = (totalDelta != null && totalFirst) ? (totalDelta / totalFirst * 100) : null;
     const tdSign = (totalDelta != null && totalDelta > 0) ? "+" : "";
     const pdSign = (popDelta != null && popDelta > 0) ? "+" : "";
-    // Marginal FLY per marginal capita: > 0.50 means flourishing outpaced
-    // population (composite index rose). < 0.50 means we're going backwards.
+    // 2019 per-capita FLY is the empirical baseline under the new methodology.
+    // Marginal-FLY-per-marginal-American > baseline means each new American
+    // is bringing more flourishing than the average 2019 American did.
+    const baselinePerCapita = (totalFirst != null && popFirst)
+      ? totalFirst / popFirst : null;
     const marginalFLYpc = (totalDelta != null && popDelta && popDelta > 0)
       ? (totalDelta / popDelta) : null;
     const tilesHTML =
@@ -3264,25 +3322,29 @@ async function loadBalance() {
     // Verdict line — the question the user asked: are we creating flourishing
     // faster than we're creating Americans?
     const verdictEl = document.getElementById("balance-verdict");
-    if (verdictEl && marginalFLYpc != null) {
-      const mfpc = marginalFLYpc.toFixed(2);
-      // Expected FLY at baseline pace = ΔPop × 0.50.
-      const expectedFly = popDelta * FLY_PER_CAP_ANCHOR;
+    if (verdictEl && marginalFLYpc != null && baselinePerCapita != null) {
+      const mfpc = marginalFLYpc.toFixed(3);
+      const bpc = baselinePerCapita.toFixed(3);
+      // Expected FLY at the 2019 per-capita pace = ΔPop × baseline.
+      const expectedFly = popDelta * baselinePerCapita;
       const excess = totalDelta - expectedFly;
       const excessSign = excess > 0 ? "+" : "";
+      // Threshold band: ±5% of baseline = "flat."
+      const upBar = baselinePerCapita * 1.05;
+      const downBar = baselinePerCapita * 0.95;
       let verdictCls, verdictHead, verdictBody;
-      if (marginalFLYpc > 0.55) {
+      if (marginalFLYpc > upBar) {
         verdictCls = "verdict-up";
         verdictHead = "Flourishing is outpacing population growth.";
-        verdictBody = `For every new American added since 2019, the country produced <strong>${mfpc} Flourishing Life Years</strong> — above the 0.50-per-person baseline. At baseline, ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} FLY; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is running ahead.`;
-      } else if (marginalFLYpc >= 0.45) {
+        verdictBody = `For every new American added since 2019, the country produced <strong>${mfpc} Flourishing Life Years</strong> — above the 2019 per-capita baseline of ${bpc}. At baseline, ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} FLY; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is running ahead.`;
+      } else if (marginalFLYpc >= downBar) {
         verdictCls = "verdict-flat";
         verdictHead = "Flourishing is keeping pace with population.";
-        verdictBody = `Each new American added since 2019 brought <strong>${mfpc} Flourishing Life Years</strong> — at the 0.50-per-person baseline. We're not gaining ground, but not losing it either.`;
+        verdictBody = `Each new American added since 2019 brought <strong>${mfpc} Flourishing Life Years</strong> — close to the 2019 per-capita baseline of ${bpc}. We're not gaining ground, but not losing it either.`;
       } else {
         verdictCls = "verdict-down";
         verdictHead = "Population is growing faster than flourishing.";
-        verdictBody = `Each new American added since 2019 brought only <strong>${mfpc} Flourishing Life Years</strong> — below the 0.50-per-person baseline. ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} FLY at baseline; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is going backwards on a per-American basis.`;
+        verdictBody = `Each new American added since 2019 brought only <strong>${mfpc} Flourishing Life Years</strong> — below the 2019 per-capita baseline of ${bpc}. ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} FLY at baseline; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is going backwards on a per-American basis.`;
       }
       verdictEl.className = "balance-verdict " + verdictCls;
       verdictEl.innerHTML = `<strong class="balance-verdict-head">${verdictHead}</strong><span class="balance-verdict-body">${verdictBody}</span>`;
@@ -3329,6 +3391,7 @@ async function loadBalance() {
       { year: 2021, nominal_T: 9.342, cpi: 1.060 },
       { year: 2022, nominal_T: 9.062, cpi: 1.143 },
       { year: 2023, nominal_T: 9.145, cpi: 1.192 },
+      { year: 2024, nominal_T: 9.852, cpi: 1.227 },
     ];
     const flyByYear = new Map(rows.map(r => [r.year, r.total_fly]));
     const aligned = COST_TREND
@@ -3396,12 +3459,40 @@ async function loadBalance() {
       `${summary} <span class="${dCls}">(${dSign}${delta.toFixed(1)}% net 2019→${last.year})</span>`;
 
     // Secondary chart: 5 per-domain lines + composite
+    // v0.8: per_domain_breakdown is {strong_share, adequate_share, below_share}
+    // per domain. Convert to a 2019=100 index of per-domain FLY contribution:
+    //   contribution_t = strong_t × 0.20 + adequate_t × 0.10
+    //   index_t = contribution_t / contribution_2019 × 100
+    const baselineRow = rows.find(r => r.year === 2019);
+    const baselineDomainWeight = {};
+    if (baselineRow && baselineRow.per_domain_breakdown) {
+      for (const [key] of BALANCE_DOMAIN_ORDER) {
+        const b = baselineRow.per_domain_breakdown[key];
+        if (b && typeof b === "object") {
+          baselineDomainWeight[key] = (b.strong_share || 0) * 0.20
+                                     + (b.adequate_share || 0) * 0.10;
+        } else if (typeof b === "number") {
+          // Backwards compat with old scalar shape (pre-v0.8): index by ratio.
+          baselineDomainWeight[key] = b / 100;
+        }
+      }
+    }
     const domainSeries = BALANCE_DOMAIN_ORDER.map(([key, label, color]) => ({
       name: label,
       color: color,
       points: rows.map(r => {
-        const v = r.per_domain_breakdown && r.per_domain_breakdown[key];
-        return { year: r.year, value: (v != null ? v : null) };
+        const b = r.per_domain_breakdown && r.per_domain_breakdown[key];
+        const baseline = baselineDomainWeight[key];
+        if (b == null || !baseline) return { year: r.year, value: null };
+        let val;
+        if (typeof b === "object") {
+          const contribution = (b.strong_share || 0) * 0.20
+                             + (b.adequate_share || 0) * 0.10;
+          val = contribution / baseline * 100;
+        } else {
+          val = b;  // legacy scalar passthrough
+        }
+        return { year: r.year, value: val };
       }),
       thick: false,
     }));
