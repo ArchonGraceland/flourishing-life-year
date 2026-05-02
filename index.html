@@ -1091,6 +1091,66 @@
     line-height: 1.55;
   }
 
+  /* §05 cost-projection chart card — visually distinct as "projection / future" */
+  .cost-projection-card {
+    margin: 18px auto 0;
+    max-width: 880px;
+    padding: 24px 28px 20px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent-soft);
+    border-radius: 4px;
+  }
+  .cost-projection-card h3 {
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px;
+    color: var(--ink); margin: 0 0 4px;
+  }
+  .cost-projection-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .cost-projection-sublabel {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.04em;
+    margin-bottom: 18px; line-height: 1.5;
+  }
+  .cost-projection-svg { display: block; width: 100%; height: auto; }
+  .cost-projection-legend {
+    margin-top: 10px;
+    display: flex; flex-wrap: wrap; gap: 8px 22px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--ink-soft); letter-spacing: 0.04em;
+  }
+  .cost-projection-legend-row {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .cost-projection-legend-row::before {
+    content: ""; display: inline-block; width: 18px; height: 2px;
+    background: var(--c, var(--ink));
+  }
+  .cost-projection-legend-row.dashed::before {
+    background-image: linear-gradient(to right, var(--c, var(--ink-soft)) 50%, transparent 50%);
+    background-size: 5px 100%;
+  }
+  .cost-projection-legend-row.thick { color: var(--ink); font-weight: 600; }
+  .cost-projection-legend-row.thick::before { background: var(--ink); height: 3.5px; }
+  .cost-projection-summary {
+    margin-top: 14px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--ink-soft);
+    border-top: 1px dashed var(--rule); padding-top: 12px;
+    line-height: 1.6;
+  }
+  .cost-projection-summary .yr {
+    font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500;
+  }
+  .cost-projection-verdict {
+    display: block; margin-top: 8px;
+    font-family: 'Source Serif 4', serif; font-style: italic;
+    font-size: 14px; color: var(--ink); line-height: 1.55;
+  }
+
   /* §05 cost-trend chart card — mirrors balance-chart-card visually */
   .cost-trend-card {
     margin: 36px auto 0;
@@ -2750,6 +2810,17 @@
         <div class="cost-trend-summary" id="cost-trend-summary">Loading trend…</div>
       </div>
 
+      <!-- Projected share of GDP needed if cost-per-FLY keeps climbing -->
+      <div class="cost-projection-card">
+        <div class="cost-projection-eyebrow">Projection — what if the trend continues?</div>
+        <h3>Public spending as a share of GDP, projected forward</h3>
+        <div class="cost-projection-sublabel">If real cost-per-FLY keeps climbing, public spending eats more and more of GDP. Two scenarios: <strong>2019–2024 trend</strong> (cost-per-FLY +1.7%/yr real) and <strong>post-2022 pace</strong> (+3%/yr). Holds real GDP growth at 2%/yr and FLY production at population pace (~1%/yr). Horizontal reference at 50% — the empirical ceiling reached by the highest-tax democracies (Nordic peak); ~36% is the current US level.</div>
+        <svg class="cost-projection-svg" id="cost-projection-svg" viewBox="0 0 880 280" role="img"
+             aria-label="Projected public spending as share of GDP, two scenarios, with 50%-of-GDP reference line."></svg>
+        <div class="cost-projection-legend" id="cost-projection-legend"></div>
+        <div class="cost-projection-summary" id="cost-projection-summary">Loading projection…</div>
+      </div>
+
       <div class="cost-footnotes">
         <p class="cost-footnote">
           <strong>The state doesn't buy flourishing — but it does build the floor.</strong> A Flourishing Life Year is produced by a person, not purchased by a government. Citizens hold jobs, raise families, get educated, age in place. The state doesn't make any of those things happen. But it does build and maintain the environment those things happen in — public schools, courts, public health, infrastructure, security, social insurance. The number above isn't <em>what flourishing costs</em>. It's <em>what the country spent maintaining the conditions inside which flourishing happens</em>. Without those conditions, fewer Americans would clear the 2019 bars on the five domains; that's the conceptual link the dollar figure stands in for.
@@ -3143,6 +3214,78 @@ function fmtIndexAsPct(indexValue) {
   return `${sign}${delta.toFixed(1)}%`;
 }
 
+function renderCostProjectionSVG(svg, dataSeries, opts) {
+  // dataSeries: [{name, color, points: [{year, value 0..1 share-of-GDP}], thick, dashed}]
+  // opts: {referenceY: 0.50, referenceLabel: "50% (Nordic peak)"}
+  const W = svg.viewBox.baseVal.width || 880;
+  const H = svg.viewBox.baseVal.height || 280;
+  const PL = 60, PR = 70, PT = 24, PB = 36;
+  const allYears = new Set();
+  const allVals = [0];
+  for (const ser of dataSeries) {
+    for (const p of ser.points) {
+      allYears.add(p.year);
+      if (p.value != null) allVals.push(p.value);
+    }
+  }
+  const years = [...allYears].sort();
+  const yMin = 0;
+  const rawMax = Math.max(...allVals);
+  const yMax = Math.max(0.6, Math.min(1.0, rawMax * 1.1));
+  const xOf = y => PL + (y - years[0]) / Math.max(1, years.at(-1) - years[0]) * (W - PL - PR);
+  const yOf = v => PT + (1 - (v - yMin) / (yMax - yMin)) * (H - PT - PB);
+  const fmtPct = v => Math.round(v * 100) + "%";
+
+  let s = "";
+
+  // Reference line (e.g. 50% Nordic peak)
+  if (opts && opts.referenceY != null) {
+    s += `<line class="balance-baseline" x1="${PL}" x2="${(W - PR).toFixed(1)}" y1="${yOf(opts.referenceY).toFixed(1)}" y2="${yOf(opts.referenceY).toFixed(1)}" />`;
+    if (opts.referenceLabel) {
+      s += `<text class="balance-axis-text" x="${(W - PR - 4).toFixed(1)}" y="${(yOf(opts.referenceY) - 5).toFixed(1)}" text-anchor="end" fill="var(--ink-soft)">${opts.referenceLabel}</text>`;
+    }
+  }
+
+  // Y-axis ticks
+  const yTicks = [0, 0.25, 0.5, 0.75, 1.0].filter(t => t <= yMax);
+  for (const t of yTicks) {
+    s += `<text class="balance-axis-text" x="${PL - 6}" y="${(yOf(t) + 3).toFixed(1)}" text-anchor="end">${fmtPct(t)}</text>`;
+  }
+
+  // X-axis line + ticks every 10 years (plus first/last)
+  s += `<line class="balance-axis" x1="${PL}" x2="${(W - PR).toFixed(1)}" y1="${(H - PB).toFixed(1)}" y2="${(H - PB).toFixed(1)}" />`;
+  const tickYears = years.filter(yr =>
+    yr === years[0] || yr === years.at(-1) || yr % 10 === 0);
+  for (const yr of tickYears) {
+    s += `<text class="balance-axis-text" x="${xOf(yr).toFixed(1)}" y="${(H - PB + 16).toFixed(1)}" text-anchor="middle">${yr}</text>`;
+  }
+
+  // Series
+  for (const ser of dataSeries) {
+    const pts = ser.points.filter(p => p.value != null);
+    const path = pts.map(p => `${xOf(p.year).toFixed(1)},${yOf(p.value).toFixed(1)}`).join(" ");
+    const cls = ser.thick ? "balance-line balance-line-composite" : "balance-line balance-line-domain";
+    const stroke = ser.thick ? "" : ` stroke="${ser.color || "var(--ink-soft)"}"`;
+    const dash = ser.dashed ? ` stroke-dasharray="4 4"` : "";
+    s += `<polyline class="${cls}" points="${path}"${stroke}${dash} />`;
+    // Endpoint dots only on solid (historical) series
+    if (!ser.dashed && pts.length) {
+      for (const p of [pts[0], pts.at(-1)]) {
+        const fill = ser.thick ? "var(--ink)" : (ser.color || "var(--ink-soft)");
+        s += `<circle cx="${xOf(p.year).toFixed(1)}" cy="${yOf(p.value).toFixed(1)}" r="3" fill="${fill}" />`;
+      }
+    }
+    // Trailing label on dashed projection endpoints
+    if (ser.dashed && pts.length) {
+      const lp = pts.at(-1);
+      const fill = ser.color || "var(--ink-soft)";
+      s += `<text class="balance-axis-text" x="${(xOf(lp.year) + 6).toFixed(1)}" y="${(yOf(lp.value) + 4).toFixed(1)}" text-anchor="start" font-weight="500" fill="${fill}">${fmtPct(lp.value)}</text>`;
+    }
+  }
+
+  svg.innerHTML = s;
+}
+
 function renderCostTrendSVG(svg, dataSeries) {
   // dataSeries: [{name, color, points: [{year, value}], thick}]
   // The thick (primary) series anchors the baseline. Y axis in $K.
@@ -3462,6 +3605,73 @@ async function loadBalance() {
       }
     } else if (sumEl) {
       sumEl.textContent = "Trend data unavailable for this release.";
+    }
+
+    // §05 cost-projection chart — public spending share of GDP, projected
+    // forward at two cost-per-FLY growth scenarios. The horizontal 50%-of-GDP
+    // line is the empirical ceiling reached by the highest-tax democracies
+    // (Sweden / Denmark peak ~50% of GDP); the question is at what year each
+    // scenario crosses it.
+    const GDP_BY_YEAR = {  // BEA Table 1.1.5, current $T
+      2019: 21.539, 2020: 21.323, 2021: 23.681,
+      2022: 26.144, 2023: 27.721, 2024: 29.184,
+    };
+    const PROJECTION_END_YEAR = 2080;
+    const TREND_REAL_FLY_GROWTH = 0.0174;   // observed 2019–2024
+    const RECENT_REAL_FLY_GROWTH = 0.030;   // post-2022 pace
+    const FLY_PRODUCTION_GROWTH = 0.010;    // population pace
+    const REAL_GDP_GROWTH = 0.020;          // long-run consensus
+
+    const histShare = COST_TREND
+      .filter(c => GDP_BY_YEAR[c.year])
+      .map(c => ({ year: c.year, value: c.nominal_T / GDP_BY_YEAR[c.year] }));
+    const startYear = histShare.at(-1).year;
+    const startShare = histShare.at(-1).value;
+    const trendShareGrowth = (1 + TREND_REAL_FLY_GROWTH) * (1 + FLY_PRODUCTION_GROWTH) /
+                             (1 + REAL_GDP_GROWTH) - 1;
+    const recentShareGrowth = (1 + RECENT_REAL_FLY_GROWTH) * (1 + FLY_PRODUCTION_GROWTH) /
+                              (1 + REAL_GDP_GROWTH) - 1;
+
+    const trendProj = [];
+    const recentProj = [];
+    for (let y = startYear; y <= PROJECTION_END_YEAR; y += 1) {
+      const t = y - startYear;
+      trendProj.push({ year: y, value: startShare * Math.pow(1 + trendShareGrowth, t) });
+      recentProj.push({ year: y, value: startShare * Math.pow(1 + recentShareGrowth, t) });
+    }
+    const yearReachesShare = (start, value, rate, target) => {
+      if (value >= target || rate <= 0) return null;
+      return start + Math.ceil(Math.log(target / value) / Math.log(1 + rate));
+    };
+    const trendHits50 = yearReachesShare(startYear, startShare, trendShareGrowth, 0.50);
+    const recentHits50 = yearReachesShare(startYear, startShare, recentShareGrowth, 0.50);
+
+    const projSvg = document.getElementById("cost-projection-svg");
+    const projLegend = document.getElementById("cost-projection-legend");
+    const projSummary = document.getElementById("cost-projection-summary");
+    if (projSvg) {
+      renderCostProjectionSVG(projSvg, [
+        { name: "historical", points: histShare, thick: true },
+        { name: "trend", color: "var(--ink-soft)", points: trendProj, dashed: true },
+        { name: "recent", color: "var(--accent)", points: recentProj, dashed: true },
+      ], { referenceY: 0.50, referenceLabel: "50% — Nordic peak" });
+    }
+    if (projLegend) {
+      projLegend.innerHTML =
+        `<span class="cost-projection-legend-row thick">Historical (2019–${startYear})</span>` +
+        `<span class="cost-projection-legend-row dashed" style="--c: var(--ink-soft)">Trend continues (cost-per-FLY +1.7%/yr real)</span>` +
+        `<span class="cost-projection-legend-row dashed" style="--c: var(--accent)">Recent pace (cost-per-FLY +3%/yr real)</span>`;
+    }
+    if (projSummary) {
+      const trendTxt = trendHits50
+        ? `<span class="yr">${trendHits50}</span>`
+        : "never (cost growth ≤ GDP growth)";
+      const recentTxt = recentHits50
+        ? `<span class="yr">${recentHits50}</span>`
+        : "never";
+      projSummary.innerHTML =
+        `Public spending hits 50% of GDP at — trend pace: ${trendTxt} · recent pace: ${recentTxt}.` +
+        `<span class="cost-projection-verdict">The threat isn't "we run out of money tomorrow." It's that efficiency declines slowly enough that nobody panics until it's eaten the budget. Each percentage point of GDP is real money that can't go to anything else.</span>`;
     }
 
     // Primary chart: composite only
