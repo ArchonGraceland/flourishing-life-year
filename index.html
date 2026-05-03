@@ -2788,7 +2788,7 @@
 
       <div class="balance-chart-card balance-primary">
         <h3>National FLY index</h3>
-        <div class="balance-sublabel">Total Flourishing Life Years produced each year, expressed as percent of 2019. Person-level scoring against absolute 2019 thresholds; nominal-dollar inputs are CPI-deflated to constant 2019 dollars.</div>
+        <div class="balance-sublabel">Total Flourishing Life Years produced each year, expressed as percent of 2019. Person-level scoring against absolute 2019 thresholds; current-year dollar inputs are CPI-deflated to constant 2019 dollars.</div>
         <svg class="balance-chart-svg" data-which="composite" viewBox="0 0 880 260" role="img"
              aria-label="National FLY index by year, 2019 baseline."></svg>
         <div class="balance-summary" id="balance-summary-primary">—</div>
@@ -3427,18 +3427,18 @@
 
         <div class="cost-rollup">
           <div class="cost-rollup-row cost-rollup-divisor">
-            <span class="cost-rollup-label">Total Flourishing Life Years produced</span>
+            <span class="cost-rollup-label">Total <strong>Lived</strong> Flourishing Life Years produced</span>
             <span class="cost-rollup-bar"><span style="width: 100%; background: var(--accent-soft)"></span></span>
             <span class="cost-rollup-val"><span id="cost-fly-divisor">—</span></span>
           </div>
         </div>
 
         <div class="cost-result">
-          <div class="cost-result-label">= Public spending per FLY produced</div>
+          <div class="cost-result-label">= Public spending per <strong>Lived</strong> FLY produced</div>
           <div class="cost-result-val"><span id="cost-per-fly">—</span></div>
-          <div class="cost-result-meta">at every level of government, taxes and borrowing combined</div>
+          <div class="cost-result-meta">at every level of government, taxes and borrowing combined · denominator is Lived FLY (loss-weighted)</div>
           <div class="cost-result-borrowed">
-            Of which <span class="cost-result-borrowed-val"><span id="cost-borrowed-per-fly">—</span></span> was borrowed — the federal deficit, divided by FLY.
+            Of which <span class="cost-result-borrowed-val"><span id="cost-borrowed-per-fly">—</span></span> was borrowed — the federal deficit, divided by Lived FLY.
           </div>
           <div class="cost-result-real">
             ≈ <span class="cost-result-real-val" id="cost-per-fly-real">—</span> in constant 2019 dollars — comparable to the trend chart below.
@@ -3446,12 +3446,12 @@
         </div>
       </div>
 
-      <!-- Cost-per-FLY over time -->
+      <!-- Cost-per-Lived-FLY over time -->
       <div class="cost-trend-card">
-        <h3>Cost per FLY, year over year</h3>
-        <div class="cost-trend-sublabel">Consolidated public spending ÷ Flourishing Life Years produced. Two series: <strong>nominal</strong> (current-year dollars) and <strong>real</strong> (constant 2019 dollars, CPI-U deflated). Real is what the country is actually paying after stripping out inflation; nominal is the headline.</div>
+        <h3>Cost per Lived FLY, year over year</h3>
+        <div class="cost-trend-sublabel">Consolidated public spending ÷ <strong>Lived</strong> Flourishing Life Years produced. Two dollar series: <strong>current-year $</strong> (face-value spending) and <strong>real $</strong> (constant 2019 dollars, CPI-U deflated). Real-$ strips out inflation; current-$ is the headline. The denominator is Lived FLY in both series — same loss-weighted FLY, two ways to express the dollars.</div>
         <svg class="cost-trend-svg" id="cost-trend-svg" viewBox="0 0 880 240" role="img"
-             aria-label="Cost per Flourishing Life Year by year, nominal and real series."></svg>
+             aria-label="Cost per Lived Flourishing Life Year by year, current-year and inflation-adjusted dollar series."></svg>
         <div class="cost-trend-legend" id="cost-trend-legend"></div>
         <div class="cost-trend-summary" id="cost-trend-summary">Loading trend…</div>
       </div>
@@ -4508,13 +4508,13 @@ async function loadBalance() {
       const realPoints    = aligned.map(a => ({ year: a.year, value: a.real }));
       const nominalPoints = aligned.map(a => ({ year: a.year, value: a.nominal }));
       renderCostTrendSVG(trendSvg, [
-        { name: "nominal", color: "var(--accent-soft)", points: nominalPoints, thick: false },
+        { name: "current-$", color: "var(--accent-soft)", points: nominalPoints, thick: false },
         { name: "real", points: realPoints, thick: true },
       ]);
       if (legendEl) {
         legendEl.innerHTML =
-          `<span class="cost-trend-legend-row real">Real (constant 2019 $)</span>` +
-          `<span class="cost-trend-legend-row" style="--c: var(--accent-soft)">Nominal (current $)</span>`;
+          `<span class="cost-trend-legend-row real">Real $ (constant 2019, CPI-deflated)</span>` +
+          `<span class="cost-trend-legend-row" style="--c: var(--accent-soft)">Current-year $ (face-value)</span>`;
       }
       const f = realPoints[0], l = realPoints.at(-1);
       const change = ((l.value - f.value) / f.value) * 100;
@@ -4534,7 +4534,7 @@ async function loadBalance() {
           `<span class="yr">Real ${f.year}: ${fmtThousands(f.value)}</span>` +
           `→ <span class="yr">${l.year}: ${fmtThousands(l.value)}</span> ` +
           `<span class="${cls}">(${sign}${change.toFixed(1)}% real, 2019$)</span>` +
-          ` · <span class="yr">Nominal ${nl.year}: ${fmtThousands(nl.value)}</span>` +
+          ` · <span class="yr">Current-$ ${nl.year}: ${fmtThousands(nl.value)}</span>` +
           `<span class="cost-trend-verdict">${verdict}</span>`;
       }
     } else if (sumEl) {
