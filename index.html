@@ -2464,17 +2464,17 @@
             <span class="lived-headline-aside-val" id="lived-headline-delta-lived">—</span>
           </div>
           <div class="lived-headline-aside-row">
-            <span class="lived-headline-aside-label">vs 2019 (raw)</span>
+            <span class="lived-headline-aside-label">vs 2019 (nominal)</span>
             <span class="lived-headline-aside-val raw" id="lived-headline-delta-raw">—</span>
           </div>
           <div class="lived-headline-aside-row">
-            <span class="lived-headline-aside-label">Raw additive total</span>
+            <span class="lived-headline-aside-label">Nominal total</span>
             <span class="lived-headline-aside-val raw" id="lived-headline-raw">—</span>
           </div>
         </div>
       </div>
       <div class="lived-headline-foot">
-        The gap between the two ledgers is the cost of unbalanced flourishing — domains backsliding below 2019, weighted 2× per <a href="#why-losses">§ Why losses count double</a>.
+        <strong>Nominal</strong> = the additive face-value total (every Strong worth 0.20, every Adequate 0.10, every Below 0). <strong>Lived</strong> = the same total with below-2019 domains weighted 2× per loss aversion. The gap between the two ledgers is the cost of unbalanced flourishing — see <a href="#why-losses">§ Why losses count double</a>.
       </div>
     </div>
 
@@ -2718,12 +2718,12 @@
         <span class="eq-preview-banner">v1.0 methodology · adopted 2026-05-03 · soak review 2026-05-15</span>
         <div class="eq-preview-head">Per-person FLY: the two scorings, side by side.</div>
         <div class="eq-preview-sublede">
-          Same five-domain profile, scored two ways. <strong>v0.9 raw additive</strong> is the original method (Strong = 0.20, Adequate = 0.10, Below = 0.00). <strong>v1.0 lived</strong> is the current method — per-person loss-weighting where Below contributions actively subtract. The example below is the "doing great except wealth" person (four Strong, one Below in wealth) — exactly the case where the additive ledger silently under-counts a single weak domain.
+          Same five-domain profile, scored two ways. <strong>Nominal</strong> is the original additive method (Strong = 0.20, Adequate = 0.10, Below = 0.00) — the face-value figure the §02 equation produces. <strong>Lived</strong> is the v1.0 method — per-person loss-weighting where Below contributions actively subtract. The example below is the "doing great except wealth" person (four Strong, one Below in wealth) — exactly the case where the additive ledger silently under-counts a single weak domain.
         </div>
 
         <div class="eq-preview-grid">
           <div class="eq-preview-col">
-            <div class="eq-preview-col-head">v0.9 raw additive (legacy comparison)</div>
+            <div class="eq-preview-col-head">Nominal — face-value additive (legacy)</div>
             <div class="eq-preview-formula">
               <div class="eq-preview-row strong"><span>Purchasing power · Strong</span><span>+0.20</span></div>
               <div class="eq-preview-row below"><span>Wealth · Below</span><span>0.00</span></div>
@@ -2754,7 +2754,7 @@
         </div>
 
         <div class="eq-preview-impact">
-          <strong>What's running where.</strong> Per-person FLY in <a href="/assessment">the assessment</a> is now scored both ways, with the v1.0 lived figure as the headline. The county map's "Lived FLY (v1.0)" view aggregates v1.0 person-level scores up via PUMS → PUMA → county. The §The national balance headline figures stay aggregate-loss-weighted (raw_2019 × (1 + weighted change)), as before — that adjustment is mathematically distinct from but consistent with the per-person v1.0 formula. See <a href="#why-losses">§ Why losses count double</a> for the unifying principle.
+          <strong>What's running where.</strong> Per-person FLY in <a href="/assessment">the assessment</a> is now scored both ways, with the v1.0 lived figure as the headline. The county map's "Lived FLY (v1.0)" view aggregates v1.0 person-level scores up via PUMS → PUMA → county. The §The national balance headline figures stay aggregate-loss-weighted (FLY<sub>nominal, 2019</sub> × (1 + weighted change)), as before — that adjustment is mathematically distinct from but consistent with the per-person v1.0 formula. See <a href="#why-losses">§ Why losses count double</a> for the unifying principle.
         </div>
 
         <div class="eq-preview-impact">
@@ -2771,7 +2771,7 @@
       <div class="balance-header">
         <h2>Lived flourishing, year over year. <em>2019 = 100.</em></h2>
         <p class="balance-lede">
-          How much flourishing is the country actually producing? <strong>Lived</strong> is the headline — total per-person flourishing aggregated nationally, with below-2019 domains weighted 2× per loss aversion. Anchored at 2019 (last full pre-COVID year). The raw additive total stays alongside in lighter type so the gap between the two ledgers — what we produced on the books vs what we produced in lives — is visible at every step. <a href="#why-losses">§ Why losses count double</a> explains the rule.
+          How much flourishing is the country actually producing? <strong>Lived</strong> is the headline — total per-person flourishing aggregated nationally, with below-2019 domains weighted 2× per loss aversion. Anchored at 2019 (last full pre-COVID year). The <strong>nominal</strong> total — the additive face-value figure with no loss-weighting — stays alongside in lighter type so the gap between the two ledgers (what we produced on the books vs what we produced in lives) is visible at every step. <a href="#why-losses">§ Why losses count double</a> explains the rule.
         </p>
         <div class="balance-headline-strip" id="balance-headline-strip"></div>
         <div class="balance-verdict" id="balance-verdict"></div>
@@ -2845,25 +2845,25 @@
 
         <p><strong>Where the rule applies, where it doesn't.</strong> Loss aversion is a property of <em>change</em>, not state. So the rule applies to every figure on this site that reports a delta — year-over-year, vs-2019, vs-cohort, projection. It does <em>not</em> apply to per-person scores or per-county composites: those are levels, and loss-weighting them would silently change what an individual's score means. Loss-weighting is layered on top when the question is "how is the country moving?", not "what is it now?"</p>
 
-        <p><strong>The lived FLY total — derived, not redefined.</strong> The site's headline national total has been switched from raw additive FLY to <em>lived FLY</em>. Lived FLY is a derived figure, defined precisely:</p>
+        <p><strong>The lived FLY total — derived, not redefined.</strong> The site's headline national total has been switched from <em>nominal FLY</em> (the additive face-value figure) to <em>lived FLY</em>. Lived FLY is a derived figure, defined precisely:</p>
 
         <div class="lossweight-example">
           <div class="ex-head">Lived FLY — the formal definition</div>
-          <div class="ex-row"><span class="ex-label">Raw 2019 baseline total</span><span class="ex-val">FLY<sub>raw, 2019</sub></span></div>
+          <div class="ex-row"><span class="ex-label">Nominal 2019 baseline total</span><span class="ex-val">FLY<sub>nominal, 2019</sub></span></div>
           <div class="ex-row"><span class="ex-label">Loss-weighted % change vs 2019</span><span class="ex-val">Δ<sub>lw</sub>(year)</span></div>
           <div class="ex-divider"></div>
-          <div class="ex-row"><span class="ex-label">Lived FLY for any year</span><span class="ex-val weighted">= FLY<sub>raw, 2019</sub> × (1 + Δ<sub>lw</sub>)</span></div>
+          <div class="ex-row"><span class="ex-label">Lived FLY for any year</span><span class="ex-val weighted">= FLY<sub>nominal, 2019</sub> × (1 + Δ<sub>lw</sub>)</span></div>
         </div>
 
-        <p>The 2019 baseline is unchanged: lived 2019 = raw 2019 (loss-weighting is zero at the baseline year by definition). For every later year, the country's "raw production" of flourishing is multiplied by the loss-weighted change to get the lived equivalent. The gap between raw and lived is the <em>cost of unbalanced flourishing</em> — what the country produced on the additive ledger but lost on the lived ledger because some domains backslid. That gap is visible directly on the primary balance chart: the dashed line (raw) sits above the solid line (lived) whenever any domain is below 2019.</p>
+        <p>The 2019 baseline is unchanged: lived 2019 = nominal 2019 (loss-weighting is zero at the baseline year by definition). For every later year, the country's nominal production of flourishing is multiplied by the loss-weighted change to get the lived equivalent. The gap between nominal and lived is the <em>cost of unbalanced flourishing</em> — what the country produced on the additive ledger but lost on the lived ledger because some domains backslid. That gap is visible directly on the primary balance chart: the dashed line (nominal) sits above the solid line (lived) whenever any domain is below 2019.</p>
 
-        <p><strong>What this preserves, and what it doesn't.</strong> Per-person FLY scores stay unchanged — the §02 equation (0.20 × #Strong + 0.10 × #Adequate) still describes a person, and the additive sum across people still gives the raw national total. County map values stay raw — geography is comparative. What changes: the headline national figures, the cost-per-FLY denominator, and the year-over-year deltas now read as lived figures, with the raw additive numbers shown beside them in lighter type for audit.</p>
+        <p><strong>What this preserves, and what it doesn't.</strong> Per-person FLY scores stay unchanged — the §02 equation (0.20 × #Strong + 0.10 × #Adequate) still describes a person, and the additive sum across people still gives the nominal national total. County map values stay nominal-equivalent — geography is comparative. What changes: the headline national figures, the cost-per-FLY denominator, and the year-over-year deltas now read as lived figures, with the nominal numbers shown beside them in lighter type for audit.</p>
 
-        <p><strong>What you'll see on this site.</strong> Lived FLY is the headline metric in §02 (rollup), §The national balance (chart and summary), and §05 (cost-per-FLY). Raw additive figures still appear in lighter type beside the lived ones, so the loss-weighting drag is never hidden — only made the primary reading. Domains below their 2019 bar carry a small badge on their card. The point is to make the asymmetry structural, never decorative.</p>
+        <p><strong>What you'll see on this site.</strong> Lived FLY is the headline metric in §The national picture, §02 (rollup), §The national balance (chart and summary), and §05 (cost-per-FLY). Nominal figures still appear in lighter type beside the lived ones, so the loss-weighting drag is never hidden — only made the primary reading. Domains below their 2019 bar carry a small badge on their card. The point is to make the asymmetry structural, never decorative.</p>
 
         <div class="lossweight-rule">
           <strong>v0.10 methodology entry — locked.</strong>
-          Loss-weighting factor = 2.0×, applied to per-domain change measures relative to the 2019 baseline. The lived national total is derived from raw_2019 × (1 + loss-weighted % change) and is the headline metric in §02, §The national balance, and §05; raw additive totals are shown beside it for audit. Per-person FLY scores and per-county composites are unmodified — those are levels, not changes. The 2× factor is locked at the empirical loss-aversion coefficient from Kahneman &amp; Tversky 1992; revisiting it requires a methodology version bump.
+          Loss-weighting factor = 2.0×, applied to per-domain change measures relative to the 2019 baseline. The lived national total is derived from FLY<sub>nominal, 2019</sub> × (1 + loss-weighted % change) and is the headline metric in §02, §The national balance, and §05; nominal totals are shown beside it for audit. Per-person FLY scores and per-county composites are unmodified — those are levels, not changes. The 2× factor is locked at the empirical loss-aversion coefficient from Kahneman &amp; Tversky 1992; revisiting it requires a methodology version bump.
         </div>
 
         <p class="lossweight-cite">
@@ -4314,7 +4314,7 @@ async function loadBalance() {
     const popFirst = popOf(first);
     const popDelta = (popLast != null && popFirst != null) ? (popLast - popFirst) : null;
     const popDeltaPct = (popDelta != null && popFirst) ? (popDelta / popFirst * 100) : null;
-    // Raw additive totals — kept available as the audit-trail comparison.
+    // Nominal additive totals — kept available as the audit-trail comparison.
     const totalLastRaw = last.total_fly;
     const totalFirstRaw = first.total_fly;
     // Lived (loss-weighted) totals are now the headline figures everywhere
@@ -4323,7 +4323,7 @@ async function loadBalance() {
     const totalFirst = livedTotalByYear[first.year] ?? totalFirstRaw;
     const totalDelta = (totalLast != null && totalFirst != null) ? (totalLast - totalFirst) : null;
     const totalDeltaPct = (totalDelta != null && totalFirst) ? (totalDelta / totalFirst * 100) : null;
-    // Raw delta retained for the audit-trail annotation under the headline.
+    // Nominal delta retained for the audit-trail annotation under the headline.
     const totalDeltaRaw = (totalLastRaw != null && totalFirstRaw != null) ? (totalLastRaw - totalFirstRaw) : null;
     const totalDeltaPctRaw = (totalDeltaRaw != null && totalFirstRaw) ? (totalDeltaRaw / totalFirstRaw * 100) : null;
     const tdSign = (totalDelta != null && totalDelta > 0) ? "+" : "";
@@ -4339,14 +4339,14 @@ async function loadBalance() {
       `<span class="balance-headline-figure">` +
         `<span class="bh-num">${fmtMillions(totalLast)}</span>` +
         `<span class="bh-unit">Lived Flourishing Life Years in ${last.year}` +
-          (totalLastRaw != null ? ` <span class="bh-raw-aside">(raw additive: ${fmtMillions(totalLastRaw)})</span>` : "") +
+          (totalLastRaw != null ? ` <span class="bh-raw-aside">(nominal: ${fmtMillions(totalLastRaw)})</span>` : "") +
         `</span>` +
       `</span>` +
       (totalDelta != null
         ? `<span class="balance-headline-figure">` +
             `<span class="bh-num ${dCls}">${tdSign}${fmtMillions(Math.abs(totalDelta))}</span>` +
             `<span class="bh-unit">Lived FLY vs 2019 (<span class="${dCls}">${dSign}${totalDeltaPct.toFixed(1)}%</span>)` +
-              (totalDeltaPctRaw != null ? ` <span class="bh-raw-aside">(raw: ${totalDeltaPctRaw >= 0 ? "+" : ""}${totalDeltaPctRaw.toFixed(1)}%)</span>` : "") +
+              (totalDeltaPctRaw != null ? ` <span class="bh-raw-aside">(nominal: ${totalDeltaPctRaw >= 0 ? "+" : ""}${totalDeltaPctRaw.toFixed(1)}%)</span>` : "") +
             `</span>` +
           `</span>`
         : "") +
@@ -4420,7 +4420,7 @@ async function loadBalance() {
     }
 
     // Write the most-recent year's lived FLY total into §02's caption as
-    // the headline figure. The raw additive total still appears alongside
+    // the headline figure. The nominal additive total still appears alongside
     // (it's the literal output of the per-person equation above), so the
     // §02 reader can see the relationship between equation and lived
     // total at a glance.
@@ -4431,7 +4431,7 @@ async function loadBalance() {
         eq02.innerHTML =
           `${fmtMillions(lived)} lived` +
           (totalLastRaw != null
-            ? ` <span class="eq-rollup-raw-aside">(raw additive: ${fmtMillions(totalLastRaw)})</span>`
+            ? ` <span class="eq-rollup-raw-aside">(nominal: ${fmtMillions(totalLastRaw)})</span>`
             : "");
       } else if (totalLastRaw != null) {
         eq02.textContent = fmtMillions(totalLastRaw);
@@ -4599,7 +4599,7 @@ async function loadBalance() {
     // lines is the "cost of unbalanced flourishing" — what the loss-
     // weighting reveals that the equal-weight reading hides.
     const compositeRawSeries = {
-      name: "Raw",
+      name: "Nominal",
       color: "var(--ink-soft)",
       points: rows.map(r => ({ year: r.year, value: r.composite_index })),
       thick: false,
@@ -4623,11 +4623,11 @@ async function loadBalance() {
       const lwV = lwCompositeByYear[r.year];
       const lived = lwV != null ? fmtIndexAsPct(lwV) : "—";
       const raw = r.composite_index != null ? fmtIndexAsPct(r.composite_index) : "—";
-      return `<span class="yr">${r.year}: ${lived} <span class="balance-summary-raw">(raw ${raw})</span></span>`;
+      return `<span class="yr">${r.year}: ${lived} <span class="balance-summary-raw">(nominal ${raw})</span></span>`;
     }).join(" · ");
     document.getElementById("balance-summary-primary").innerHTML =
       `${summary} <span class="${ldCls}">(${ldSign}${livedDelta.toFixed(1)}% lived net 2019→${last.year})</span>` +
-      ` <span class="balance-summary-raw">· raw ${dSign}${delta.toFixed(1)}%</span>`;
+      ` <span class="balance-summary-raw">· nominal ${dSign}${delta.toFixed(1)}%</span>`;
 
     // Secondary chart: 5 per-domain lines + composite. Per-domain indices
     // computed against the early-block baselineDomainWeight, which the

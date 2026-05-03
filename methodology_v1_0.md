@@ -15,7 +15,7 @@
 ## What does NOT change
 
 - The five domains, their indicators, or the frozen-2019 absolute thresholds (Strong / Adequate / Below remain identically defined).
-- The national raw additive total — still reported alongside the lived total for audit.
+- The national nominal additive total — still reported alongside the lived total for audit.
 - The principle that **levels stay raw, changes get loss-weighted**. v1.0 just extends the scope of "change" to include the per-person deviation from the Adequate baseline. (See § *Why this is internally consistent* below.)
 - The cost-per-FLY methodology in §05 (already lived-FLY-based after the recent §05 update).
 
@@ -30,7 +30,7 @@ deviation_d = +0.10  if Strong
               0      if Adequate
              −0.10   if Below
 
-raw FLY    = 0.20 × #Strong + 0.10 × #Adequate           (unchanged from v0.9)
+nominal FLY = 0.20 × #Strong + 0.10 × #Adequate          (unchanged from v0.9)
 lived FLY  = 0.50 + Σ_d ( deviation_d × w_d )
    where  w_d = 1   if deviation_d ≥ 0
                 2   if deviation_d  < 0     (loss-weighting)
@@ -38,16 +38,16 @@ lived FLY  = 0.50 + Σ_d ( deviation_d × w_d )
 
 **Range under v1.0:**
 - 5 Strong → lived FLY = 0.50 + 5 × 0.10 = **+1.00**
-- 5 Adequate → lived FLY = **0.50** (matches v0.9 raw)
+- 5 Adequate → lived FLY = **0.50** (matches v0.9 nominal)
 - 5 Below → lived FLY = 0.50 + 5 × (−0.20) = **−0.50**
 
-The 5-Strong and 5-Adequate endpoints match v0.9 raw FLY. The 5-Below endpoint is now negative (−0.50 vs 0.00 in v0.9), reflecting that complete failure on every domain isn't a "zero contribution" — it's an active loss against the baseline. Mixed cases shift downward in proportion to the count of Below domains.
+The 5-Strong and 5-Adequate endpoints match v0.9 nominal FLY. The 5-Below endpoint is now negative (−0.50 vs 0.00 in v0.9), reflecting that complete failure on every domain isn't a "zero contribution" — it's an active loss against the baseline. Mixed cases shift downward in proportion to the count of Below domains.
 
 ### Worked example (the "doing great except wealth" case)
 
 ```
 4 Strong + 1 Below in wealth:
-  raw FLY   = 4 × 0.20 + 0      = 0.80
+  nominal FLY = 4 × 0.20 + 0      = 0.80
   lived FLY = 0.50 + 4 × 0.10 + 1 × (−0.20) = 0.70
 ```
 
@@ -166,7 +166,7 @@ The map currently has a new view toggle: **"v1.0 lived FLY (mock)"**. When selec
 
 - County composite is recomputed client-side from the existing per-domain percentile data using a rough Strong/Adequate/Below mapping (pct ≥ 75 = Strong; 25 ≤ pct < 75 = Adequate; pct < 25 = Below). This is **deterministic** and **illustrative only** — the real v1.0 pipeline runs against PUMS person-level data with frozen-2019 absolute thresholds, not against percentile ranks.
 - Color scale shifts to 0–1 FLY space.
-- Tooltip shows raw FLY + lived FLY + below-count.
+- Tooltip shows nominal FLY + lived FLY + below-count.
 - A prominent banner above the map: **"MOCK — synthesized from v0.9 percentiles for visual review. Real v1.0 data ships with the pipeline rebuild."**
 
 The mock is calibrated to look directionally correct, not numerically precise. It exists so you can see the visual + UX impact before authorizing the pipeline + schema work.
