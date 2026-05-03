@@ -603,23 +603,23 @@
 
     <div class="status-cards" id="status-cards"></div>
 
-    <!-- Per-person FLY: paired raw (v0.9 legacy) and lived (v1.0 current,
-         per-person loss-weighted) scoring of the same five-domain answers
-         above. Both numbers shown so the reader can audit the asymmetry. -->
+    <!-- Per-person FLY: paired Nominal and Lived scoring of the same
+         five-domain answers above. Both numbers shown so the reader can
+         audit the loss-weighting drag. -->
     <div class="fly-preview" id="fly-preview" style="display:none;">
-      <span class="fly-preview-banner">v1.0 methodology · adopted 2026-05-03 · soak review 2026-05-15</span>
+      <span class="fly-preview-banner">Per-person FLY · the two readings</span>
       <div class="fly-preview-head">Your Flourishing Life Year score — both readings.</div>
       <div class="fly-preview-sublede">
-        Same answers, two scorings. <strong>Nominal</strong> is the original additive method (Strong = 0.20, Adequate = 0.10, Below = 0.00) — the face-value figure the §02 equation produces. <strong>Lived</strong> is the v1.0 method — per-person loss-weighting where Below contributions actively subtract, because a domain at zero is structurally damaging in a way strong domains can't fully compensate for.
+        Same answers, two scorings. <strong>Nominal</strong> is the additive face-value method (Strong = 0.20, Adequate = 0.10, Below = 0.00) — the figure the §02 equation produces. <strong>Lived</strong> is the loss-weighted method — Below contributions actively subtract at 2× weight, because a domain at zero is structurally damaging in a way strong domains can't fully compensate for.
       </div>
       <div class="fly-preview-grid">
         <div class="fly-preview-cell">
-          <div class="fly-preview-label">Nominal — face-value additive (legacy)</div>
+          <div class="fly-preview-label">Nominal — face-value additive</div>
           <div class="fly-preview-val" id="fly-preview-raw">—</div>
           <div class="fly-preview-delta" id="fly-preview-raw-detail">—</div>
         </div>
         <div class="fly-preview-cell lived">
-          <div class="fly-preview-label">v1.0 lived (current — loss-weighted)</div>
+          <div class="fly-preview-label">Lived — loss-weighted</div>
           <div class="fly-preview-val" id="fly-preview-lived">—</div>
           <div class="fly-preview-delta" id="fly-preview-lived-detail">—</div>
         </div>
@@ -1112,7 +1112,7 @@ function renderResult(scored) {
       explainer = `No Below domains — your raw and lived scores match. Loss-weighting only kicks in when a domain falls below baseline.`;
     } else {
       const drag = Math.abs(flyDelta).toFixed(2);
-      explainer = `Loss-weighting drags your score down by <strong>${drag}</strong> — that's the lived cost of having ${belowCount} domain${belowCount === 1 ? "" : "s"} below cohort, weighted 2× per the methodology proposal. <a href="/#why-losses">Why losses count double →</a>`;
+      explainer = `Loss-weighting drags your score down by <strong>${drag}</strong> — the lived cost of having ${belowCount} domain${belowCount === 1 ? "" : "s"} below cohort, weighted 2×. <a href="/#why-losses">Why losses count double →</a>`;
     }
     document.getElementById("fly-preview-explainer").innerHTML = explainer;
   }

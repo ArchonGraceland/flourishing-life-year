@@ -2496,7 +2496,7 @@
       </div>
       <div class="nstat">
         <div class="nstat-num">5</div>
-        <div class="nstat-label">Domains in the composite,<br>geometric mean of percentile ranks</div>
+        <div class="nstat-label">Domains in the score,<br>summed for per-person Flourishing Life Year</div>
       </div>
       <div class="nstat">
         <div class="nstat-num">11</div>
@@ -2517,47 +2517,47 @@
       Hover any county for its scores. Higher is better; gray means insufficient federal data (≥ 4 of 5 domains required). Two summary metrics are available — pick which question you want answered, then color the map by it. Or switch to a single-domain view to see one indicator at a time.
     </p>
 
-    <!-- Methodology comparison card — answers "why are there two summary
-         metrics?" once, for the reader scanning the page. The view-aware
-         byline below the toggle row contextualizes whichever view is active. -->
+    <!-- Methodology comparison card — Lived vs Nominal, both in 0–1 FLY
+         space. Same five domains, same data, same anchor, different rule:
+         one is loss-weighted, one is the additive face-value. -->
     <div class="map-method-compare">
       <div class="map-method-cell lived">
-        <div class="map-method-label">Lived FLY <span class="badge">v1.0 · current</span></div>
-        <div class="map-method-q">"How much flourishing does each person here actually produce?"</div>
+        <div class="map-method-label">Lived</div>
+        <div class="map-method-q">"How much flourishing per person, with below-2019 domains weighted 2×?"</div>
         <ul class="map-method-specs">
           <li><span>Range</span><strong>−0.50 to +1.00</strong> FLY units</li>
+          <li><span>Aggregation</span>0.50 baseline + 0.10 × #Strong − 0.20 × #Below</li>
           <li><span>Anchor</span>2019-frozen absolute thresholds</li>
-          <li><span>Aggregation</span>Loss-weighted (Below × 2×) sum across 5 domains</li>
           <li><span>Source</span>PUMS person records → PUMA → county</li>
         </ul>
       </div>
       <div class="map-method-vs" aria-hidden="true">vs.</div>
       <div class="map-method-cell composite">
-        <div class="map-method-label">Composite <span class="badge legacy">v0.9 · legacy</span></div>
-        <div class="map-method-q">"How does this county rank against the others?"</div>
+        <div class="map-method-label">Nominal</div>
+        <div class="map-method-q">"How much flourishing per person, no loss-weighting?"</div>
         <ul class="map-method-specs">
-          <li><span>Range</span><strong>1 to 100</strong> percentile rank</li>
-          <li><span>Anchor</span>Cross-sectional, re-ranks each release</li>
-          <li><span>Aggregation</span>Geometric mean of per-domain percentile ranks</li>
-          <li><span>Source</span>County aggregates from ACS, CDC, BEA</li>
+          <li><span>Range</span><strong>0.00 to +1.00</strong> FLY units</li>
+          <li><span>Aggregation</span>0.20 × #Strong + 0.10 × #Adequate</li>
+          <li><span>Anchor</span>2019-frozen absolute thresholds</li>
+          <li><span>Source</span>PUMS person records → PUMA → county</li>
         </ul>
       </div>
     </div>
     <div class="map-method-note">
-      Same five domains, two ways to summarize. <a href="#why-losses">§ Why losses count double</a> explains the methodology shift; the byline below the view selector tells you what you're looking at right now.
+      Same five domains, two ways to summarize — both in FLY units, with the same data and the same anchor. The gap between them is the loss-weighting drag. <a href="#why-losses">§ Why losses count double</a> explains the rule.
     </div>
 
     <div class="meta-row" id="meta-row">
       <div><span class="label">Release</span><span class="value">v2025.12</span></div>
       <div><span class="label">Counties scored</span><span class="value" id="meta-scored">…</span></div>
       <div><span class="label">Counties gray</span><span class="value" id="meta-gray">…</span></div>
-      <div><span class="label" id="meta-range-label">Composite range</span><span class="value" id="meta-range">…</span></div>
+      <div><span class="label" id="meta-range-label">FLY range</span><span class="value" id="meta-range">…</span></div>
     </div>
 
     <div class="domain-selector" role="tablist" aria-label="Color the map by">
       <span class="selector-label">View</span>
-      <button data-view="lived_v1" class="active" role="tab" aria-selected="true">Lived FLY (v1.0 mock)</button>
-      <button data-view="composite" role="tab">Composite (v0.9 percentile)</button>
+      <button data-view="lived_v1" class="active" role="tab" aria-selected="true">Lived</button>
+      <button data-view="nominal" role="tab">Nominal</button>
       <button data-view="purchasing_power" role="tab">Purchasing power</button>
       <button data-view="wealth"  role="tab">Wealth</button>
       <button data-view="family"  role="tab">Family</button>
@@ -2570,12 +2570,12 @@
     <div class="map-view-byline" id="map-view-byline"></div>
 
     <div class="map-mock-banner" id="map-mock-banner">
-      <strong>MOCK DATA.</strong> Per-county lived FLY synthesized from v0.9 percentile ranks (pct ≥ 75 → Strong, 25–75 → Adequate, &lt; 25 → Below) and run through the v1.0 per-person loss-weighted formula. Visual review only. The real v1.0 pipeline runs against PUMS person-level data with frozen-2019 absolute thresholds — see <a href="/methodology_v1_0.md">methodology v1.0</a> for the spec.
+      <strong>FALLBACK MODE.</strong> Per-county lived FLY synthesized from per-domain percentile data (≥ 75 → Strong, 25–75 → Adequate, &lt; 25 → Below) — used only when the PUMS-derived <code>county_lived_fly</code> table is empty for this release. The production pipeline runs against PUMS person-level data with frozen-2019 absolute thresholds.
     </div>
 
     <div class="map-stage">
       <svg id="map-svg" viewBox="0 0 975 610" role="img"
-           aria-label="Choropleth map of US counties shaded by Flourishing Life Year composite score. Scroll or pinch to zoom; drag to pan."></svg>
+           aria-label="Choropleth map of US counties shaded by Flourishing Life Year score. Scroll or pinch to zoom; drag to pan."></svg>
       <div class="zoom-controls" role="group" aria-label="Zoom controls">
         <button id="zoom-in"  type="button" aria-label="Zoom in">+</button>
         <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
@@ -2591,7 +2591,7 @@
     </div>
 
     <div class="legend-row">
-      <span class="value" id="legend-label">Composite</span>
+      <span class="value" id="legend-label">Lived</span>
       <div>
         <div class="legend-bar" aria-hidden="true"></div>
         <div class="legend-ticks">
@@ -2720,20 +2720,19 @@
         Person-level FLY sums to county totals, county to state, state to national — the same additive structure as GDP. Most-recent national total: <strong><span id="eq-rollup-current">—</span></strong> Flourishing Life Years.<span class="eq-deprivation-flag" id="eq-rollup-deprivation"></span> The frozen-2019 accounting (anchored at 2019 = 100) is in <a href="#balance">§ The national balance</a> below.
       </div>
 
-      <!-- Per-person loss-weighting preview (v1.0 methodology proposal).
-           Mocked up locally for visual review before adopting. The current
-           §02 equation above stays the official methodology; this block
-           previews how the same person scores under the proposed extension. -->
+      <!-- Per-person FLY scoring — Nominal vs Lived, side by side. The
+           equation above produces the Nominal figure; loss-weighting on top
+           produces the Lived figure. -->
       <div class="eq-preview">
-        <span class="eq-preview-banner">v1.0 methodology · adopted 2026-05-03 · soak review 2026-05-15</span>
-        <div class="eq-preview-head">Per-person FLY: the two scorings, side by side.</div>
+        <span class="eq-preview-banner">Per-person FLY · the two readings</span>
+        <div class="eq-preview-head">Nominal and Lived, side by side.</div>
         <div class="eq-preview-sublede">
-          Same five-domain profile, scored two ways. <strong>Nominal</strong> is the original additive method (Strong = 0.20, Adequate = 0.10, Below = 0.00) — the face-value figure the §02 equation produces. <strong>Lived</strong> is the v1.0 method — per-person loss-weighting where Below contributions actively subtract. The example below is the "doing great except wealth" person (four Strong, one Below in wealth) — exactly the case where the additive ledger silently under-counts a single weak domain.
+          Same five-domain profile, scored two ways. <strong>Nominal</strong> is the additive face-value figure the §02 equation produces (Strong = 0.20, Adequate = 0.10, Below = 0.00). <strong>Lived</strong> is the loss-weighted version — Below contributions actively subtract at 2× weight. The example below is the "doing great except wealth" person (four Strong, one Below in wealth) — exactly the case where the additive ledger silently under-counts a single weak domain.
         </div>
 
         <div class="eq-preview-grid">
           <div class="eq-preview-col">
-            <div class="eq-preview-col-head">Nominal — face-value additive (legacy)</div>
+            <div class="eq-preview-col-head">Nominal — face-value additive</div>
             <div class="eq-preview-formula">
               <div class="eq-preview-row strong"><span>Purchasing power · Strong</span><span>+0.20</span></div>
               <div class="eq-preview-row below"><span>Wealth · Below</span><span>0.00</span></div>
@@ -2745,7 +2744,7 @@
             </div>
           </div>
           <div class="eq-preview-col lived">
-            <div class="eq-preview-col-head">v1.0 lived (current — per-person loss-weighted)</div>
+            <div class="eq-preview-col-head">Lived — per-person loss-weighted</div>
             <div class="eq-preview-formula">
               <div class="eq-preview-row preview-baseline"><span>Baseline (5 × 0.10 = "all Adequate")</span><span>+0.50</span></div>
               <div class="eq-preview-row strong"><span>Purchasing power · Strong (+0.10)</span><span>+0.10</span></div>
@@ -2760,11 +2759,11 @@
         </div>
 
         <div class="eq-preview-impact">
-          <strong>The reading.</strong> Under v0.9, the wealth-zero contributes nothing — silent. Under v1.0, it actively drags the score down by 0.10. The difference is the lived cost of one weak domain that the additive ledger absorbed without registering. Range under v1.0: <strong>−0.50</strong> (5 Below) to <strong>+1.00</strong> (5 Strong); 5 Adequate still scores <strong>0.50</strong>; 5 Strong still scores <strong>1.00</strong>. Only the Below penalty changes.
+          <strong>The reading.</strong> Under Nominal, the wealth-zero contributes nothing — silent. Under Lived, it actively drags the score down by 0.10. The difference is the lived cost of one weak domain that the additive ledger absorbed without registering. Lived range: <strong>−0.50</strong> (5 Below) to <strong>+1.00</strong> (5 Strong); 5 Adequate still scores <strong>0.50</strong>; 5 Strong still scores <strong>1.00</strong>. Only the Below penalty changes.
         </div>
 
         <div class="eq-preview-impact">
-          <strong>What's running where.</strong> Per-person FLY in <a href="/assessment">the assessment</a> is now scored both ways, with the v1.0 lived figure as the headline. The county map's "Lived FLY (v1.0)" view aggregates v1.0 person-level scores up via PUMS → PUMA → county. The §The national balance headline figures stay aggregate-loss-weighted (FLY<sub>nominal, 2019</sub> × (1 + weighted change)), as before — that adjustment is mathematically distinct from but consistent with the per-person v1.0 formula. See <a href="#why-losses">§ Why losses count double</a> for the unifying principle.
+          <strong>What's running where.</strong> Per-person FLY in <a href="/assessment">the assessment</a> is scored both ways, with Lived as the headline. The county map's "Lived" view aggregates person-level scores up via PUMS → PUMA → county; the "Nominal" view shows the same data without loss-weighting. National-level headline figures use FLY<sub>nominal, 2019</sub> × (1 + loss-weighted change) — the same loss-aversion principle, applied at aggregate scale. See <a href="#why-losses">§ Why losses count double</a> for the unifying rule.
         </div>
 
         <div class="eq-preview-impact">
@@ -2797,9 +2796,9 @@
 
       <div class="balance-chart-card balance-secondary">
         <h3>By domain, each anchored at 2019 = 100</h3>
-        <div class="balance-sublabel">Per-domain FLY contribution per year, plus the composite, on a shared axis. Each line is the share of Americans clearing that domain's 2019 bar — Strong + half-credit-Adequate — indexed to 2019 = 100.</div>
+        <div class="balance-sublabel">Per-domain FLY contribution per year, plus the lived line, on a shared axis. Each line is the share of Americans clearing that domain's 2019 bar — Strong + half-credit-Adequate — indexed to 2019 = 100.</div>
         <svg class="balance-chart-svg" data-which="per_domain" viewBox="0 0 880 320" role="img"
-             aria-label="Per-domain FLY contribution by year, 5 lines plus composite."></svg>
+             aria-label="Per-domain FLY contribution by year, 5 lines plus the lived aggregate."></svg>
         <div class="balance-legend" id="balance-legend"></div>
       </div>
 
@@ -2815,7 +2814,7 @@
         <strong>2020 gap.</strong> Census did not release a 2020 ACS 1-year PUMS due to COVID-era survey-response quality concerns. The trend interpolates visually across the gap; no synthetic 2020 estimate is published.
       </p>
       <p class="balance-footnote">
-        <strong>Methodology (v0.9).</strong> Every adult (18+) in PUMS is scored Strong / Adequate / Below across the five domains using absolute 2019-frozen thresholds. Adult FLY = 0.20 × #Strong + 0.10 × #Adequate (range 0.00–1.00). <em>Children inherit the weighted-mean adult FLY of their household</em> — a 5-year-old in a Strong-flourishing home is flourishing; her score is the average of the adults raising her. Group-quarters children (foster care, juvenile detention, institutional placement) score 0, since institutional placement is, by the framework's own logic, a family-domain failure. National total FLY is the PWGTP-weighted sum across the full US population. The thresholds are the same across years — so an increase in the index means more Americans clearing the 2019 bar, not just outranking each other.
+        <strong>Methodology.</strong> Every adult (18+) in PUMS is scored Strong / Adequate / Below across the five domains using absolute 2019-frozen thresholds. Adult Nominal FLY = 0.20 × #Strong + 0.10 × #Adequate (range 0.00–1.00). <em>Children inherit the weighted-mean adult FLY of their household</em> — a 5-year-old in a Strong-flourishing home is flourishing; her score is the average of the adults raising her. Group-quarters children (foster care, juvenile detention, institutional placement) score 0, since institutional placement is, by the framework's own logic, a family-domain failure. National total FLY is the PWGTP-weighted sum across the full US population. The thresholds are the same across years — so an increase in the index means more Americans clearing the 2019 bar, not just outranking each other.
       </p>
       <p class="balance-footnote">
         <strong>Most-recent-year cutoff:</strong> the trend extends to 2024, the most recent year with ACS 1-year PUMS published. The 2025 number arrives in fall 2026.
@@ -2872,8 +2871,8 @@
         <p><strong>What you'll see on this site.</strong> Lived FLY is the headline metric in §The national picture, §02 (rollup), §The national balance (chart and summary), and §05 (cost-per-FLY). Nominal figures still appear in lighter type beside the lived ones, so the loss-weighting drag is never hidden — only made the primary reading. Domains below their 2019 bar carry a small badge on their card. The point is to make the asymmetry structural, never decorative.</p>
 
         <div class="lossweight-rule">
-          <strong>v0.10 methodology entry — locked.</strong>
-          Loss-weighting factor = 2.0×, applied to per-domain change measures relative to the 2019 baseline. The lived national total is derived from FLY<sub>nominal, 2019</sub> × (1 + loss-weighted % change) and is the headline metric in §02, §The national balance, and §05; nominal totals are shown beside it for audit. Per-person FLY scores and per-county composites are unmodified — those are levels, not changes. The 2× factor is locked at the empirical loss-aversion coefficient from Kahneman &amp; Tversky 1992; revisiting it requires a methodology version bump.
+          <strong>The rule.</strong>
+          Loss-weighting factor = 2.0×, applied uniformly: at per-person scoring (Lived FLY = 0.50 + 0.10 × #Strong − 0.20 × #Below, derived as Nominal + loss-weighted deviations from baseline) and at the national-aggregate level (Lived total = FLY<sub>nominal, 2019</sub> × (1 + loss-weighted % change)). The 2× factor is anchored to the empirical loss-aversion coefficient from Kahneman &amp; Tversky 1992. Same rule everywhere change is reported.
         </div>
 
         <p class="lossweight-cite">
@@ -3218,7 +3217,7 @@
       <div class="trends-header">
         <h2>Five domains, <em>fifteen years.</em></h2>
         <p class="trends-lede">
-          The county FLY index is relative — each release re-percentile-ranks counties against each other, so it can't speak to whether the nation is moving forward or back. To answer that question we need <em>absolute levels</em>. These are the national-level headline indicators per domain, drawn from the same federal sources, year by year. Change figures show relative growth from the first year to the last.
+          The county FLY map shows a snapshot — one release at a time. To answer "is the nation moving forward or back?" we need <em>absolute levels over time</em>. These are the national-level headline indicators per domain, drawn from the same federal sources, year by year. Change figures show relative growth from the first year to the last.
         </p>
       </div>
 
@@ -3295,7 +3294,7 @@
       <div class="step">
         <div class="step-num">iii.</div>
         <h4 class="step-title">Score</h4>
-        <p class="step-body">Convert each indicator to a national percentile rank (1–100). Compose with equal weights — within each domain and across the five — using a geometric mean. A deficit in any one domain visibly pulls the composite down.</p>
+        <p class="step-body">Each domain is scored against absolute frozen-2019 thresholds (Strong / Adequate / Below). Per-person Nominal FLY = 0.20 × #Strong + 0.10 × #Adequate. Lived FLY layers loss-weighting on top: Below contributions actively subtract at 2× weight, so a deficit in any one domain visibly pulls the score down.</p>
       </div>
       <div class="step">
         <div class="step-num">iv.</div>
@@ -3351,7 +3350,7 @@
         </ul>
       </div>
       <p class="method-table-note">
-        A county's <em>composite</em> requires data on at least 4 of 5 domains. With one domain suppressed (structurally — see clarification below), the composite is computed from the four available and flagged on hover. With two or more suppressed, the county shows as gray on the map. High-noise survey estimates are <em>flagged for reliability</em>, not suppressed — they still contribute to the composite, but the map fades them and the tooltip shows the MOE so a reader can decide. <strong>No imputation, ever</strong> — no state averages, no nearest-neighbor fill, no modeled estimates. The number is either reproducible from federal data, or it isn't.
+        A county's <em>summary score</em> requires data on at least 4 of 5 domains. With one domain suppressed (structurally — see clarification below), the score is computed from the four available and flagged on hover. With two or more suppressed, the county shows as gray on the map. High-noise survey estimates are <em>flagged for reliability</em>, not suppressed — they still contribute to the score, but the map fades them and the tooltip shows the MOE so a reader can decide. <strong>No imputation, ever</strong> — no state averages, no nearest-neighbor fill, no modeled estimates. The number is either reproducible from federal data, or it isn't.
       </p>
       <p class="method-table-note method-table-footnote method-table-stance">
         <strong>The family-domain editorial position (Q8.6).</strong> The index treats stable two-parent households with children as the family-domain definition of flourishing past age 30, on the empirical grounds that this household configuration produces the strongest measured outcomes on income, wealth accumulation, child educational attainment, and adult mortality. <em>This is a normative position, not a neutral observation.</em> People who flourish outside this configuration — never-married, divorced, child-free, single-parent, same-sex — are real and not failing; the index simply does not register their household structure as flourishing on this domain. The position is empirical, not moral; the moral question of whether American policy should support this configuration is downstream. The county-map indicator (married-couple share of children under 18) reverses the prior cohabiting-couple inclusion to anchor the indicator on the position the index actually takes.
@@ -3371,7 +3370,7 @@
       </div>
       <div class="principle">
         <h4 class="principle-title">Indicators, not index worship</h4>
-        <p class="principle-body">The composite matters less than its components. Every page shows the underlying indicators driving the score — drill down until the claim is falsifiable.</p>
+        <p class="principle-body">The summary matters less than its components. Every page shows the underlying indicators driving the score — drill down until the claim is falsifiable.</p>
       </div>
       <div class="principle">
         <h4 class="principle-title">Open by construction</h4>
@@ -3574,8 +3573,8 @@ const DOMAIN_ORDER = [
   ["education",         "Education"],
 ];
 const VIEW_LABEL = {
-  lived_v1: "Lived FLY (v1.0 mock)",
-  composite: "Composite (v0.9 percentile)",
+  lived_v1: "Lived",
+  nominal: "Nominal",
   purchasing_power: "Purchasing power",
   wealth: "Wealth", family: "Family",
   health: "Health", education: "Education",
@@ -3810,7 +3809,7 @@ async function loadNationalTrends() {
       label: "National FLY index",
       unit: `geometric mean of all five domains, ${baselineYear ?? "—"} = 100`,
       format: "index",
-      note: "A single number per year derived from the five domain series above. If every domain were unchanged from the baseline, this would stay at 100; if all five gained equally, it would rise. The geometric mean penalizes lopsided gains the same way the county composite does — a big lift in one domain can't fully compensate for a drop in another.",
+      note: "A single number per year derived from the five domain series above. If every domain were unchanged from the baseline, this would stay at 100; if all five gained equally, it would rise. The Lived line on the §balance chart applies loss-weighting on top of this — a big lift in one domain can't fully compensate for a drop in another.",
       values: compValues,
     };
 
@@ -4676,7 +4675,7 @@ async function loadBalance() {
     const legend = document.getElementById("balance-legend");
     legend.innerHTML = BALANCE_DOMAIN_ORDER.map(([key, label, color]) =>
       `<span class="balance-legend-row" style="--c: ${color}">${label}</span>`
-    ).join("") + `<span class="balance-legend-row composite">Lived composite (loss-weighted)</span>`;
+    ).join("") + `<span class="balance-legend-row composite">Lived (loss-weighted)</span>`;
 
     // Tertiary chart: loss-weighted view of the latest snapshot. The
     // returned stats also drive the §02 deprivation flag, the per-card
@@ -4837,9 +4836,9 @@ async function loadMap() {
       });
     }
     const livedV1Mode = livedLiveByGeoid.size > 0 ? "live" : "mock";
-    console.info(`[map] v1.0 lived FLY mode: ${livedV1Mode} (${livedLiveByGeoid.size} live rows)`);
+    console.info(`[map] lived/nominal mode: ${livedV1Mode} (${livedLiveByGeoid.size} live rows)`);
 
-    let currentView = "lived_v1";  // v1.0 lived FLY default
+    let currentView = "lived_v1";  // Lived FLY is the default view
 
     // Cache per geoid so we don't recompute / re-look-up on every hover.
     // In live mode the cache holds the parsed Supabase row shape; in mock
@@ -4876,9 +4875,12 @@ async function loadMap() {
         const l = getLived(geoid);
         return l == null ? null : livedFLYToDisplay(l.lived);
       }
-      if (view === "composite") {
-        const c = compByGeoid.get(geoid);
-        return c && c.composite != null ? c.composite : null;
+      if (view === "nominal") {
+        const l = getLived(geoid);
+        // Nominal is in 0–1 FLY space (0 worst, 1 best). Convert to display
+        // 0–100 the same way livedFLYToDisplay does: (raw + 0.50) / 1.50 × 100.
+        // raw_fly is always >= 0 by construction so this lands in 33–100.
+        return l == null ? null : Math.max(0, Math.min(100, ((l.raw + 0.50) / 1.50) * 100));
       }
       const dom = domainsByGeoid.get(geoid);
       return dom && dom[view] && dom[view].pct != null ? dom[view].pct : null;
@@ -4886,18 +4888,17 @@ async function loadMap() {
 
     function isFlagged(geoid, view) {
       const dom = domainsByGeoid.get(geoid);
-      if (view === "lived_v1") {
+      if (view === "lived_v1" || view === "nominal") {
         // Live mode: trust the DB-stored reliability_flag (PUMS sample size).
-        // Mock mode: fall back to per-domain MOE > 0.30 union, same as v0.9.
+        // Fallback mode: per-domain MOE > 0.30 union of any domain.
         if (livedV1Mode === "live") {
           const r = livedLiveByGeoid.get(geoid);
           return r ? !!r.reliabilityFlag : false;
         }
-      }
-      if (!dom) return false;
-      if (view === "composite" || view === "lived_v1") {
+        if (!dom) return false;
         return Object.values(dom).some(d => d.moe != null && d.moe > 0.30);
       }
+      if (!dom) return false;
       const d = dom[view];
       return d && d.moe != null && d.moe > 0.30;
     }
@@ -4913,31 +4914,42 @@ async function loadMap() {
       .interpolate(d3.interpolateLab)
       .clamp(true);
 
-    // Lived FLY (v1.0) gets its own diverging palette anchored at the
-    // *empirical* percentiles of the data, not the theoretical [-0.5, 1.0]
-    // range. ~90% of counties live in [0.45, 0.77], so stretching the color
-    // spectrum across that band makes the differences inside the bell curve
-    // legible. Below-median counties read warm (toward accent red), above
-    // read cool (toward deep green); the median is paper-cream-neutral.
+    // Lived and Nominal both get diverging palettes anchored at the
+    // *empirical* percentiles of their data (not theoretical ranges).
+    // ~90% of counties live in a narrow band, so stretching the color
+    // spectrum across that band makes the differences inside the bell
+    // curve legible. Below-median counties read warm, above read cool;
+    // the median is paper-cream-neutral.
     let colorLived = null;
+    let colorNominal = null;
     let livedPercentiles = null;
-    function buildColorLived() {
-      const vals = [];
+    let nominalPercentiles = null;
+    function buildColorScales() {
+      const livedVals = [], nominalVals = [];
       for (const f of counties.features) {
         const l = getLived(f.properties.GEOID);
-        if (l) vals.push(l.lived);
+        if (l == null) continue;
+        livedVals.push(l.lived);
+        nominalVals.push(l.raw);
       }
-      if (vals.length < 10) return;
-      vals.sort((a, b) => a - b);
-      const pct = (p) => vals[Math.max(0, Math.min(vals.length - 1, Math.floor((vals.length - 1) * p)))];
-      livedPercentiles = { p05: pct(0.05), p50: pct(0.50), p95: pct(0.95) };
-      colorLived = d3.scaleLinear()
-        .domain([livedPercentiles.p05, livedPercentiles.p50, livedPercentiles.p95])
-        .range(["#9e2a16", "#e8dcc0", "#1a3a2e"])
-        .interpolate(d3.interpolateLab)
-        .clamp(true);
+      const pct = (vals, p) => vals[Math.max(0, Math.min(vals.length - 1, Math.floor((vals.length - 1) * p)))];
+      const PALETTE = ["#9e2a16", "#e8dcc0", "#1a3a2e"];
+      if (livedVals.length >= 10) {
+        livedVals.sort((a, b) => a - b);
+        livedPercentiles = { p05: pct(livedVals, 0.05), p50: pct(livedVals, 0.50), p95: pct(livedVals, 0.95) };
+        colorLived = d3.scaleLinear()
+          .domain([livedPercentiles.p05, livedPercentiles.p50, livedPercentiles.p95])
+          .range(PALETTE).interpolate(d3.interpolateLab).clamp(true);
+      }
+      if (nominalVals.length >= 10) {
+        nominalVals.sort((a, b) => a - b);
+        nominalPercentiles = { p05: pct(nominalVals, 0.05), p50: pct(nominalVals, 0.50), p95: pct(nominalVals, 0.95) };
+        colorNominal = d3.scaleLinear()
+          .domain([nominalPercentiles.p05, nominalPercentiles.p50, nominalPercentiles.p95])
+          .range(PALETTE).interpolate(d3.interpolateLab).clamp(true);
+      }
     }
-    buildColorLived();
+    buildColorScales();
 
     const svg = d3.select("#map-svg");
     svg.selectAll("*").remove();
@@ -4963,43 +4975,35 @@ async function loadMap() {
         html += `<div class="${cls}"><span class="domain-label">${label}</span>` +
                 `<span class="domain-pct">${fmtPct(pct)}${flag}</span></div>`;
       }
-      // v0.9 percentile composite row
-      if (c && c.composite != null) {
-        const cls = currentView === "composite" ? "score-row composite-row row-active" : "score-row composite-row";
-        html += `<div class="${cls}"><span class="domain-label">Composite (${c.domains_available}/5, v0.9)</span><span class="domain-pct">${c.composite.toFixed(1)}</span></div>`;
-      } else if (c) {
-        html += `<div class="gray-note composite-row">Insufficient data (${c.domains_available}/5 domains)</div>`;
-      } else {
-        html += `<div class="gray-note composite-row">No data for this county code in this release</div>`;
-      }
-      // v1.0 lived FLY row — always shown so the comparison is visible
-      // alongside the v0.9 composite, regardless of which view is active.
-      // In live mode includes the real PUMA source + sample size; in mock
-      // mode shows the synthesized counts and labels itself "(mock)".
+      // Both summary rows (Nominal + Lived) come from the same getLived()
+      // call — same five-domain data, same anchor, just different rule.
+      // In live mode includes the real PUMA source + sample size; in
+      // fallback mode shows the synthesized counts.
       const lived = getLived(geoid);
       if (lived) {
-        const cls = currentView === "lived_v1" ? "score-row composite-row row-active" : "score-row composite-row";
-        const livedSign = lived.lived >= 0 ? "" : "−";
-        const livedAbs = Math.abs(lived.lived).toFixed(2);
         const fmtN = (n) => Number(n).toFixed(1);
         const detail = `${fmtN(lived.strong)}S · ${fmtN(lived.adequate)}A · ${fmtN(lived.below)}B`;
-        const label = livedV1Mode === "live" ? "Lived FLY (v1.0)" : "Lived FLY (v1.0 mock)";
-        let footer = `${detail} · raw ${lived.raw.toFixed(2)}`;
+        let pumaInfo = "";
         if (livedV1Mode === "live" && lived.pumaSource) {
           const source = lived.pumaSource === "multi-PUMA pop-weighted"
             ? "multi-PUMA"
             : `PUMA ${lived.pumaSource}`;
-          footer += ` · ${source}`;
-          if (lived.sampleSize != null) {
-            footer += ` · n=${lived.sampleSize.toLocaleString()}`;
-          }
-          if (lived.reliabilityFlag) {
-            footer += ` · small-PUMA flag`;
-          }
+          pumaInfo += ` · ${source}`;
+          if (lived.sampleSize != null) pumaInfo += ` · n=${lived.sampleSize.toLocaleString()}`;
+          if (lived.reliabilityFlag)    pumaInfo += ` · small-PUMA flag`;
         }
-        html += `<div class="${cls}"><span class="domain-label">${label}</span><span class="domain-pct">${livedSign}${livedAbs} <span class="moe-flag">${footer}</span></span></div>`;
-      } else if (currentView === "lived_v1") {
-        html += `<div class="gray-note composite-row">v1.0 lived FLY: no data for this county in this release</div>`;
+        // Nominal row
+        const nomCls = currentView === "nominal" ? "score-row composite-row row-active" : "score-row composite-row";
+        html += `<div class="${nomCls}"><span class="domain-label">Nominal</span><span class="domain-pct">${lived.raw.toFixed(2)} <span class="moe-flag">${detail}${pumaInfo}</span></span></div>`;
+        // Lived row
+        const livCls = currentView === "lived_v1" ? "score-row composite-row row-active" : "score-row composite-row";
+        const livedSign = lived.lived >= 0 ? "" : "−";
+        const livedAbs = Math.abs(lived.lived).toFixed(2);
+        html += `<div class="${livCls}"><span class="domain-label">Lived</span><span class="domain-pct">${livedSign}${livedAbs}</span></div>`;
+      } else if (c) {
+        html += `<div class="gray-note composite-row">Insufficient data (${c.domains_available}/5 domains)</div>`;
+      } else {
+        html += `<div class="gray-note composite-row">No data for this county code in this release</div>`;
       }
       return html;
     }
@@ -5075,6 +5079,10 @@ async function loadMap() {
             const lived = getLived(geoid);
             return lived ? colorLived(lived.lived) : "#c9bfa8";
           }
+          if (currentView === "nominal" && colorNominal) {
+            const lived = getLived(geoid);
+            return lived ? colorNominal(lived.raw) : "#c9bfa8";
+          }
           const v = getValue(geoid, currentView);
           return v == null ? "#c9bfa8" : color(v);
         })
@@ -5093,10 +5101,10 @@ async function loadMap() {
       }
       document.getElementById("meta-scored").textContent = scored.toLocaleString();
       document.getElementById("meta-gray").textContent = gray.toLocaleString();
-      // v1.0 lived FLY: report range in FLY space, not display-space.
+      // Lived / Nominal: report range in 0–1 FLY space, not display-space.
       let rangeText = "—";
       if (scored) {
-        if (currentView === "lived_v1") {
+        if (currentView === "lived_v1" || currentView === "nominal") {
           // vmin/vmax are in display space (0–100); convert back to FLY space.
           const lo = (vmin / 100) * 1.50 - 0.50;
           const hi = (vmax / 100) * 1.50 - 0.50;
@@ -5109,23 +5117,25 @@ async function loadMap() {
       const label = VIEW_LABEL[currentView];
       document.getElementById("meta-range-label").textContent = `${label} range`;
       document.getElementById("legend-label").textContent = label;
-      // Swap legend tick labels and the legend-bar gradient itself based
-      // on view. v0.9 / per-domain stays the existing tan→green ramp at
-      // 1/25/50/75/100 percentile-rank ticks. v1.0 lived FLY uses the
-      // empirical-percentile diverging palette with p05/p50/p95 ticks
-      // shown verbatim (so the color anchors are honest).
+      // Swap legend tick labels and the legend-bar gradient based on view.
+      // Per-domain views stay on the percentile-rank tan→green ramp with
+      // 1/25/50/75/100 ticks. Lived / Nominal use the empirical-percentile
+      // diverging palette with p05/p50/p95 ticks shown verbatim.
       const ticksEl = document.querySelector(".legend-ticks");
       const barEl = document.querySelector(".legend-bar");
-      const fmtLived = (v) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2);
-      if (currentView === "lived_v1" && livedPercentiles) {
-        const { p05, p50, p95 } = livedPercentiles;
+      const fmtFLY = (v) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2);
+      const pctsForView =
+        currentView === "lived_v1" ? livedPercentiles :
+        currentView === "nominal"  ? nominalPercentiles : null;
+      if (pctsForView) {
+        const { p05, p50, p95 } = pctsForView;
         if (ticksEl) {
           ticksEl.innerHTML =
-            `<span>${fmtLived(p05)}</span>` +
+            `<span>${fmtFLY(p05)}</span>` +
             `<span></span>` +
-            `<span>${fmtLived(p50)}</span>` +
+            `<span>${fmtFLY(p50)}</span>` +
             `<span></span>` +
-            `<span>${fmtLived(p95)}</span>`;
+            `<span>${fmtFLY(p95)}</span>`;
         }
         if (barEl) {
           barEl.style.background = "linear-gradient(to right, #9e2a16, #e8dcc0, #1a3a2e)";
@@ -5135,24 +5145,24 @@ async function loadMap() {
           ticksEl.innerHTML = `<span>1</span><span>25</span><span>50</span><span>75</span><span>100</span>`;
         }
         if (barEl) {
-          barEl.style.background = "";  // restore CSS default (the v0.9 ramp)
+          barEl.style.background = "";  // restore CSS default
         }
       }
       // View-aware byline: tells the reader what they're looking at right
-      // now in plain language. Rewrites for each of the three view families
-      // (lived FLY · composite · single-domain).
+      // now in plain language. Three view families: Lived · Nominal ·
+      // single-domain percentile rank.
       const byline = document.getElementById("map-view-byline");
       if (byline) {
         let html = "", modeClass = "";
         if (currentView === "lived_v1") {
           modeClass = "mode-lived";
           const liveSuffix = livedV1Mode === "live"
-            ? "Live PUMS-derived data."
-            : "<em>Mock</em> — synthesized from v0.9 percentiles for visual review.";
-          html = `<strong>Lived FLY (v1.0).</strong> Absolute lived flourishing per person, in <span class="units">−0.50 to +1.00</span> FLY units against the 2019-frozen thresholds. Below-baseline domains weighted 2× per loss aversion. ${liveSuffix} Toggle to "Composite (v0.9)" for the relative-rank reading instead.`;
-        } else if (currentView === "composite") {
+            ? ""
+            : " <em>Fallback</em> — synthesized from per-domain percentile data because the production table is empty for this release.";
+          html = `<strong>Lived.</strong> Per-person flourishing with below-2019 domains weighted 2× per loss aversion. Range <span class="units">−0.50 to +1.00</span> FLY units against the frozen-2019 thresholds. Toggle to <em>Nominal</em> for the additive face-value reading.${liveSuffix}`;
+        } else if (currentView === "nominal") {
           modeClass = "mode-composite";
-          html = `<strong>Composite (v0.9 percentile).</strong> Each county's geometric-mean rank against the other 3,143, in <span class="units">1 to 100</span> percentile space. Cross-sectional and unitless — re-ranks each release. Toggle to "Lived FLY (v1.0)" for an absolute lived-flourishing reading instead.`;
+          html = `<strong>Nominal.</strong> Per-person additive flourishing, no loss-weighting. Each Strong domain worth 0.20, each Adequate 0.10, each Below 0. Range <span class="units">0.00 to +1.00</span> FLY units against the frozen-2019 thresholds. Toggle to <em>Lived</em> for the loss-weighted reading.`;
         } else {
           modeClass = "mode-domain";
           const domLabels = {
@@ -5161,7 +5171,7 @@ async function loadMap() {
             health: "Health", education: "Education",
           };
           const dom = domLabels[currentView] || "Domain";
-          html = `<strong>${dom} — domain percentile rank.</strong> Each county's rank among 3,144 on this single domain (<span class="units">1 to 100</span>). Single-indicator view; toggle to a summary metric (Lived FLY or Composite) for the cross-domain readings.`;
+          html = `<strong>${dom} — domain percentile rank.</strong> Each county's rank among 3,144 on this single domain (<span class="units">1 to 100</span>). Single-indicator view; toggle to <em>Lived</em> or <em>Nominal</em> for the cross-domain summaries.`;
         }
         byline.className = "map-view-byline " + modeClass;
         byline.innerHTML = html;
@@ -5179,13 +5189,9 @@ async function loadMap() {
       }
     }
 
-    // If live data is loaded for v1.0, retitle the toggle button so the
-    // user sees "Lived FLY (v1.0)" instead of "(v1.0 mock)". The map.aria
-    // label and the tooltip already adapt by mode via getLived().
-    if (livedV1Mode === "live") {
-      const btn = document.querySelector('.domain-selector button[data-view="lived_v1"]');
-      if (btn) btn.textContent = "Lived FLY (v1.0)";
-    }
+    // Toggle button labels are already neutral ("Lived" / "Nominal") and
+    // don't need rewriting between fallback and live modes — the byline
+    // surfaces the live-vs-fallback distinction in prose instead.
     applyView();
 
     document.querySelectorAll(".domain-selector button").forEach(btn => {
