@@ -60,10 +60,14 @@ from run_pums import (
 # v1.0 default to most-recent year. PUMS 2024 was released fall 2025.
 DEFAULT_YEAR = 2024
 
-# Reliability flag: PUMA with PUMS person count below this threshold is
-# flagged on the map (65% opacity). Threshold is tunable per
-# methodology_v1_0.md; 1500 ≈ 1.5% of a typical PUMA's ~100k residents.
-RELIABILITY_THRESHOLD = 1500
+# Reliability flag: county whose underlying PUMS sample is below this
+# threshold is rendered at 65% opacity on the map. At n=1000, standard
+# error on a binary share is ±3pp at 95% CI — a meaningful resolution
+# floor. Initial proposal was 1500 (~26% flag rate, fights the visual
+# signal); soak-period sweep against the actual data showed 1000 gives
+# a 1.2% flag rate (39 counties) which makes the flag a real warning
+# rather than a soft caution. See methodology_v1_0.md.
+RELIABILITY_THRESHOLD = 1000
 
 # Per-person FLY constants — match pums_thresholds.person_fly_from_tiers
 # but emit lived FLY simultaneously per the v1.0 formula.

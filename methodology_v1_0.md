@@ -99,9 +99,11 @@ PUMS data resolves to **PUMA** (Public Use Microdata Area), not county. Each PUM
 
 ## Reliability flag for small PUMAs
 
-Borrowing the existing ACS MOE > 30% pattern (v0.9 amendment): PUMAs with PUMS sample size below a threshold (TBD — proposed `n < 1500` weighted PUMS records, mirroring the existing `n < 20` rule for CDC WONDER but at PUMS scale) get a reliability flag. Flagged counties:
+Borrowing the existing ACS MOE > 30% pattern (v0.9 amendment): counties whose underlying PUMS sample is below a threshold get a reliability flag. **Threshold = `n < 1000` PUMS person records** (selected after a soak-period sweep against 2024 data, locked 2026-05-03). At n=1000 the standard error on a binary share is ≈ ±3pp at 95% CI — a meaningful resolution floor. The 1000 cut yields ~1.2% flag rate on the v2025.12 release (39 of 3,143 counties), making the flag a genuine "undersized PUMA" warning rather than a soft caution that flags half the country. Earlier proposals at 1,500 (~26% flag rate) were rejected for fighting the visual signal of the percentile-stretched map palette.
+
+Flagged counties:
 - Render at 65% opacity on the map (matches v0.9 reliability-flag treatment).
-- Tooltip shows "PUMS sample size flag: ±X% reliability."
+- Tooltip surfaces the actual PUMA-level PUMS sample size next to a "small-PUMA flag" note.
 - Composite is computed and ranked, but flagged so a reader can decide.
 
 Suppression (gray on the map) is reserved for PUMAs without sufficient PUMS responses to compute any per-domain scoring — same conceptual rule as v0.9 (data unavailability ≠ noise).
