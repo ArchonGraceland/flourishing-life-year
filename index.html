@@ -2450,15 +2450,15 @@
            §02 equation above stays the official methodology; this block
            previews how the same person scores under the proposed extension. -->
       <div class="eq-preview">
-        <span class="eq-preview-banner">Methodology preview · v1.0 proposal · not yet adopted</span>
-        <div class="eq-preview-head">Per-person loss-weighting — same person, two scorings.</div>
+        <span class="eq-preview-banner">v1.0 methodology · adopted 2026-05-03 · soak review 2026-05-15</span>
+        <div class="eq-preview-head">Per-person FLY: the two scorings, side by side.</div>
         <div class="eq-preview-sublede">
-          Same five-domain profile, scored under the current additive method and under the proposed per-person loss-weighting where Below contributions actively subtract. The example below is the "doing great except wealth" person — four Strong domains, one Below in wealth — exactly the case where the current methodology arguably under-counts the lived cost of a single weak domain.
+          Same five-domain profile, scored two ways. <strong>v0.9 raw additive</strong> is the original method (Strong = 0.20, Adequate = 0.10, Below = 0.00). <strong>v1.0 lived</strong> is the current method — per-person loss-weighting where Below contributions actively subtract. The example below is the "doing great except wealth" person (four Strong, one Below in wealth) — exactly the case where the additive ledger silently under-counts a single weak domain.
         </div>
 
         <div class="eq-preview-grid">
           <div class="eq-preview-col">
-            <div class="eq-preview-col-head">Current methodology — raw additive</div>
+            <div class="eq-preview-col-head">v0.9 raw additive (legacy comparison)</div>
             <div class="eq-preview-formula">
               <div class="eq-preview-row strong"><span>Purchasing power · Strong</span><span>+0.20</span></div>
               <div class="eq-preview-row below"><span>Wealth · Below</span><span>0.00</span></div>
@@ -2470,7 +2470,7 @@
             </div>
           </div>
           <div class="eq-preview-col lived">
-            <div class="eq-preview-col-head">Proposed: lived (per-person loss-weighted)</div>
+            <div class="eq-preview-col-head">v1.0 lived (current — per-person loss-weighted)</div>
             <div class="eq-preview-formula">
               <div class="eq-preview-row preview-baseline"><span>Baseline (5 × 0.10 = "all Adequate")</span><span>+0.50</span></div>
               <div class="eq-preview-row strong"><span>Purchasing power · Strong (+0.10)</span><span>+0.10</span></div>
@@ -2485,15 +2485,15 @@
         </div>
 
         <div class="eq-preview-impact">
-          <strong>What changes:</strong> the wealth-zero is no longer silent. Under the current additive ledger it just contributes nothing; under loss-weighting it actively drags the person's score down by 0.10 — closer to how the gap actually feels. Range under the proposal: <strong>−0.50</strong> (5 Below) to <strong>+1.00</strong> (5 Strong); 5 Adequate still scores <strong>0.50</strong>; 5 Strong still scores <strong>1.00</strong>. Only the Below penalty changes.
+          <strong>The reading.</strong> Under v0.9, the wealth-zero contributes nothing — silent. Under v1.0, it actively drags the score down by 0.10. The difference is the lived cost of one weak domain that the additive ledger absorbed without registering. Range under v1.0: <strong>−0.50</strong> (5 Below) to <strong>+1.00</strong> (5 Strong); 5 Adequate still scores <strong>0.50</strong>; 5 Strong still scores <strong>1.00</strong>. Only the Below penalty changes.
         </div>
 
         <div class="eq-preview-impact">
-          <strong>Cascading effects if adopted:</strong> the §02 equation rewrites to "0.50 baseline + Σ(deviation × asymmetric weight)". Per-county composites would recompute as the population-weighted mean of person-level lived FLY (the map's percentile-rank composite is a separate metric and is unaffected). Assessment scores for individuals with weak domains drop visibly. National headline figures don't move much (already loss-weighted at aggregate level), but the methodology aligns: loss-aversion applies uniformly to changes-from-baseline, whether at person or aggregate level. Methodology version bump to <strong>v1.0</strong>.
+          <strong>What's running where.</strong> Per-person FLY in <a href="/assessment">the assessment</a> is now scored both ways, with the v1.0 lived figure as the headline. The county map's "Lived FLY (v1.0)" view aggregates v1.0 person-level scores up via PUMS → PUMA → county. The §The national balance headline figures stay aggregate-loss-weighted (raw_2019 × (1 + weighted change)), as before — that adjustment is mathematically distinct from but consistent with the per-person v1.0 formula. See <a href="#why-losses">§ Why losses count double</a> for the unifying principle.
         </div>
 
         <div class="eq-preview-impact">
-          <strong>Try it on yourself:</strong> the <a href="/assessment">assessment</a> shows your raw FLY score and a preview of your lived FLY score under this proposal — same answers, both readings, side by side.
+          <strong>Try it on yourself.</strong> The <a href="/assessment">assessment</a> shows your FLY score under both methodologies — same answers, both readings, side by side.
         </div>
       </div>
     </div>

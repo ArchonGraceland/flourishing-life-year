@@ -1,8 +1,8 @@
 # Methodology v1.0 — per-person loss-weighting + county lived FLY
 
-**Status:** *Proposal — pending sign-off. Not yet adopted.*
+**Status:** *Adopted 2026-05-03. Soak review 2026-05-15. Locks after soak.*
 **Supersedes:** v0.9 (PUMS person-level FLY) for per-person and county-level scoring.
-**Preserves:** v0.9 national aggregate methodology, frozen-2019 thresholds, additive structure for derived raw totals.
+**Preserves:** v0.9 national aggregate methodology, frozen-2019 thresholds, additive structure for derived raw totals. v0.9 percentile-rank composite remains available on the map as a "v0.9 legacy" toggle for transparency.
 
 ---
 
@@ -147,14 +147,14 @@ create index county_lived_fly_release on county_lived_fly (release_version);
 
 ## Migration plan (phased)
 
-| Phase | What | Authorization |
-|------|------|--------------|
-| 1 | Methodology amendment doc (this file) + frontend mock | ✅ this session |
-| 2 | Schema migration: create `county_lived_fly` table in Supabase | needs explicit go-ahead before applying |
-| 3 | PUMS pipeline extension: PUMA-level scoring + PUMA→county crosswalk + lived FLY computation | needs methodology sign-off |
-| 4 | First v1.0 release: load `county_lived_fly` for release `v2026.05` | needs phase 3 done + soak review |
-| 5 | Frontend swap to live v1.0 data; v0.9 demoted to legacy toggle | needs phase 4 done |
-| 6 | Methodology spec amendment finalized; v1.0 locked | needs all above |
+| Phase | What | Status |
+|------|------|--------|
+| 1 | Methodology amendment doc + frontend mocks | ✅ done 2026-05-03 |
+| 2 | Schema migration: `county_lived_fly` table in Supabase | ✅ done — migration `20260503133200_add_county_lived_fly` |
+| 3 | PUMS pipeline: PUMA-level scoring + PUMA→county crosswalk + lived FLY computation | ✅ done — `pipeline/run_pums_county.py`, validated end-to-end on VT then full 50-state dry-run |
+| 4 | First v1.0 release: load `county_lived_fly` for release `v2025.12` | ✅ done — 3,143 rows live, lived FLY 0.267→0.855, mean 0.639, drag 0.063 vs raw |
+| 5 | Frontend swap to live v1.0 data; v0.9 demoted to legacy toggle | ✅ done — `loadMap` auto-detects `county_lived_fly` rows and flips banner/button/tooltip |
+| 6 | Methodology spec amendment finalized; v1.0 locked | pending soak review 2026-05-15 |
 
 ---
 

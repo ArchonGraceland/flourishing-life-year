@@ -603,23 +603,23 @@
 
     <div class="status-cards" id="status-cards"></div>
 
-    <!-- Per-person FLY preview — methodology proposal v1.0, paired raw and
-         lived score under per-person loss-weighting. Renders from your
-         actual answers above. -->
+    <!-- Per-person FLY: paired raw (v0.9 legacy) and lived (v1.0 current,
+         per-person loss-weighted) scoring of the same five-domain answers
+         above. Both numbers shown so the reader can audit the asymmetry. -->
     <div class="fly-preview" id="fly-preview" style="display:none;">
-      <span class="fly-preview-banner">Methodology preview · v1.0 proposal · not yet adopted</span>
+      <span class="fly-preview-banner">v1.0 methodology · adopted 2026-05-03 · soak review 2026-05-15</span>
       <div class="fly-preview-head">Your Flourishing Life Year score — both readings.</div>
       <div class="fly-preview-sublede">
-        Same answers, two scorings. <strong>Raw</strong> is the current additive method (Strong = 0.20, Adequate = 0.10, Below = 0.00). <strong>Lived</strong> is the proposed per-person loss-weighting where Below contributions actively subtract — a domain at zero is structurally damaging in a way strong domains can't fully compensate for.
+        Same answers, two scorings. <strong>v0.9 raw</strong> is the original additive method (Strong = 0.20, Adequate = 0.10, Below = 0.00). <strong>v1.0 lived</strong> is the current method — per-person loss-weighting where Below contributions actively subtract, because a domain at zero is structurally damaging in a way strong domains can't fully compensate for.
       </div>
       <div class="fly-preview-grid">
         <div class="fly-preview-cell">
-          <div class="fly-preview-label">Current methodology — raw</div>
+          <div class="fly-preview-label">v0.9 raw additive (legacy)</div>
           <div class="fly-preview-val" id="fly-preview-raw">—</div>
           <div class="fly-preview-delta" id="fly-preview-raw-detail">—</div>
         </div>
         <div class="fly-preview-cell lived">
-          <div class="fly-preview-label">Proposed: lived (loss-weighted)</div>
+          <div class="fly-preview-label">v1.0 lived (current — loss-weighted)</div>
           <div class="fly-preview-val" id="fly-preview-lived">—</div>
           <div class="fly-preview-delta" id="fly-preview-lived-detail">—</div>
         </div>
