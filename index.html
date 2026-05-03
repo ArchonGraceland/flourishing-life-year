@@ -1595,6 +1595,7 @@
   .balance-line { fill: none; stroke-linejoin: round; stroke-linecap: round; }
   .balance-line-composite { stroke: var(--ink); stroke-width: 2.4; }
   .balance-line-domain { stroke-width: 1.4; opacity: 0.85; }
+  .balance-line-leader { stroke-width: 0.6; opacity: 0.45; }
   .balance-axis { stroke: var(--rule); stroke-width: 0.6; }
   .balance-axis-text {
     font-family: 'IBM Plex Mono', monospace; font-size: 10.5px;
@@ -3350,9 +3351,9 @@ function renderBalanceLineSVG(svg, dataSeries, opts = {}) {
   // dataSeries: array of {name, color, points: [{year, value}, ...], thick: bool}
   const W = svg.viewBox.baseVal.width || 880;
   const H = svg.viewBox.baseVal.height || 260;
-  // Extra right padding leaves room for the trailing composite-value label
-  // and so the rightmost year tick (text-anchor="middle") doesn't overhang.
-  const PL = 50, PR = 80, PT = 20, PB = 40;
+  // Right padding holds a direct end-of-line label per series ("Purchasing
+  // power", "Composite +2.0%", …) — wide enough for the longest name.
+  const PL = 50, PR = 138, PT = 20, PB = 40;
   // Year axis from min to max across all series
   const allYears = new Set();
   const allValues = [100];  // baseline always 100
@@ -3384,9 +3385,12 @@ function renderBalanceLineSVG(svg, dataSeries, opts = {}) {
   for (const yr of years) {
     svgInner += `<text class="balance-axis-text" x="${xOf(yr).toFixed(1)}" y="${H - PB + 16}" text-anchor="middle">${yr}</text>`;
   }
-  // Series lines + endpoint dots
+  // Series lines + endpoint dots. Collect end-of-line label entries as we go
+  // so we can stack-adjust them after, avoiding overlaps.
+  const endLabels = [];
   for (const s of dataSeries) {
-    const pts = s.points.filter(p => p.value != null)
+    const validPts = s.points.filter(p => p.value != null);
+    const pts = validPts
       .map(p => `${xOf(p.year).toFixed(1)},${yOf(p.value).toFixed(1)}`).join(" ");
     const cls = s.thick ? "balance-line balance-line-composite" : "balance-line balance-line-domain";
     const color = s.thick ? null : s.color;
@@ -3399,16 +3403,44 @@ function renderBalanceLineSVG(svg, dataSeries, opts = {}) {
         svgInner += `<circle cx="${xOf(p.year).toFixed(1)}" cy="${yOf(p.value).toFixed(1)}" r="${s.thick ? 3 : 2.5}" fill="${fill}" />`;
       }
     }
-    // Last-point label for the composite (only) so the trajectory ending number is readable.
-    // Anchored at "start" so text grows rightward into the right padding band, never past it.
-    if (s.thick && s.points.length) {
-      const last = s.points.at(-1);
-      if (last.value != null) {
-        const lx = xOf(last.year) + 8;
-        const ly = yOf(last.value) + 4;
-        svgInner += `<text class="balance-axis-text" x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="start" font-weight="600" fill="var(--ink)">${fmtIndexAsPct(last.value)}</text>`;
-      }
+    if (validPts.length) {
+      const last = validPts.at(-1);
+      const fill = s.thick ? "var(--ink)" : (s.color || "var(--ink-soft)");
+      const text = s.thick
+        ? `Composite ${fmtIndexAsPct(last.value)}`
+        : (s.name || "");
+      endLabels.push({
+        anchorX: xOf(last.year),
+        anchorY: yOf(last.value),
+        y: yOf(last.value),
+        text, fill, weight: s.thick ? 600 : 500, thick: !!s.thick,
+      });
     }
+  }
+  // Stack labels: sort by y, push apart so each clears the next by minGap.
+  // Then a corrective up-pass in case the stack overflows the bottom edge.
+  const minGap = 13;
+  endLabels.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < endLabels.length; i++) {
+    if (endLabels[i].y - endLabels[i - 1].y < minGap) {
+      endLabels[i].y = endLabels[i - 1].y + minGap;
+    }
+  }
+  const yMaxLabel = H - PB - 2;
+  for (let i = endLabels.length - 1; i > 0; i--) {
+    if (endLabels[i].y > yMaxLabel) endLabels[i].y = yMaxLabel;
+    if (endLabels[i - 1].y > endLabels[i].y - minGap) {
+      endLabels[i - 1].y = endLabels[i].y - minGap;
+    }
+  }
+  // Render labels. Draw a thin leader from the endpoint dot to the label
+  // whenever the label was nudged more than 2px from its true y.
+  const labelX = (W - PR + 8).toFixed(1);
+  for (const l of endLabels) {
+    if (Math.abs(l.y - l.anchorY) > 2) {
+      svgInner += `<line class="balance-line-leader" x1="${l.anchorX.toFixed(1)}" y1="${l.anchorY.toFixed(1)}" x2="${labelX}" y2="${l.y.toFixed(1)}" stroke="${l.fill}" />`;
+    }
+    svgInner += `<text class="balance-axis-text" x="${labelX}" y="${(l.y + 3).toFixed(1)}" text-anchor="start" font-weight="${l.weight}" fill="${l.fill}">${l.text}</text>`;
   }
   svg.innerHTML = svgInner;
 }
