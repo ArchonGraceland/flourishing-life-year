@@ -4485,10 +4485,17 @@ async function loadMap() {
       try { return JSON.parse(text); }
       catch (e) { throw new Error(`${label}: parse failed for ${url} — ${e.message}`); }
     };
-    const [topology, composites, domains] = await Promise.all([
+    // v1.0 phase 5: try to fetch county_lived_fly alongside the v0.9 tables.
+    // If rows exist for this release, we're in live mode; if not, we fall
+    // back to the synthesized mock (livedFLYMock) and keep the warning
+    // banner visible. This means the moment phase-4 loads real data into
+    // Supabase, the frontend flips automatically — no code change needed.
+    const [topology, composites, domains, livedRows] = await Promise.all([
       fetchJSON(TOPOLOGY_URL, "topology"),
       fetchAll(`/rest/v1/composite_scores?release_version=eq.${RELEASE}&select=geoid,composite,domains_available`),
       fetchAll(`/rest/v1/domain_scores?release_version=eq.${RELEASE}&select=geoid,domain,percentile,moe_pct`),
+      fetchAll(`/rest/v1/county_lived_fly?release_version=eq.${RELEASE}&select=geoid,lived_fly,raw_fly,n_strong,n_adequate,n_below,puma_source,pums_sample_size,reliability_flag`)
+        .catch((e) => { console.warn("county_lived_fly fetch failed; falling back to mock:", e); return []; }),
     ]);
 
     const compByGeoid = new Map();
@@ -4503,16 +4510,54 @@ async function loadMap() {
       domainsByGeoid.get(r.geoid)[r.domain] = { pct: r.percentile, moe: r.moe_pct };
     }
 
-    let currentView = "lived_v1";  // v1.0 lived FLY (mock) is the new default
+    // v1.0 live data: if county_lived_fly has rows for this release, build a
+    // map from it and switch into "live" mode. Empty result → mock mode.
+    const livedLiveByGeoid = new Map();
+    for (const r of livedRows) {
+      livedLiveByGeoid.set(r.geoid, {
+        lived: Number(r.lived_fly),
+        raw: Number(r.raw_fly),
+        nStrong: Number(r.n_strong),
+        nAdequate: Number(r.n_adequate),
+        nBelow: Number(r.n_below),
+        pumaSource: r.puma_source,
+        sampleSize: r.pums_sample_size,
+        reliabilityFlag: r.reliability_flag,
+      });
+    }
+    const livedV1Mode = livedLiveByGeoid.size > 0 ? "live" : "mock";
+    console.info(`[map] v1.0 lived FLY mode: ${livedV1Mode} (${livedLiveByGeoid.size} live rows)`);
 
-    // Cache lived-FLY mock results per geoid so we don't recompute on every
-    // hover / repaint.
+    let currentView = "lived_v1";  // v1.0 lived FLY default
+
+    // Cache per geoid so we don't recompute / re-look-up on every hover.
+    // In live mode the cache holds the parsed Supabase row shape; in mock
+    // mode it holds the livedFLYMock output. Both shapes share the keys
+    // {lived, raw, ...} that the tooltip and color scale read.
     const livedCache = new Map();
     function getLived(geoid) {
       if (livedCache.has(geoid)) return livedCache.get(geoid);
-      const lived = livedFLYMock(domainsByGeoid.get(geoid));
-      livedCache.set(geoid, lived);
-      return lived;
+      let result = null;
+      if (livedV1Mode === "live") {
+        const r = livedLiveByGeoid.get(geoid);
+        if (r) {
+          result = {
+            lived: r.lived,
+            raw: r.raw,
+            strong: r.nStrong,
+            adequate: r.nAdequate,
+            below: r.nBelow,
+            resolved: 5,
+            pumaSource: r.pumaSource,
+            sampleSize: r.sampleSize,
+            reliabilityFlag: r.reliabilityFlag,
+          };
+        }
+      } else {
+        result = livedFLYMock(domainsByGeoid.get(geoid));
+      }
+      livedCache.set(geoid, result);
+      return result;
     }
 
     function getValue(geoid, view) {
@@ -4530,6 +4575,14 @@ async function loadMap() {
 
     function isFlagged(geoid, view) {
       const dom = domainsByGeoid.get(geoid);
+      if (view === "lived_v1") {
+        // Live mode: trust the DB-stored reliability_flag (PUMS sample size).
+        // Mock mode: fall back to per-domain MOE > 0.30 union, same as v0.9.
+        if (livedV1Mode === "live") {
+          const r = livedLiveByGeoid.get(geoid);
+          return r ? !!r.reliabilityFlag : false;
+        }
+      }
       if (!dom) return false;
       if (view === "composite" || view === "lived_v1") {
         return Object.values(dom).some(d => d.moe != null && d.moe > 0.30);
@@ -4582,17 +4635,34 @@ async function loadMap() {
       } else {
         html += `<div class="gray-note composite-row">No data for this county code in this release</div>`;
       }
-      // v1.0 lived FLY mock row — always shown so the comparison is visible
+      // v1.0 lived FLY row — always shown so the comparison is visible
       // alongside the v0.9 composite, regardless of which view is active.
+      // In live mode includes the real PUMA source + sample size; in mock
+      // mode shows the synthesized counts and labels itself "(mock)".
       const lived = getLived(geoid);
       if (lived) {
         const cls = currentView === "lived_v1" ? "score-row composite-row row-active" : "score-row composite-row";
         const livedSign = lived.lived >= 0 ? "" : "−";
         const livedAbs = Math.abs(lived.lived).toFixed(2);
-        const detail = `${lived.strong}S · ${lived.adequate}A · ${lived.below}B`;
-        html += `<div class="${cls}"><span class="domain-label">Lived FLY (v1.0 mock)</span><span class="domain-pct">${livedSign}${livedAbs} <span class="moe-flag">${detail} · raw ${lived.raw.toFixed(2)}</span></span></div>`;
+        const fmtN = (n) => Number(n).toFixed(1);
+        const detail = `${fmtN(lived.strong)}S · ${fmtN(lived.adequate)}A · ${fmtN(lived.below)}B`;
+        const label = livedV1Mode === "live" ? "Lived FLY (v1.0)" : "Lived FLY (v1.0 mock)";
+        let footer = `${detail} · raw ${lived.raw.toFixed(2)}`;
+        if (livedV1Mode === "live" && lived.pumaSource) {
+          const source = lived.pumaSource === "multi-PUMA pop-weighted"
+            ? "multi-PUMA"
+            : `PUMA ${lived.pumaSource}`;
+          footer += ` · ${source}`;
+          if (lived.sampleSize != null) {
+            footer += ` · n=${lived.sampleSize.toLocaleString()}`;
+          }
+          if (lived.reliabilityFlag) {
+            footer += ` · small-PUMA flag`;
+          }
+        }
+        html += `<div class="${cls}"><span class="domain-label">${label}</span><span class="domain-pct">${livedSign}${livedAbs} <span class="moe-flag">${footer}</span></span></div>`;
       } else if (currentView === "lived_v1") {
-        html += `<div class="gray-note composite-row">v1.0 lived FLY: insufficient domains (need ≥4)</div>`;
+        html += `<div class="gray-note composite-row">v1.0 lived FLY: no data for this county in this release</div>`;
       }
       return html;
     }
@@ -4705,9 +4775,24 @@ async function loadMap() {
           ? `<span>−0.50</span><span>−0.13</span><span>+0.25</span><span>+0.63</span><span>+1.00</span>`
           : `<span>1</span><span>25</span><span>50</span><span>75</span><span>100</span>`;
       }
-      // Mock banner — visible only when v1.0 lived FLY mock is active.
+      // Mock banner — visible only when v1.0 lived FLY view is active AND
+      // we're in mock mode. In live mode (county_lived_fly populated) the
+      // banner stays hidden because the data is no longer synthetic.
       const banner = document.getElementById("map-mock-banner");
-      if (banner) banner.classList.toggle("visible", currentView === "lived_v1");
+      if (banner) {
+        banner.classList.toggle(
+          "visible",
+          currentView === "lived_v1" && livedV1Mode === "mock"
+        );
+      }
+    }
+
+    // If live data is loaded for v1.0, retitle the toggle button so the
+    // user sees "Lived FLY (v1.0)" instead of "(v1.0 mock)". The map.aria
+    // label and the tooltip already adapt by mode via getLived().
+    if (livedV1Mode === "live") {
+      const btn = document.querySelector('.domain-selector button[data-view="lived_v1"]');
+      if (btn) btn.textContent = "Lived FLY (v1.0)";
     }
     applyView();
 
