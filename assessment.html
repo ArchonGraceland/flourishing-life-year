@@ -277,6 +277,69 @@
     .status-card .badge { justify-self: start; }
   }
 
+  /* Per-person FLY preview block — paired raw / lived score under the
+     proposed v1.0 per-person loss-weighting methodology. Shown on the
+     result page alongside the existing tier classification. */
+  .fly-preview {
+    margin: 28px 0 36px;
+    padding: 24px 26px 22px;
+    background: var(--paper);
+    border: 1px dashed var(--rule);
+    border-left: 4px solid var(--accent);
+  }
+  .fly-preview-banner {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500;
+    background: rgba(200, 55, 29, 0.08); padding: 4px 10px;
+    margin-bottom: 14px; border-radius: 2px;
+  }
+  .fly-preview-head {
+    font-family: 'Fraunces', serif; font-weight: 500;
+    font-size: 19px; color: var(--ink); margin-bottom: 4px;
+  }
+  .fly-preview-sublede {
+    font-size: 13px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 720px; margin-bottom: 18px;
+  }
+  .fly-preview-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .fly-preview-cell {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 16px 18px;
+  }
+  .fly-preview-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-soft); font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .fly-preview-cell.lived .fly-preview-label { color: var(--accent); }
+  .fly-preview-val {
+    font-family: 'Fraunces', serif; font-weight: 500;
+    font-size: 38px; line-height: 1; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .fly-preview-cell.lived .fly-preview-val { color: var(--accent); }
+  .fly-preview-delta {
+    margin-top: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--ink-soft);
+  }
+  .fly-preview-explainer {
+    margin-top: 16px; font-size: 13px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .fly-preview-explainer a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .fly-preview-explainer a:hover { color: var(--ink); }
+  @media (max-width: 720px) {
+    .fly-preview-grid { grid-template-columns: 1fr; }
+    .fly-preview-val { font-size: 32px; }
+  }
+
   .result-disclosure {
     background: var(--paper-warm); padding: 24px 28px;
     border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0;
@@ -539,6 +602,30 @@
     </div>
 
     <div class="status-cards" id="status-cards"></div>
+
+    <!-- Per-person FLY preview — methodology proposal v1.0, paired raw and
+         lived score under per-person loss-weighting. Renders from your
+         actual answers above. -->
+    <div class="fly-preview" id="fly-preview" style="display:none;">
+      <span class="fly-preview-banner">Methodology preview · v1.0 proposal · not yet adopted</span>
+      <div class="fly-preview-head">Your Flourishing Life Year score — both readings.</div>
+      <div class="fly-preview-sublede">
+        Same answers, two scorings. <strong>Raw</strong> is the current additive method (Strong = 0.20, Adequate = 0.10, Below = 0.00). <strong>Lived</strong> is the proposed per-person loss-weighting where Below contributions actively subtract — a domain at zero is structurally damaging in a way strong domains can't fully compensate for.
+      </div>
+      <div class="fly-preview-grid">
+        <div class="fly-preview-cell">
+          <div class="fly-preview-label">Current methodology — raw</div>
+          <div class="fly-preview-val" id="fly-preview-raw">—</div>
+          <div class="fly-preview-delta" id="fly-preview-raw-detail">—</div>
+        </div>
+        <div class="fly-preview-cell lived">
+          <div class="fly-preview-label">Proposed: lived (loss-weighted)</div>
+          <div class="fly-preview-val" id="fly-preview-lived">—</div>
+          <div class="fly-preview-delta" id="fly-preview-lived-detail">—</div>
+        </div>
+      </div>
+      <div class="fly-preview-explainer" id="fly-preview-explainer">—</div>
+    </div>
 
     <div class="result-disclosure">
       <h3>How this is read</h3>
@@ -982,6 +1069,53 @@ function renderResult(scored) {
   if (scored.below)    summaryParts.push(`${scored.below} below cohort`);
   const summaryLine = summaryParts.join(" · ") + ". Family is shown descriptively.";
   document.getElementById("result-summary").textContent = summaryLine;
+
+  // ————— Per-person FLY preview (v1.0 methodology proposal) —————
+  // Computes both raw additive FLY and lived (loss-weighted) FLY from the
+  // same status reads. Family is descriptive in v0.5 of the assessment, so
+  // FLY here is the four-domain version (max raw 0.80; max lived 0.80).
+  // Under loss-weighting, baseline = N × 0.10 (= 0.40 for 4 domains).
+  const evalDomains = ["purchasing_power", "wealth", "health", "education"];
+  let rawFLY = 0, deviationSum = 0;
+  let strongCount = 0, adequateCount = 0, belowCount = 0;
+  for (const dom of evalDomains) {
+    const status = scored.reads[dom] && scored.reads[dom].status;
+    if (status === "strong") {
+      rawFLY += 0.20;
+      deviationSum += 0.10;
+      strongCount++;
+    } else if (status === "adequate") {
+      rawFLY += 0.10;
+      deviationSum += 0;
+      adequateCount++;
+    } else if (status === "below") {
+      rawFLY += 0;
+      deviationSum += -0.10 * 2;  // 2× loss-weighting per § Why losses count double
+      belowCount++;
+    }
+  }
+  const baseline = evalDomains.length * 0.10;       // 0.40 for 4 domains
+  const livedFLY = baseline + deviationSum;
+  const flyDelta = livedFLY - rawFLY;
+  const previewEl = document.getElementById("fly-preview");
+  if (previewEl) {
+    previewEl.style.display = "block";
+    document.getElementById("fly-preview-raw").textContent = rawFLY.toFixed(2);
+    document.getElementById("fly-preview-lived").textContent = livedFLY.toFixed(2);
+    const tally = `${strongCount} strong · ${adequateCount} adequate · ${belowCount} below`;
+    document.getElementById("fly-preview-raw-detail").textContent =
+      `${tally} → 0.20 × ${strongCount} + 0.10 × ${adequateCount} + 0 × ${belowCount}`;
+    document.getElementById("fly-preview-lived-detail").textContent =
+      `${tally} → 0.40 baseline + 0.10 × ${strongCount} − 0.20 × ${belowCount}`;
+    let explainer;
+    if (belowCount === 0) {
+      explainer = `No Below domains — your raw and lived scores match. Loss-weighting only kicks in when a domain falls below baseline.`;
+    } else {
+      const drag = Math.abs(flyDelta).toFixed(2);
+      explainer = `Loss-weighting drags your score down by <strong>${drag}</strong> — that's the lived cost of having ${belowCount} domain${belowCount === 1 ? "" : "s"} below cohort, weighted 2× per the methodology proposal. <a href="/#why-losses">Why losses count double →</a>`;
+    }
+    document.getElementById("fly-preview-explainer").innerHTML = explainer;
+  }
 
   // Status cards
   const grid = document.getElementById("status-cards");

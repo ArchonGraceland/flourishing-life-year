@@ -602,6 +602,84 @@
     font-family: 'Fraunces', serif;
   }
 
+  /* ————— §02 EQUATION — PER-PERSON LOSS-WEIGHTING PREVIEW —————
+     Methodology mock-up for the v1.0 per-person extension. Side-by-side
+     scoring of the same person under the current additive method and the
+     proposed loss-weighted method. Visually marked as a preview. */
+  .eq-preview {
+    max-width: 880px; margin: 40px auto 0;
+    padding: 24px 28px 22px;
+    background: var(--paper);
+    border: 1px dashed var(--rule);
+    border-left: 4px solid var(--accent);
+  }
+  .eq-preview-banner {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500;
+    background: rgba(200, 55, 29, 0.08); padding: 4px 10px;
+    margin-bottom: 14px; border-radius: 2px;
+  }
+  .eq-preview-head {
+    font-family: 'Fraunces', serif; font-weight: 500;
+    font-size: 22px; color: var(--ink);
+    margin-bottom: 10px; letter-spacing: -0.01em;
+  }
+  .eq-preview-sublede {
+    font-size: 14px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 760px; margin-bottom: 22px;
+  }
+  .eq-preview-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+    margin-bottom: 18px;
+  }
+  .eq-preview-col {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 16px 18px;
+  }
+  .eq-preview-col-head {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-soft); font-weight: 500;
+    margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .eq-preview-col.lived .eq-preview-col-head { color: var(--accent); }
+  .eq-preview-formula {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px; line-height: 1.7;
+  }
+  .eq-preview-row {
+    display: flex; justify-content: space-between; gap: 12px;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  .eq-preview-row > span:first-child { color: var(--ink-soft); }
+  .eq-preview-row.strong > span:last-child { color: #2d5a4a; }
+  .eq-preview-row.adequate > span:last-child { color: #8b6b2c; }
+  .eq-preview-row.below > span:last-child { color: var(--accent); font-weight: 500; }
+  .eq-preview-row.preview-baseline > span:last-child { color: var(--ink); }
+  .eq-preview-divider {
+    border-top: 1px dashed var(--rule); margin: 8px 0 6px;
+  }
+  .eq-preview-row.total {
+    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 500;
+    padding-top: 4px;
+  }
+  .eq-preview-row.total > span:first-child { color: var(--ink); }
+  .eq-preview-col.lived .eq-preview-row.total > span:last-child { color: var(--accent); }
+  .eq-preview-impact {
+    margin-top: 14px; font-size: 13.5px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .eq-preview-impact strong { color: var(--ink); font-weight: 500; }
+  @media (max-width: 720px) {
+    .eq-preview { padding: 18px 18px 16px; margin: 28px 16px 0; }
+    .eq-preview-grid { grid-template-columns: 1fr; gap: 14px; }
+    .eq-preview-formula { font-size: 11.5px; }
+  }
+
   /* ————— DOMAINS ————— */
   section.domains {
     padding: 100px 0;
@@ -1591,10 +1669,47 @@
   }
   .balance-primary { border-left: 4px solid var(--ink); }
   .balance-secondary { border-left: 4px solid var(--accent-soft, #e89a8a); }
+  .balance-tertiary { border-left: 4px solid var(--accent); }
+
+  /* Loss-weighted version of the year-over-year delta shown on the
+     primary balance summary line. Sits beside the equal-weight figure. */
+  .balance-summary .loss-weighted {
+    color: var(--accent); font-weight: 600; margin-left: 4px;
+  }
+  /* Faint raw-additive figures shown alongside the lived headline numbers,
+     so the loss-weighting drag is auditable wherever it appears. */
+  .balance-summary-raw {
+    color: var(--ink-soft); font-weight: 400;
+    font-size: 0.92em; opacity: 0.78;
+  }
+  .balance-headline-figure .bh-raw-aside {
+    display: block; margin-top: 2px;
+    font-size: 11px; color: var(--ink-soft); opacity: 0.85;
+    font-weight: 400; letter-spacing: 0.02em;
+  }
+  /* §02 rollup-current pairs lived (headline) with raw (audit-trail). */
+  .eq-rollup-raw-aside {
+    color: var(--ink-soft); font-weight: 400;
+    font-size: 0.85em; margin-left: 4px;
+  }
+
+  .balance-asym-row-name { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.02em; }
+  .balance-asym-zone-cap { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .balance-asym-summary {
+    margin-top: 16px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--ink-soft);
+    border-top: 1px dashed var(--rule); padding-top: 12px;
+    display: flex; flex-wrap: wrap; gap: 6px 22px;
+  }
+  .balance-asym-summary .key { color: var(--ink-soft); letter-spacing: 0.04em; text-transform: uppercase; font-size: 10.5px; margin-right: 6px; }
+  .balance-asym-summary .val-raw { font-variant-numeric: tabular-nums; color: var(--ink); }
+  .balance-asym-summary .val-weighted { font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 600; }
+  .balance-asym-summary .val-count { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; }
 
   .balance-line { fill: none; stroke-linejoin: round; stroke-linecap: round; }
   .balance-line-composite { stroke: var(--ink); stroke-width: 2.4; }
   .balance-line-domain { stroke-width: 1.4; opacity: 0.85; }
+  .balance-line-comparison { stroke-width: 1.5; stroke-dasharray: 5 4; opacity: 0.55; }
   .balance-line-leader { stroke-width: 0.6; opacity: 0.45; }
   .balance-axis { stroke: var(--rule); stroke-width: 0.6; }
   .balance-axis-text {
@@ -1652,6 +1767,115 @@
     .balance-inner { padding: 0 24px; }
     .balance-chart-card { padding: 18px 18px 16px; }
   }
+
+  /* ————— § WHY LOSSES COUNT DOUBLE (the canonical loss-weighting page) ————— */
+  section.lossweight {
+    padding: 90px 0 80px;
+    background: var(--paper-warm);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .lossweight-inner { max-width: 880px; margin: 0 auto; padding: 0 32px; }
+  .lossweight-header { margin-bottom: 32px; }
+  .lossweight-header h2 {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(30px, 3.6vw, 44px); line-height: 1.05;
+    letter-spacing: -0.02em; margin: 14px 0 20px;
+  }
+  .lossweight-header h2 em {
+    font-family: 'Source Serif 4', serif; font-style: italic;
+    color: var(--accent); font-weight: 400;
+  }
+  .lossweight-lede {
+    font-size: 17px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 720px;
+  }
+  .lossweight-body { font-size: 16px; line-height: 1.65; color: var(--ink); }
+  .lossweight-body p { margin: 0 0 20px; }
+  .lossweight-body strong { color: var(--ink); font-weight: 500; }
+  .lossweight-body em { color: var(--ink); font-style: italic; }
+  .lossweight-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .lossweight-body a:hover { color: var(--ink); }
+
+  .lossweight-example {
+    margin: 28px 0;
+    padding: 22px 26px 18px;
+    background: var(--paper);
+    border-left: 4px solid var(--accent);
+  }
+  .lossweight-example .ex-head {
+    font-family: 'Fraunces', serif; font-weight: 500; font-size: 16px;
+    color: var(--ink); margin-bottom: 14px;
+  }
+  .lossweight-example .ex-row {
+    display: grid; grid-template-columns: minmax(190px, 1fr) auto;
+    gap: 14px; align-items: baseline; padding: 4px 0;
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+  }
+  .lossweight-example .ex-label { color: var(--ink-soft); }
+  .lossweight-example .ex-val { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .lossweight-example .ex-val.gain { color: #2d5a4a; font-weight: 500; }
+  .lossweight-example .ex-val.loss { color: var(--accent); font-weight: 500; }
+  .lossweight-example .ex-val.weighted { color: var(--accent); font-weight: 600; }
+  .lossweight-example .ex-divider {
+    border-top: 1px dashed var(--rule); margin: 12px 0 10px;
+  }
+
+  .lossweight-rule {
+    margin: 26px 0 18px;
+    padding: 18px 22px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    font-size: 14px; line-height: 1.6;
+  }
+  .lossweight-rule strong {
+    display: block; font-family: 'Fraunces', serif;
+    font-weight: 500; font-size: 15px;
+    color: var(--accent); letter-spacing: 0;
+    margin-bottom: 6px;
+  }
+
+  .lossweight-cite {
+    margin-top: 26px; font-size: 13px; line-height: 1.6;
+    color: var(--ink-soft); border-top: 1px dashed var(--rule);
+    padding-top: 16px;
+  }
+  .lossweight-cite strong { color: var(--ink); font-weight: 500; }
+
+  @media (max-width: 720px) {
+    section.lossweight { padding: 60px 0 50px; }
+    .lossweight-inner { padding: 0 24px; }
+    .lossweight-example .ex-row { grid-template-columns: 1fr; gap: 0; padding: 6px 0; }
+    .lossweight-example .ex-label { font-size: 11.5px; }
+  }
+
+  /* Domain card badges: ✓ above / ⚠ below the 2019 baseline.
+     Injected via JS once balance fetch resolves. The badge sits between
+     the domain label and the colored dot in .domain-num. */
+  .domain-num { gap: 8px; }
+  .domain-num > :first-child { margin-right: auto; }
+  .domain-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; font-weight: 500;
+    border-radius: 2px;
+    text-decoration: none;
+    cursor: help;
+  }
+  .domain-badge.above { background: rgba(45, 90, 74, 0.10); color: #2d5a4a; }
+  .domain-badge.below { background: rgba(200, 55, 29, 0.10); color: var(--accent); }
+  .domain-badge .arrow { font-size: 11px; line-height: 1; }
+  .domain-badge .pct { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+
+  /* Companion line under the §02 rollup arithmetic showing the
+     deprivation count, for honest pairing with the absolute total. */
+  .eq-deprivation-flag {
+    color: var(--accent); font-weight: 500;
+  }
+  .eq-deprivation-flag a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .eq-deprivation-flag a:hover { color: var(--ink); }
 
   /* ————— NATIONAL TRENDS (§ The country over time) ————— */
   section.trends {
@@ -1831,6 +2055,27 @@
   .meta-row .label { color: var(--ink-soft); opacity: 0.7; }
   .meta-row .value { color: var(--ink); font-weight: 500; }
 
+  /* Mock-data banner shown above the map only when the v1.0 lived-FLY
+     view is active. Marks the data as illustrative-only. */
+  .map-mock-banner {
+    margin: 0 0 14px;
+    padding: 12px 18px;
+    background: rgba(200, 55, 29, 0.06);
+    border: 1px dashed var(--accent);
+    border-left: 4px solid var(--accent);
+    color: var(--ink); font-size: 13px; line-height: 1.55;
+    display: none;
+  }
+  .map-mock-banner.visible { display: block; }
+  .map-mock-banner strong {
+    color: var(--accent); font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase;
+    margin-right: 6px;
+  }
+  .map-mock-banner a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .map-mock-banner a:hover { color: var(--ink); }
+
   .domain-selector { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
   .domain-selector button {
     font-family: 'IBM Plex Mono', monospace;
@@ -1967,6 +2212,7 @@
     <div class="nav-links">
       <a href="#map">Map</a>
       <a href="#balance">National balance</a>
+      <a href="#why-losses">Why losses count</a>
       <a href="#domains">Five domains</a>
       <a href="#method">Methodology</a>
       <a href="#cost">Cost</a>
@@ -2039,12 +2285,17 @@
 
     <div class="domain-selector" role="tablist" aria-label="Color the map by">
       <span class="selector-label">View</span>
-      <button data-view="composite" class="active" role="tab" aria-selected="true">Composite</button>
+      <button data-view="lived_v1" class="active" role="tab" aria-selected="true">Lived FLY (v1.0 mock)</button>
+      <button data-view="composite" role="tab">Composite (v0.9 percentile)</button>
       <button data-view="purchasing_power" role="tab">Purchasing power</button>
       <button data-view="wealth"  role="tab">Wealth</button>
       <button data-view="family"  role="tab">Family</button>
       <button data-view="health"  role="tab">Health</button>
       <button data-view="education" role="tab">Education</button>
+    </div>
+
+    <div class="map-mock-banner" id="map-mock-banner">
+      <strong>MOCK DATA.</strong> Per-county lived FLY synthesized from v0.9 percentile ranks (pct ≥ 75 → Strong, 25–75 → Adequate, &lt; 25 → Below) and run through the v1.0 per-person loss-weighted formula. Visual review only. The real v1.0 pipeline runs against PUMS person-level data with frozen-2019 absolute thresholds — see <a href="/methodology_v1_0.md">methodology v1.0</a> for the spec.
     </div>
 
     <div class="map-stage">
@@ -2191,7 +2442,59 @@
         </div>
       </div>
       <div class="eq-rollup-caption">
-        Person-level FLY sums to county totals, county to state, state to national — the same additive structure as GDP. Most-recent national total: <strong><span id="eq-rollup-current">—</span></strong> Flourishing Life Years. The frozen-2019 accounting (anchored at 2019 = 100) is in <a href="#balance">§ The national balance</a> below.
+        Person-level FLY sums to county totals, county to state, state to national — the same additive structure as GDP. Most-recent national total: <strong><span id="eq-rollup-current">—</span></strong> Flourishing Life Years.<span class="eq-deprivation-flag" id="eq-rollup-deprivation"></span> The frozen-2019 accounting (anchored at 2019 = 100) is in <a href="#balance">§ The national balance</a> below.
+      </div>
+
+      <!-- Per-person loss-weighting preview (v1.0 methodology proposal).
+           Mocked up locally for visual review before adopting. The current
+           §02 equation above stays the official methodology; this block
+           previews how the same person scores under the proposed extension. -->
+      <div class="eq-preview">
+        <span class="eq-preview-banner">Methodology preview · v1.0 proposal · not yet adopted</span>
+        <div class="eq-preview-head">Per-person loss-weighting — same person, two scorings.</div>
+        <div class="eq-preview-sublede">
+          Same five-domain profile, scored under the current additive method and under the proposed per-person loss-weighting where Below contributions actively subtract. The example below is the "doing great except wealth" person — four Strong domains, one Below in wealth — exactly the case where the current methodology arguably under-counts the lived cost of a single weak domain.
+        </div>
+
+        <div class="eq-preview-grid">
+          <div class="eq-preview-col">
+            <div class="eq-preview-col-head">Current methodology — raw additive</div>
+            <div class="eq-preview-formula">
+              <div class="eq-preview-row strong"><span>Purchasing power · Strong</span><span>+0.20</span></div>
+              <div class="eq-preview-row below"><span>Wealth · Below</span><span>0.00</span></div>
+              <div class="eq-preview-row strong"><span>Family · Strong</span><span>+0.20</span></div>
+              <div class="eq-preview-row strong"><span>Health · Strong</span><span>+0.20</span></div>
+              <div class="eq-preview-row strong"><span>Education · Strong</span><span>+0.20</span></div>
+              <div class="eq-preview-divider"></div>
+              <div class="eq-preview-row total"><span>FLY / person</span><span>0.80</span></div>
+            </div>
+          </div>
+          <div class="eq-preview-col lived">
+            <div class="eq-preview-col-head">Proposed: lived (per-person loss-weighted)</div>
+            <div class="eq-preview-formula">
+              <div class="eq-preview-row preview-baseline"><span>Baseline (5 × 0.10 = "all Adequate")</span><span>+0.50</span></div>
+              <div class="eq-preview-row strong"><span>Purchasing power · Strong (+0.10)</span><span>+0.10</span></div>
+              <div class="eq-preview-row below"><span>Wealth · Below (−0.10 × <strong>2</strong>)</span><span>−0.20</span></div>
+              <div class="eq-preview-row strong"><span>Family · Strong (+0.10)</span><span>+0.10</span></div>
+              <div class="eq-preview-row strong"><span>Health · Strong (+0.10)</span><span>+0.10</span></div>
+              <div class="eq-preview-row strong"><span>Education · Strong (+0.10)</span><span>+0.10</span></div>
+              <div class="eq-preview-divider"></div>
+              <div class="eq-preview-row total"><span>Lived FLY / person</span><span>0.70</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="eq-preview-impact">
+          <strong>What changes:</strong> the wealth-zero is no longer silent. Under the current additive ledger it just contributes nothing; under loss-weighting it actively drags the person's score down by 0.10 — closer to how the gap actually feels. Range under the proposal: <strong>−0.50</strong> (5 Below) to <strong>+1.00</strong> (5 Strong); 5 Adequate still scores <strong>0.50</strong>; 5 Strong still scores <strong>1.00</strong>. Only the Below penalty changes.
+        </div>
+
+        <div class="eq-preview-impact">
+          <strong>Cascading effects if adopted:</strong> the §02 equation rewrites to "0.50 baseline + Σ(deviation × asymmetric weight)". Per-county composites would recompute as the population-weighted mean of person-level lived FLY (the map's percentile-rank composite is a separate metric and is unaffected). Assessment scores for individuals with weak domains drop visibly. National headline figures don't move much (already loss-weighted at aggregate level), but the methodology aligns: loss-aversion applies uniformly to changes-from-baseline, whether at person or aggregate level. Methodology version bump to <strong>v1.0</strong>.
+        </div>
+
+        <div class="eq-preview-impact">
+          <strong>Try it on yourself:</strong> the <a href="/assessment">assessment</a> shows your raw FLY score and a preview of your lived FLY score under this proposal — same answers, both readings, side by side.
+        </div>
       </div>
     </div>
   </section>
@@ -2225,6 +2528,14 @@
         <div class="balance-legend" id="balance-legend"></div>
       </div>
 
+      <div class="balance-chart-card balance-tertiary">
+        <h3>Loss-weighted view, each shortfall drawn at 2× scale</h3>
+        <div class="balance-sublabel">The same five domains, latest year vs. 2019 — but the <strong>loss side of the axis is on a 2× scale</strong>. Visual length encodes weighted contribution to lived flourishing: a year of decline hurts about twice as much as an equal-sized year of gain helps. (Loss aversion, Kahneman &amp; Tversky 1992.) The summary line below shows both the equal-weight and loss-weighted readings, so the math is in plain sight.</div>
+        <svg class="balance-chart-svg" data-which="asymmetric" viewBox="0 0 880 300" role="img"
+             aria-label="Per-domain deviation from 2019 baseline; losses drawn at 2× scale to reflect loss aversion."></svg>
+        <div class="balance-asym-summary" id="balance-asym-summary"></div>
+      </div>
+
       <p class="balance-footnote">
         <strong>2020 gap.</strong> Census did not release a 2020 ACS 1-year PUMS due to COVID-era survey-response quality concerns. The trend interpolates visually across the gap; no synthetic 2020 estimate is published.
       </p>
@@ -2234,6 +2545,66 @@
       <p class="balance-footnote">
         <strong>Most-recent-year cutoff:</strong> the trend extends to 2024, the most recent year with ACS 1-year PUMS published. The 2025 number arrives in fall 2026.
       </p>
+    </div>
+  </section>
+
+  <!-- §WHY LOSSES COUNT DOUBLE — canonical loss-weighting explainer.
+       Single page that defines the rule; every other loss-weighted figure
+       on the site links here. -->
+  <section class="lossweight" id="why-losses">
+    <div class="lossweight-inner">
+      <div class="section-label">§ Why losses count double</div>
+      <div class="lossweight-header">
+        <h2>Decline hurts roughly twice as much <em>as gain helps.</em></h2>
+        <p class="lossweight-lede">
+          The loss-weighted view in <a href="#balance">§ The national balance</a> isn't a math trick — it's an accounting principle this site uses everywhere it reports change. Levels stay raw; changes get loss-weighted. This page is the one place that defines the rule, so every other figure on the site can link back to it.
+        </p>
+      </div>
+
+      <div class="lossweight-body">
+        <p><strong>The principle.</strong> Lived flourishing isn't symmetric. A year of decline registers in households more heavily than an equal-sized year of progress: the lost income, the closed clinic, the broken family, the foreclosed home — these are felt acutely and remembered. Equal-sized gains arrive quietly. Behavioral economics has measured this asymmetry empirically; the standard finding is that people weight losses about twice as heavily as gains (Kahneman &amp; Tversky 1992, "Advances in Prospect Theory," with median λ ≈ 2.25 across replications).</p>
+
+        <p><strong>Why the index has to reflect this.</strong> If we average the five domains equally and report only the headline number, a country that is rapidly enriching and educating itself can paper over collapsing health and family formation indefinitely. The headline keeps moving up; the lived experience moves the other way. The tension between national accounts and lived reality is the failure mode of every aggregate index, and the loss-weighted view is how this index refuses it.</p>
+
+        <p><strong>The rule, in one line.</strong> When summarizing change across domains: above-baseline gains count once, below-baseline losses count twice.</p>
+
+        <div class="lossweight-example">
+          <div class="ex-head">Worked example</div>
+          <div class="ex-row"><span class="ex-label">Domain A — change vs 2019</span><span class="ex-val gain">+5.0%</span></div>
+          <div class="ex-row"><span class="ex-label">Domain B — change vs 2019</span><span class="ex-val gain">+4.0%</span></div>
+          <div class="ex-row"><span class="ex-label">Domain C — change vs 2019</span><span class="ex-val loss">−3.0%</span></div>
+          <div class="ex-divider"></div>
+          <div class="ex-row"><span class="ex-label">Equal-weight average</span><span class="ex-val">(+5 + 4 − 3) ÷ 3 = +2.0%</span></div>
+          <div class="ex-row"><span class="ex-label">Loss-weighted (loss × 2)</span><span class="ex-val weighted">(+5 + 4 − 6) ÷ 3 = +1.0%</span></div>
+        </div>
+
+        <p><strong>Where the rule applies, where it doesn't.</strong> Loss aversion is a property of <em>change</em>, not state. So the rule applies to every figure on this site that reports a delta — year-over-year, vs-2019, vs-cohort, projection. It does <em>not</em> apply to per-person scores or per-county composites: those are levels, and loss-weighting them would silently change what an individual's score means. Loss-weighting is layered on top when the question is "how is the country moving?", not "what is it now?"</p>
+
+        <p><strong>The lived FLY total — derived, not redefined.</strong> The site's headline national total has been switched from raw additive FLY to <em>lived FLY</em>. Lived FLY is a derived figure, defined precisely:</p>
+
+        <div class="lossweight-example">
+          <div class="ex-head">Lived FLY — the formal definition</div>
+          <div class="ex-row"><span class="ex-label">Raw 2019 baseline total</span><span class="ex-val">FLY<sub>raw, 2019</sub></span></div>
+          <div class="ex-row"><span class="ex-label">Loss-weighted % change vs 2019</span><span class="ex-val">Δ<sub>lw</sub>(year)</span></div>
+          <div class="ex-divider"></div>
+          <div class="ex-row"><span class="ex-label">Lived FLY for any year</span><span class="ex-val weighted">= FLY<sub>raw, 2019</sub> × (1 + Δ<sub>lw</sub>)</span></div>
+        </div>
+
+        <p>The 2019 baseline is unchanged: lived 2019 = raw 2019 (loss-weighting is zero at the baseline year by definition). For every later year, the country's "raw production" of flourishing is multiplied by the loss-weighted change to get the lived equivalent. The gap between raw and lived is the <em>cost of unbalanced flourishing</em> — what the country produced on the additive ledger but lost on the lived ledger because some domains backslid. That gap is visible directly on the primary balance chart: the dashed line (raw) sits above the solid line (lived) whenever any domain is below 2019.</p>
+
+        <p><strong>What this preserves, and what it doesn't.</strong> Per-person FLY scores stay unchanged — the §02 equation (0.20 × #Strong + 0.10 × #Adequate) still describes a person, and the additive sum across people still gives the raw national total. County map values stay raw — geography is comparative. What changes: the headline national figures, the cost-per-FLY denominator, and the year-over-year deltas now read as lived figures, with the raw additive numbers shown beside them in lighter type for audit.</p>
+
+        <p><strong>What you'll see on this site.</strong> Lived FLY is the headline metric in §02 (rollup), §The national balance (chart and summary), and §05 (cost-per-FLY). Raw additive figures still appear in lighter type beside the lived ones, so the loss-weighting drag is never hidden — only made the primary reading. Domains below their 2019 bar carry a small badge on their card. The point is to make the asymmetry structural, never decorative.</p>
+
+        <div class="lossweight-rule">
+          <strong>v0.10 methodology entry — locked.</strong>
+          Loss-weighting factor = 2.0×, applied to per-domain change measures relative to the 2019 baseline. The lived national total is derived from raw_2019 × (1 + loss-weighted % change) and is the headline metric in §02, §The national balance, and §05; raw additive totals are shown beside it for audit. Per-person FLY scores and per-county composites are unmodified — those are levels, not changes. The 2× factor is locked at the empirical loss-aversion coefficient from Kahneman &amp; Tversky 1992; revisiting it requires a methodology version bump.
+        </div>
+
+        <p class="lossweight-cite">
+          <strong>Reference.</strong> Kahneman, D. &amp; Tversky, A. (1992). "Advances in Prospect Theory: Cumulative Representation of Uncertainty." <em>Journal of Risk and Uncertainty</em> 5(4): 297–323. The Liebig's-Law-of-the-Minimum analogy from agronomy (a crop's yield is set by its scarcest nutrient, not its average) and the UNDP's 2010 switch to a geometric-mean Human Development Index are the same idea applied to different aggregation problems.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -2249,7 +2620,7 @@
       <div class="domain-grid">
 
         <!-- Domain 1: Purchasing Power (span 6) -->
-        <div class="domain-card span-6">
+        <div class="domain-card span-6" data-domain="purchasing_power">
           <div class="domain-num">
             <span>01 / PURCHASING POWER</span>
             <span class="domain-dot" style="background: var(--domain-1)"></span>
@@ -2333,7 +2704,7 @@
         </div>
 
         <!-- Domain 2: Wealth (span 6) -->
-        <div class="domain-card span-6">
+        <div class="domain-card span-6" data-domain="wealth">
           <div class="domain-num">
             <span>02 / WEALTH ACCUMULATION</span>
             <span class="domain-dot" style="background: var(--domain-2)"></span>
@@ -2394,7 +2765,7 @@
         </div>
 
         <!-- Domain 3: Family (span 4) -->
-        <div class="domain-card span-4">
+        <div class="domain-card span-4" data-domain="family">
           <div class="domain-num">
             <span>03 / FAMILY FORMATION</span>
             <span class="domain-dot" style="background: var(--domain-3)"></span>
@@ -2448,7 +2819,7 @@
         </div>
 
         <!-- Domain 4: Health (span 4) -->
-        <div class="domain-card span-4">
+        <div class="domain-card span-4" data-domain="health">
           <div class="domain-num">
             <span>04 / HEALTHY LIFESPAN</span>
             <span class="domain-dot" style="background: var(--domain-4)"></span>
@@ -2501,7 +2872,7 @@
         </div>
 
         <!-- Domain 5: Education (span 4) -->
-        <div class="domain-card span-4">
+        <div class="domain-card span-4" data-domain="education">
           <div class="domain-num">
             <span>05 / USEFUL EDUCATION</span>
             <span class="domain-dot" style="background: var(--domain-5)"></span>
@@ -2898,6 +3269,7 @@
         <h4>Project</h4>
         <a href="#map">Map</a>
         <a href="#balance">National balance</a>
+        <a href="#why-losses">Why losses count</a>
         <a href="#domains">Five domains</a>
         <a href="#method">Methodology</a>
         <a href="#cost">Cost</a>
@@ -2927,11 +3299,46 @@ const DOMAIN_ORDER = [
   ["education",         "Education"],
 ];
 const VIEW_LABEL = {
-  composite: "Composite",
+  lived_v1: "Lived FLY (v1.0 mock)",
+  composite: "Composite (v0.9 percentile)",
   purchasing_power: "Purchasing power",
   wealth: "Wealth", family: "Family",
   health: "Health", education: "Education",
 };
+
+// v1.0 mock — synthesize per-person Strong/Adequate/Below from per-county
+// percentile ranks (pct ≥ 75 → Strong, 25 ≤ pct < 75 → Adequate, < 25 →
+// Below), then apply the v1.0 per-person loss-weighted formula:
+//   lived_FLY = 0.50 + Σ deviation_d × w_d
+//   deviation_d = +0.10 / 0 / −0.10 for Strong/Adequate/Below
+//   w_d = 1 if deviation ≥ 0; 2 if deviation < 0
+// Returns lived FLY in [−0.50, +1.00], or null if < 4 of 5 domains.
+function livedFLYMock(domainEntries) {
+  if (!domainEntries) return null;
+  const DOMS = ["purchasing_power", "wealth", "family", "health", "education"];
+  let resolved = 0;
+  let strong = 0, adequate = 0, below = 0;
+  let deviationSum = 0;
+  for (const k of DOMS) {
+    const e = domainEntries[k];
+    if (!e || e.pct == null) continue;
+    resolved++;
+    if (e.pct >= 75)      { strong++;   deviationSum +=  0.10; }
+    else if (e.pct >= 25) { adequate++; deviationSum +=  0.00; }
+    else                  { below++;    deviationSum += -0.10 * 2; }  // 2× loss-weight
+  }
+  if (resolved < 4) return null;
+  const baseline = DOMS.length * 0.10;  // 0.50
+  const lived = baseline + deviationSum;
+  const raw = strong * 0.20 + adequate * 0.10;
+  return { lived, raw, strong, adequate, below, resolved };
+}
+// Visual scale: lived FLY range [−0.50, +1.00] → display [0, 100]
+// for the existing color scale. Negatives clamp to 0 (deepest accent).
+function livedFLYToDisplay(lived) {
+  if (lived == null) return null;
+  return Math.max(0, Math.min(100, ((lived + 0.50) / 1.50) * 100));
+}
 const STATE_ABBR = {
   "01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","11":"DC","12":"FL",
   "13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME",
@@ -3386,17 +3793,22 @@ function renderBalanceLineSVG(svg, dataSeries, opts = {}) {
     svgInner += `<text class="balance-axis-text" x="${xOf(yr).toFixed(1)}" y="${H - PB + 16}" text-anchor="middle">${yr}</text>`;
   }
   // Series lines + endpoint dots. Collect end-of-line label entries as we go
-  // so we can stack-adjust them after, avoiding overlaps.
+  // so we can stack-adjust them after, avoiding overlaps. Series may set
+  // `dashed: true` to render as a faint comparison line (e.g. raw composite
+  // beneath the lived headline).
   const endLabels = [];
   for (const s of dataSeries) {
     const validPts = s.points.filter(p => p.value != null);
     const pts = validPts
       .map(p => `${xOf(p.year).toFixed(1)},${yOf(p.value).toFixed(1)}`).join(" ");
-    const cls = s.thick ? "balance-line balance-line-composite" : "balance-line balance-line-domain";
+    const cls = s.thick ? "balance-line balance-line-composite"
+              : s.dashed ? "balance-line balance-line-comparison"
+              : "balance-line balance-line-domain";
     const color = s.thick ? null : s.color;
     svgInner += `<polyline class="${cls}" points="${pts}"${color ? ` stroke="${color}"` : ""} />`;
-    // Endpoints
-    if (s.points.length) {
+    // Endpoints — only on solid (non-dashed) series. Dashed comparison
+    // lines get no dots so they read as background reference, not data.
+    if (!s.dashed && s.points.length) {
       for (const p of [s.points[0], s.points.at(-1)]) {
         if (p.value == null) continue;
         const fill = s.thick ? "var(--ink)" : (s.color || "var(--accent)");
@@ -3406,14 +3818,18 @@ function renderBalanceLineSVG(svg, dataSeries, opts = {}) {
     if (validPts.length) {
       const last = validPts.at(-1);
       const fill = s.thick ? "var(--ink)" : (s.color || "var(--ink-soft)");
-      const text = s.thick
-        ? `Composite ${fmtIndexAsPct(last.value)}`
-        : (s.name || "");
+      // Series name + endpoint pct — for thick (lived headline) and
+      // dashed (raw comparison) alike, so the chart self-identifies.
+      const showVal = s.thick || s.dashed;
+      const baseName = s.name || (s.thick ? "Composite" : "");
+      const text = showVal
+        ? `${baseName ? baseName + " " : ""}${fmtIndexAsPct(last.value)}`
+        : baseName;
       endLabels.push({
         anchorX: xOf(last.year),
         anchorY: yOf(last.value),
         y: yOf(last.value),
-        text, fill, weight: s.thick ? 600 : 500, thick: !!s.thick,
+        text, fill, weight: s.thick ? 600 : (s.dashed ? 400 : 500), thick: !!s.thick,
       });
     }
   }
@@ -3445,6 +3861,96 @@ function renderBalanceLineSVG(svg, dataSeries, opts = {}) {
   svg.innerHTML = svgInner;
 }
 
+// Asymmetric "loss-weighted" view of the latest snapshot. Five diverging
+// horizontal bars per domain, shortfalls drawn at 2× horizontal scale so
+// visual length encodes weighted contribution to lived flourishing.
+// Returns {entries, rawMean, weightedMean, belowCount, total, latestYear}
+// so the same numbers can drive the §02 deprivation flag and the per-card
+// domain badges in §03 — single computation, no drift across surfaces.
+function renderBalanceAsymmetricSVG(svg, domainSeries) {
+  const W = svg.viewBox.baseVal.width || 880;
+  const H = svg.viewBox.baseVal.height || 300;
+  const PL = 150, PR = 70, PT = 44, PB = 40;
+  // Pull latest non-null point per domain, expressed as signed pp delta vs 2019.
+  const entries = domainSeries.map(s => {
+    let last = null;
+    for (let i = s.points.length - 1; i >= 0; i--) {
+      if (s.points[i].value != null) { last = s.points[i]; break; }
+    }
+    return {
+      key: s.key,
+      name: s.name,
+      color: s.color,
+      delta: last ? last.value - 100 : 0,
+      year: last ? last.year : null,
+    };
+  });
+
+  const maxAbs = Math.max(5, ...entries.map(e => Math.abs(e.delta)));
+  const tickStep = maxAbs <= 5 ? 2.5 : (maxAbs <= 10 ? 5 : 10);
+  const axisMax = Math.ceil(maxAbs / tickStep) * tickStep;
+  // Loss side at 2× → loss zone is 2× as wide on the page as gain zone.
+  const totalUnits = axisMax * 3;          // axisMax (gain) + axisMax×2 (loss)
+  const plotWidth = W - PL - PR;
+  const unitPx = plotWidth / totalUnits;
+  const centerX = PL + axisMax * 2 * unitPx;
+  const xOf = d => d >= 0 ? centerX + d * unitPx : centerX + d * 2 * unitPx;
+
+  let s = "";
+  // Loss-zone shading (faint accent wash).
+  s += `<rect x="${PL}" y="${PT}" width="${(centerX - PL).toFixed(1)}" height="${(H - PT - PB).toFixed(1)}" fill="var(--accent)" opacity="0.05" />`;
+  // Center vertical baseline at 2019.
+  s += `<line class="balance-baseline" x1="${centerX.toFixed(1)}" y1="${PT}" x2="${centerX.toFixed(1)}" y2="${(H - PB).toFixed(1)}" />`;
+  // Zone captions above the plot.
+  s += `<text class="balance-asym-zone-cap" x="${(centerX + 8).toFixed(1)}" y="${(PT - 16).toFixed(1)}" text-anchor="start" fill="var(--ink-soft)">Gains · 1× scale →</text>`;
+  s += `<text class="balance-asym-zone-cap" x="${(centerX - 8).toFixed(1)}" y="${(PT - 16).toFixed(1)}" text-anchor="end" fill="var(--accent)">← Losses · 2× scale</text>`;
+  // X-axis line + ticks. Same magnitudes left and right; left ticks sit at
+  // twice the visual distance from center, which is the whole point.
+  s += `<line class="balance-axis" x1="${PL}" x2="${(W - PR).toFixed(1)}" y1="${(H - PB).toFixed(1)}" y2="${(H - PB).toFixed(1)}" />`;
+  const fmtTick = t => Number.isInteger(t) ? `${t}` : `${t.toFixed(1)}`;
+  for (let t = tickStep; t <= axisMax + 1e-9; t += tickStep) {
+    const xR = xOf(t), xL = xOf(-t);
+    s += `<text class="balance-axis-text" x="${xR.toFixed(1)}" y="${(H - PB + 16).toFixed(1)}" text-anchor="middle">+${fmtTick(t)}%</text>`;
+    s += `<text class="balance-axis-text" x="${xL.toFixed(1)}" y="${(H - PB + 16).toFixed(1)}" text-anchor="middle">−${fmtTick(t)}%</text>`;
+  }
+  s += `<text class="balance-axis-text" x="${centerX.toFixed(1)}" y="${(H - PB + 16).toFixed(1)}" text-anchor="middle" font-weight="600" fill="var(--ink)">2019</text>`;
+
+  // Domain bars, top to bottom in BALANCE_DOMAIN_ORDER.
+  const N = entries.length;
+  const rowH = (H - PT - PB) / N;
+  const barH = Math.min(22, rowH * 0.55);
+  for (let i = 0; i < N; i++) {
+    const e = entries[i];
+    const y = PT + (i + 0.5) * rowH;
+    // Domain name on the left, in domain color.
+    s += `<text class="balance-asym-row-name" x="${(PL - 12).toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="end" fill="${e.color}" font-weight="600">${e.name}</text>`;
+    // Bar from baseline to delta.
+    const xEnd = xOf(e.delta);
+    const barX = Math.min(centerX, xEnd);
+    const barW = Math.abs(xEnd - centerX);
+    const op = e.delta < 0 ? 0.85 : 0.65;
+    s += `<rect x="${barX.toFixed(1)}" y="${(y - barH / 2).toFixed(1)}" width="${barW.toFixed(1)}" height="${barH.toFixed(1)}" fill="${e.color}" opacity="${op}" />`;
+    // Value label at the bar's tip, in domain color.
+    const sign = e.delta >= 0 ? "+" : "−";
+    const valStr = `${sign}${Math.abs(e.delta).toFixed(1)}%`;
+    const lblX = e.delta >= 0 ? xEnd + 6 : xEnd - 6;
+    const anchor = e.delta >= 0 ? "start" : "end";
+    s += `<text class="balance-axis-text" x="${lblX.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="${anchor}" font-weight="600" fill="${e.color}">${valStr}</text>`;
+  }
+  svg.innerHTML = s;
+
+  // Numbers for the summary strip below the chart, plus the entries list
+  // so callers can drive other surfaces (domain badges, §02 flag) without
+  // recomputing anything.
+  const rawMean = entries.reduce((a, e) => a + e.delta, 0) / entries.length;
+  const weightedMean = entries.reduce(
+    (a, e) => a + (e.delta < 0 ? 2 * e.delta : e.delta), 0
+  ) / entries.length;
+  const belowCount = entries.filter(e => e.delta < 0).length;
+  const latestYear = entries.find(e => e.year != null)?.year ?? null;
+  return { entries, rawMean, weightedMean, belowCount, total: entries.length, latestYear };
+}
+
 async function loadBalance() {
   const section = document.getElementById("balance");
   if (!section) return;
@@ -3457,6 +3963,59 @@ async function loadBalance() {
       section.querySelector(".balance-headline-strip").textContent =
         "Trend data not available for this release.";
       return;
+    }
+
+    // ————— Loss-weighted aggregation (single source of truth) —————
+    // Per § Why losses count double: levels stay raw; changes get
+    // loss-weighted; the lived-FLY level is derived as raw 2019 baseline
+    // × (1 + loss-weighted percent change). Computed once here, consumed by
+    // §02 rollup, §05 cost denominators, the primary chart, the headline
+    // strip, the verdict, and the asymmetric chart — every downstream
+    // surface reads the same numbers, no drift.
+    const baselineRow = rows.find(r => r.year === 2019);
+    const baselineDomainWeight = {};
+    if (baselineRow && baselineRow.per_domain_breakdown) {
+      for (const [key] of BALANCE_DOMAIN_ORDER) {
+        const b = baselineRow.per_domain_breakdown[key];
+        if (b && typeof b === "object") {
+          baselineDomainWeight[key] = (b.strong_share || 0) * 0.20
+                                     + (b.adequate_share || 0) * 0.10;
+        } else if (typeof b === "number") {
+          baselineDomainWeight[key] = b / 100;  // legacy scalar passthrough
+        }
+      }
+    }
+    // Per-year loss-weighted composite index (100 = 2019). Average of
+    // per-domain percent changes vs 2019 with negative changes counted 2×.
+    const lwCompositeByYear = {};
+    for (const r of rows) {
+      const perDomainDeltas = [];
+      for (const [key] of BALANCE_DOMAIN_ORDER) {
+        const baseline = baselineDomainWeight[key];
+        const b = r.per_domain_breakdown && r.per_domain_breakdown[key];
+        if (!baseline || !b) continue;
+        const contribution = typeof b === "object"
+          ? (b.strong_share || 0) * 0.20 + (b.adequate_share || 0) * 0.10
+          : b / 100;
+        perDomainDeltas.push((contribution / baseline * 100) - 100);
+      }
+      if (!perDomainDeltas.length) { lwCompositeByYear[r.year] = null; continue; }
+      const lwMean = perDomainDeltas.reduce(
+        (a, d) => a + (d < 0 ? 2 * d : d), 0
+      ) / perDomainDeltas.length;
+      lwCompositeByYear[r.year] = 100 + lwMean;
+    }
+    // Lived national total per year = raw 2019 total × (lwIndex / 100).
+    // Derived figure: per-person additive scoring is unchanged; this is the
+    // aggregate-level adjustment that makes the headline reflect the
+    // loss-aversion the per-domain chart already encodes.
+    const total_2019_raw = baselineRow ? baselineRow.total_fly : null;
+    const livedTotalByYear = {};
+    for (const r of rows) {
+      const lwIdx = lwCompositeByYear[r.year];
+      livedTotalByYear[r.year] = (total_2019_raw != null && lwIdx != null)
+        ? total_2019_raw * (lwIdx / 100)
+        : null;
     }
 
     // Headline: anchored on three figures the reader needs side-by-side to
@@ -3490,15 +4049,23 @@ async function loadBalance() {
     const popFirst = popOf(first);
     const popDelta = (popLast != null && popFirst != null) ? (popLast - popFirst) : null;
     const popDeltaPct = (popDelta != null && popFirst) ? (popDelta / popFirst * 100) : null;
-    const totalLast = last.total_fly;
-    const totalFirst = first.total_fly;
+    // Raw additive totals — kept available as the audit-trail comparison.
+    const totalLastRaw = last.total_fly;
+    const totalFirstRaw = first.total_fly;
+    // Lived (loss-weighted) totals are now the headline figures everywhere
+    // changes are reported. Per § Why losses count double.
+    const totalLast = livedTotalByYear[last.year] ?? totalLastRaw;
+    const totalFirst = livedTotalByYear[first.year] ?? totalFirstRaw;
     const totalDelta = (totalLast != null && totalFirst != null) ? (totalLast - totalFirst) : null;
     const totalDeltaPct = (totalDelta != null && totalFirst) ? (totalDelta / totalFirst * 100) : null;
+    // Raw delta retained for the audit-trail annotation under the headline.
+    const totalDeltaRaw = (totalLastRaw != null && totalFirstRaw != null) ? (totalLastRaw - totalFirstRaw) : null;
+    const totalDeltaPctRaw = (totalDeltaRaw != null && totalFirstRaw) ? (totalDeltaRaw / totalFirstRaw * 100) : null;
     const tdSign = (totalDelta != null && totalDelta > 0) ? "+" : "";
     const pdSign = (popDelta != null && popDelta > 0) ? "+" : "";
-    // 2019 per-capita FLY is the empirical baseline under the new methodology.
-    // Marginal-FLY-per-marginal-American > baseline means each new American
-    // is bringing more flourishing than the average 2019 American did.
+    // 2019 per-capita FLY is the empirical baseline. Lived 2019 = raw 2019
+    // (loss-weighting is zero at the baseline year by definition), so the
+    // baseline is unambiguous either way.
     const baselinePerCapita = (totalFirst != null && popFirst)
       ? totalFirst / popFirst : null;
     const marginalFLYpc = (totalDelta != null && popDelta && popDelta > 0)
@@ -3506,12 +4073,16 @@ async function loadBalance() {
     const tilesHTML =
       `<span class="balance-headline-figure">` +
         `<span class="bh-num">${fmtMillions(totalLast)}</span>` +
-        `<span class="bh-unit">Flourishing Life Years produced in ${last.year}</span>` +
+        `<span class="bh-unit">Lived Flourishing Life Years in ${last.year}` +
+          (totalLastRaw != null ? ` <span class="bh-raw-aside">(raw additive: ${fmtMillions(totalLastRaw)})</span>` : "") +
+        `</span>` +
       `</span>` +
       (totalDelta != null
         ? `<span class="balance-headline-figure">` +
             `<span class="bh-num ${dCls}">${tdSign}${fmtMillions(Math.abs(totalDelta))}</span>` +
-            `<span class="bh-unit">FLY-years vs 2019 (<span class="${dCls}">${dSign}${totalDeltaPct.toFixed(1)}%</span>)</span>` +
+            `<span class="bh-unit">Lived FLY vs 2019 (<span class="${dCls}">${dSign}${totalDeltaPct.toFixed(1)}%</span>)` +
+              (totalDeltaPctRaw != null ? ` <span class="bh-raw-aside">(raw: ${totalDeltaPctRaw >= 0 ? "+" : ""}${totalDeltaPctRaw.toFixed(1)}%)</span>` : "") +
+            `</span>` +
           `</span>`
         : "") +
       (popDelta != null
@@ -3522,42 +4093,53 @@ async function loadBalance() {
         : "");
     document.getElementById("balance-headline-strip").innerHTML = tilesHTML;
 
-    // Verdict line — the question the user asked: are we creating flourishing
-    // faster than we're creating Americans?
+    // Verdict line — using lived FLY per the loss-weighting rule, so the
+    // marginal-FLY-per-American figure reflects lived flourishing produced
+    // per new American since 2019, not just additive head-count.
     const verdictEl = document.getElementById("balance-verdict");
     if (verdictEl && marginalFLYpc != null && baselinePerCapita != null) {
       const mfpc = marginalFLYpc.toFixed(3);
       const bpc = baselinePerCapita.toFixed(3);
-      // Expected FLY at the 2019 per-capita pace = ΔPop × baseline.
       const expectedFly = popDelta * baselinePerCapita;
       const excess = totalDelta - expectedFly;
       const excessSign = excess > 0 ? "+" : "";
-      // Threshold band: ±5% of baseline = "flat."
       const upBar = baselinePerCapita * 1.05;
       const downBar = baselinePerCapita * 0.95;
       let verdictCls, verdictHead, verdictBody;
       if (marginalFLYpc > upBar) {
         verdictCls = "verdict-up";
-        verdictHead = "Flourishing is outpacing population growth.";
-        verdictBody = `For every new American added since 2019, the country produced <strong>${mfpc} Flourishing Life Years</strong> — above the 2019 per-capita baseline of ${bpc}. At baseline, ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} FLY; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is running ahead.`;
+        verdictHead = "Lived flourishing is outpacing population growth.";
+        verdictBody = `For every new American added since 2019, the country produced <strong>${mfpc} lived Flourishing Life Years</strong> — above the 2019 per-capita baseline of ${bpc}. At baseline, ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} lived FLY; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is running ahead even after weighting losses 2× per <a href="#why-losses">§ Why losses count double</a>.`;
       } else if (marginalFLYpc >= downBar) {
         verdictCls = "verdict-flat";
-        verdictHead = "Flourishing is keeping pace with population.";
-        verdictBody = `Each new American added since 2019 brought <strong>${mfpc} Flourishing Life Years</strong> — close to the 2019 per-capita baseline of ${bpc}. We're not gaining ground, but not losing it either.`;
+        verdictHead = "Lived flourishing is keeping pace with population.";
+        verdictBody = `Each new American added since 2019 brought <strong>${mfpc} lived Flourishing Life Years</strong> — close to the 2019 per-capita baseline of ${bpc}. We're not gaining ground, but not losing it either, after weighting losses 2× per <a href="#why-losses">§ Why losses count double</a>.`;
       } else {
         verdictCls = "verdict-down";
-        verdictHead = "Population is growing faster than flourishing.";
-        verdictBody = `Each new American added since 2019 brought only <strong>${mfpc} Flourishing Life Years</strong> — below the 2019 per-capita baseline of ${bpc}. ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} FLY at baseline; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is going backwards on a per-American basis.`;
+        verdictHead = "Population is growing faster than lived flourishing.";
+        verdictBody = `Each new American added since 2019 brought only <strong>${mfpc} lived Flourishing Life Years</strong> — below the 2019 per-capita baseline of ${bpc}. ${fmtMillions(popDelta)} new Americans would have produced ${fmtMillions(expectedFly)} lived FLY at baseline; we produced ${fmtMillions(totalDelta)} (${excessSign}${fmtMillions(Math.abs(excess))}). The country is going backwards on a per-American basis when losses are weighted 2× per <a href="#why-losses">§ Why losses count double</a>.`;
       }
       verdictEl.className = "balance-verdict " + verdictCls;
       verdictEl.innerHTML = `<strong class="balance-verdict-head">${verdictHead}</strong><span class="balance-verdict-body">${verdictBody}</span>`;
     }
 
-    // Also write the most-recent year's absolute FLY count into §02's caption,
-    // replacing the placeholder so the rollup arithmetic ends with a real number.
+    // Write the most-recent year's lived FLY total into §02's caption as
+    // the headline figure. The raw additive total still appears alongside
+    // (it's the literal output of the per-person equation above), so the
+    // §02 reader can see the relationship between equation and lived
+    // total at a glance.
     const eq02 = document.getElementById("eq-rollup-current");
-    if (eq02 && totalLast != null) {
-      eq02.textContent = fmtMillions(totalLast);
+    if (eq02) {
+      const lived = livedTotalByYear[last.year];
+      if (lived != null) {
+        eq02.innerHTML =
+          `${fmtMillions(lived)} lived` +
+          (totalLastRaw != null
+            ? ` <span class="eq-rollup-raw-aside">(raw additive: ${fmtMillions(totalLastRaw)})</span>`
+            : "");
+      } else if (totalLastRaw != null) {
+        eq02.textContent = fmtMillions(totalLastRaw);
+      }
       eq02.dataset.year = last.year;
     }
 
@@ -3570,12 +4152,15 @@ async function loadBalance() {
       const k = n / 1000;
       return "$" + (k >= 100 ? Math.round(k) : k.toFixed(1)) + "K";
     };
+    // Cost-per-FLY uses the lived (loss-weighted) divisor — same dollars,
+    // smaller denominator, so the headline cost is honestly higher than
+    // the raw equal-weight reading. The dividend stays unchanged.
     const flyDivEl = document.getElementById("cost-fly-divisor");
     const costPerFlyEl = document.getElementById("cost-per-fly");
     const costBorrowedEl = document.getElementById("cost-borrowed-per-fly");
     const costPerFlyRealEl = document.getElementById("cost-per-fly-real");
     if (totalLast != null && totalLast > 0) {
-      if (flyDivEl) flyDivEl.textContent = fmtMillions(totalLast) + " FLY";
+      if (flyDivEl) flyDivEl.textContent = fmtMillions(totalLast) + " lived FLY";
       if (costPerFlyEl) costPerFlyEl.textContent = fmtThousands(COST_FY2024_TOTAL / totalLast);
       if (costBorrowedEl) costBorrowedEl.textContent = fmtThousands(COST_FY2024_DEFICIT / totalLast);
       if (costPerFlyRealEl) costPerFlyRealEl.textContent =
@@ -3596,7 +4181,9 @@ async function loadBalance() {
       { year: 2023, nominal_T: 9.145, cpi: 1.192 },
       { year: 2024, nominal_T: 9.852, cpi: 1.227 },
     ];
-    const flyByYear = new Map(rows.map(r => [r.year, r.total_fly]));
+    // Cost-trend chart denominator: lived FLY per year, with raw fallback
+    // if a year is missing per-domain breakdown for some reason.
+    const flyByYear = new Map(rows.map(r => [r.year, livedTotalByYear[r.year] ?? r.total_fly]));
     const aligned = COST_TREND
       .filter(c => flyByYear.has(c.year) && flyByYear.get(c.year) > 0)
       .map(c => ({
@@ -3711,43 +4298,46 @@ async function loadBalance() {
         `<span class="cost-projection-verdict">The threat isn't "we run out of money tomorrow." It's that efficiency declines slowly enough that nobody panics until it's eaten the budget. Each percentage point of GDP is real money that can't go to anything else.</span>`;
     }
 
-    // Primary chart: composite only
-    const compositeSeries = {
-      name: "composite",
+    // Primary chart: lived composite (thick, the headline trajectory) +
+    // raw composite (faint dashed comparison). The gap between the two
+    // lines is the "cost of unbalanced flourishing" — what the loss-
+    // weighting reveals that the equal-weight reading hides.
+    const compositeRawSeries = {
+      name: "Raw",
+      color: "var(--ink-soft)",
       points: rows.map(r => ({ year: r.year, value: r.composite_index })),
+      thick: false,
+      dashed: true,
+    };
+    const compositeLivedSeries = {
+      name: "Lived",
+      points: rows.map(r => ({ year: r.year, value: lwCompositeByYear[r.year] })),
       thick: true,
     };
     renderBalanceLineSVG(
       section.querySelector('svg[data-which="composite"]'),
-      [compositeSeries]
+      [compositeRawSeries, compositeLivedSeries]
     );
-    // Primary summary line — each year shown as percent vs 2019.
-    const summary = rows.map(r =>
-      `<span class="yr">${r.year}: ${fmtIndexAsPct(r.composite_index)}</span>`
-    ).join(" · ");
+    // Primary summary line — lived headline per year, raw shown as a
+    // small parenthetical so the loss-weighting drag is auditable.
+    const livedDelta = (lwCompositeByYear[last.year] != null) ? (lwCompositeByYear[last.year] - 100) : delta;
+    const ldSign = livedDelta > 0 ? "+" : "";
+    const ldCls = livedDelta > 0.2 ? "delta-up" : livedDelta < -0.2 ? "delta-down" : "delta-flat";
+    const summary = rows.map(r => {
+      const lwV = lwCompositeByYear[r.year];
+      const lived = lwV != null ? fmtIndexAsPct(lwV) : "—";
+      const raw = r.composite_index != null ? fmtIndexAsPct(r.composite_index) : "—";
+      return `<span class="yr">${r.year}: ${lived} <span class="balance-summary-raw">(raw ${raw})</span></span>`;
+    }).join(" · ");
     document.getElementById("balance-summary-primary").innerHTML =
-      `${summary} <span class="${dCls}">(${dSign}${delta.toFixed(1)}% net 2019→${last.year})</span>`;
+      `${summary} <span class="${ldCls}">(${ldSign}${livedDelta.toFixed(1)}% lived net 2019→${last.year})</span>` +
+      ` <span class="balance-summary-raw">· raw ${dSign}${delta.toFixed(1)}%</span>`;
 
-    // Secondary chart: 5 per-domain lines + composite
-    // v0.8: per_domain_breakdown is {strong_share, adequate_share, below_share}
-    // per domain. Convert to a 2019=100 index of per-domain FLY contribution:
-    //   contribution_t = strong_t × 0.20 + adequate_t × 0.10
-    //   index_t = contribution_t / contribution_2019 × 100
-    const baselineRow = rows.find(r => r.year === 2019);
-    const baselineDomainWeight = {};
-    if (baselineRow && baselineRow.per_domain_breakdown) {
-      for (const [key] of BALANCE_DOMAIN_ORDER) {
-        const b = baselineRow.per_domain_breakdown[key];
-        if (b && typeof b === "object") {
-          baselineDomainWeight[key] = (b.strong_share || 0) * 0.20
-                                     + (b.adequate_share || 0) * 0.10;
-        } else if (typeof b === "number") {
-          // Backwards compat with old scalar shape (pre-v0.8): index by ratio.
-          baselineDomainWeight[key] = b / 100;
-        }
-      }
-    }
+    // Secondary chart: 5 per-domain lines + composite. Per-domain indices
+    // computed against the early-block baselineDomainWeight, which the
+    // loss-weighted aggregation already established as the single source.
     const domainSeries = BALANCE_DOMAIN_ORDER.map(([key, label, color]) => ({
+      key,
       name: label,
       color: color,
       points: rows.map(r => {
@@ -3768,14 +4358,74 @@ async function loadBalance() {
     }));
     renderBalanceLineSVG(
       section.querySelector('svg[data-which="per_domain"]'),
-      [...domainSeries, compositeSeries]
+      [...domainSeries, compositeLivedSeries]
     );
 
     // Legend
     const legend = document.getElementById("balance-legend");
     legend.innerHTML = BALANCE_DOMAIN_ORDER.map(([key, label, color]) =>
       `<span class="balance-legend-row" style="--c: ${color}">${label}</span>`
-    ).join("") + `<span class="balance-legend-row composite">Composite (geomean)</span>`;
+    ).join("") + `<span class="balance-legend-row composite">Lived composite (loss-weighted)</span>`;
+
+    // Tertiary chart: loss-weighted view of the latest snapshot. The
+    // returned stats also drive the §02 deprivation flag, the per-card
+    // domain badges in §03, and the loss-weighted addendum on the primary
+    // summary line — single computation, single source of truth.
+    const asymStats = renderBalanceAsymmetricSVG(
+      section.querySelector('svg[data-which="asymmetric"]'),
+      domainSeries
+    );
+    const fmtSigned = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1) + "%";
+    const asymSummary = document.getElementById("balance-asym-summary");
+    if (asymStats && asymSummary) {
+      asymSummary.innerHTML =
+        `<span><span class="key">Equal-weight</span><span class="val-raw">${fmtSigned(asymStats.rawMean)}</span></span>` +
+        `<span><span class="key">Loss-weighted (2×)</span><span class="val-weighted">${fmtSigned(asymStats.weightedMean)}</span></span>` +
+        `<span><span class="key">Below 2019</span><span class="val-count">${asymStats.belowCount} of ${asymStats.total} domains</span></span>`;
+    }
+
+    // §02 deprivation flag: tucks an honest "↓ N of 5 below 2019" line
+    // next to the absolute national total, with a link to the explainer.
+    const deprivationEl = document.getElementById("eq-rollup-deprivation");
+    if (deprivationEl && asymStats) {
+      if (asymStats.belowCount > 0) {
+        deprivationEl.innerHTML =
+          ` <a href="#why-losses">↓ ${asymStats.belowCount} of ${asymStats.total} domains below the 2019 baseline.</a>`;
+      } else {
+        deprivationEl.textContent = "";
+      }
+    }
+
+    // Per-domain badges on the §03 cards: ✓ above-2019 (in the domain's
+    // green) or ⚠ below-2019 (accent). Each badge links to #why-losses
+    // and carries the actual delta as a tooltip via title.
+    if (asymStats && asymStats.entries) {
+      for (const e of asymStats.entries) {
+        const card = document.querySelector(`.domain-card[data-domain="${e.key}"]`);
+        if (!card) continue;
+        const num = card.querySelector(".domain-num");
+        if (!num) continue;
+        // Avoid duplicate insertion on hot reloads.
+        const existing = num.querySelector(".domain-badge");
+        if (existing) existing.remove();
+        const above = e.delta >= 0;
+        const sign = above ? "+" : "−";
+        const pct = Math.abs(e.delta).toFixed(1);
+        const badge = document.createElement("a");
+        badge.className = `domain-badge ${above ? "above" : "below"}`;
+        badge.href = "#why-losses";
+        badge.title = `${e.year ?? ""} vs 2019 baseline. Click for the loss-weighting rationale.`;
+        badge.innerHTML =
+          `<span class="arrow">${above ? "✓" : "⚠"}</span>` +
+          `<span>${above ? "Above" : "Below"} 2019</span>` +
+          `<span class="pct">${sign}${pct}%</span>`;
+        // Insert the badge as the second child, so flex order is:
+        // label · badge · dot. The CSS rule margin-right:auto on the
+        // first child pushes the label left, the rest sit right.
+        const dot = num.querySelector(".domain-dot");
+        if (dot) num.insertBefore(badge, dot); else num.appendChild(badge);
+      }
+    }
   } catch (e) {
     section.querySelector(".balance-headline-strip").textContent =
       `Trend data unavailable: ${e.message}`;
@@ -3853,9 +4503,23 @@ async function loadMap() {
       domainsByGeoid.get(r.geoid)[r.domain] = { pct: r.percentile, moe: r.moe_pct };
     }
 
-    let currentView = "composite";
+    let currentView = "lived_v1";  // v1.0 lived FLY (mock) is the new default
+
+    // Cache lived-FLY mock results per geoid so we don't recompute on every
+    // hover / repaint.
+    const livedCache = new Map();
+    function getLived(geoid) {
+      if (livedCache.has(geoid)) return livedCache.get(geoid);
+      const lived = livedFLYMock(domainsByGeoid.get(geoid));
+      livedCache.set(geoid, lived);
+      return lived;
+    }
 
     function getValue(geoid, view) {
+      if (view === "lived_v1") {
+        const l = getLived(geoid);
+        return l == null ? null : livedFLYToDisplay(l.lived);
+      }
       if (view === "composite") {
         const c = compByGeoid.get(geoid);
         return c && c.composite != null ? c.composite : null;
@@ -3867,7 +4531,7 @@ async function loadMap() {
     function isFlagged(geoid, view) {
       const dom = domainsByGeoid.get(geoid);
       if (!dom) return false;
-      if (view === "composite") {
+      if (view === "composite" || view === "lived_v1") {
         return Object.values(dom).some(d => d.moe != null && d.moe > 0.30);
       }
       const d = dom[view];
@@ -3909,13 +4573,26 @@ async function loadMap() {
         html += `<div class="${cls}"><span class="domain-label">${label}</span>` +
                 `<span class="domain-pct">${fmtPct(pct)}${flag}</span></div>`;
       }
+      // v0.9 percentile composite row
       if (c && c.composite != null) {
         const cls = currentView === "composite" ? "score-row composite-row row-active" : "score-row composite-row";
-        html += `<div class="${cls}"><span class="domain-label">Composite (${c.domains_available}/5)</span><span class="domain-pct">${c.composite.toFixed(1)}</span></div>`;
+        html += `<div class="${cls}"><span class="domain-label">Composite (${c.domains_available}/5, v0.9)</span><span class="domain-pct">${c.composite.toFixed(1)}</span></div>`;
       } else if (c) {
         html += `<div class="gray-note composite-row">Insufficient data (${c.domains_available}/5 domains)</div>`;
       } else {
         html += `<div class="gray-note composite-row">No data for this county code in this release</div>`;
+      }
+      // v1.0 lived FLY mock row — always shown so the comparison is visible
+      // alongside the v0.9 composite, regardless of which view is active.
+      const lived = getLived(geoid);
+      if (lived) {
+        const cls = currentView === "lived_v1" ? "score-row composite-row row-active" : "score-row composite-row";
+        const livedSign = lived.lived >= 0 ? "" : "−";
+        const livedAbs = Math.abs(lived.lived).toFixed(2);
+        const detail = `${lived.strong}S · ${lived.adequate}A · ${lived.below}B`;
+        html += `<div class="${cls}"><span class="domain-label">Lived FLY (v1.0 mock)</span><span class="domain-pct">${livedSign}${livedAbs} <span class="moe-flag">${detail} · raw ${lived.raw.toFixed(2)}</span></span></div>`;
+      } else if (currentView === "lived_v1") {
+        html += `<div class="gray-note composite-row">v1.0 lived FLY: insufficient domains (need ≥4)</div>`;
       }
       return html;
     }
@@ -4004,11 +4681,33 @@ async function loadMap() {
       }
       document.getElementById("meta-scored").textContent = scored.toLocaleString();
       document.getElementById("meta-gray").textContent = gray.toLocaleString();
-      document.getElementById("meta-range").textContent =
-        scored ? `${(+vmin).toFixed(1)} – ${(+vmax).toFixed(1)}` : "—";
+      // v1.0 lived FLY: report range in FLY space, not display-space.
+      let rangeText = "—";
+      if (scored) {
+        if (currentView === "lived_v1") {
+          // vmin/vmax are in display space (0–100); convert back to FLY space.
+          const lo = (vmin / 100) * 1.50 - 0.50;
+          const hi = (vmax / 100) * 1.50 - 0.50;
+          rangeText = `${lo.toFixed(2)} – ${hi.toFixed(2)} FLY`;
+        } else {
+          rangeText = `${(+vmin).toFixed(1)} – ${(+vmax).toFixed(1)}`;
+        }
+      }
+      document.getElementById("meta-range").textContent = rangeText;
       const label = VIEW_LABEL[currentView];
       document.getElementById("meta-range-label").textContent = `${label} range`;
       document.getElementById("legend-label").textContent = label;
+      // Swap legend tick labels: percentile (1, 25, 50, 75, 100) for v0.9
+      // and per-domain views; FLY-space ticks for v1.0.
+      const ticksEl = document.querySelector(".legend-ticks");
+      if (ticksEl) {
+        ticksEl.innerHTML = currentView === "lived_v1"
+          ? `<span>−0.50</span><span>−0.13</span><span>+0.25</span><span>+0.63</span><span>+1.00</span>`
+          : `<span>1</span><span>25</span><span>50</span><span>75</span><span>100</span>`;
+      }
+      // Mock banner — visible only when v1.0 lived FLY mock is active.
+      const banner = document.getElementById("map-mock-banner");
+      if (banner) banner.classList.toggle("visible", currentView === "lived_v1");
     }
     applyView();
 
