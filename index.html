@@ -2182,8 +2182,8 @@
     border: 1px solid var(--rule);
     border-left: 4px solid var(--c, var(--rule));
   }
-  .map-method-cell.lived     { --c: #355878; }  /* slate-blue, the Lived end of the diverging palette */
-  .map-method-cell.composite { --c: #8b6b2c; }  /* ochre, the Nominal end (class still named .composite for legacy CSS reasons) */
+  .map-method-cell.lived     { --c: #355878; }  /* deep slate-blue */
+  .map-method-cell.composite { --c: #8a99ad; }  /* mid-tone slate, the lighter step on the Lived/Nominal ramp (class still named .composite for legacy CSS reasons) */
   .map-method-label {
     font-family: 'Fraunces', serif; font-weight: 500;
     font-size: 16px; color: var(--ink); letter-spacing: -0.005em;
@@ -4933,20 +4933,19 @@ async function loadMap() {
       .interpolate(d3.interpolateLab)
       .clamp(true);
 
-    // Lived and Nominal both get an earth-tone diverging palette anchored
-    // at the *conceptual* all-Adequate baseline (FLY = 0.50), not the
-    // empirical median. This way "warm" doesn't mean "below average" — it
-    // means "below the bare-minimum baseline of having every domain at
-    // Adequate." Most US counties clear that bar, so most read in the cool
-    // half of the palette; counties that don't (Mississippi Delta and
-    // similar) stand out without being moralized as "red = alarm."
+    // Sequential single-hue blue ramp for both Lived and Nominal. No
+    // diverging pivot, no stoplight semantics — just "more or less of one
+    // thing." Pale cool blue (low end) → medium blue → deep slate-blue
+    // (--domain-4) at the high end. d3 interpolates in Lab space so the
+    // perceptual lightness moves smoothly across the ramp. Anchored at
+    // empirical p05/p50/p95 of the data so the visible distribution gets
+    // the full palette.
     //
-    // Palette: deep ochre (--domain-2) → cream → deep slate-blue (--domain-4).
-    // Both endpoints are dignified earth tones, neither carries stoplight
-    // semantics. Compare with the previous red-cream-green palette which
-    // activated the universal good/bad valence.
-    const PALETTE = ["#8b6b2c", "#e8dcc0", "#355878"];  // ochre, cream, slate-blue
-    const BASELINE = 0.50;  // FLY = 0.50: every domain at Adequate
+    // BASELINE (FLY = 0.50, the all-Adequate floor) is preserved as a
+    // small tick on the legend so readers can see where the bare-minimum
+    // bar falls inside the distribution, but it no longer drives color.
+    const PALETTE = ["#dee5ec", "#8a99ad", "#355878"];  // pale → mid → slate-blue
+    const BASELINE = 0.50;
     let colorLived = null;
     let colorNominal = null;
     let livedPercentiles = null;
@@ -4960,24 +4959,12 @@ async function loadMap() {
         nominalVals.push(l.raw);
       }
       const pct = (vals, p) => vals[Math.max(0, Math.min(vals.length - 1, Math.floor((vals.length - 1) * p)))];
-      // Build a baseline-anchored color scale. Three cases by where
-      // BASELINE sits relative to the data's [p05, p95] band:
-      //   (a) BASELINE inside the band → full ochre/cream/slate diverging
-      //   (b) all data above BASELINE → cream → slate (no warm side shown)
-      //   (c) all data below BASELINE → ochre → cream (no cool side shown)
       const buildScale = (vals) => {
         if (vals.length < 10) return { scale: null, pcts: null };
         vals.sort((a, b) => a - b);
         const p05 = pct(vals, 0.05), p50 = pct(vals, 0.50), p95 = pct(vals, 0.95);
-        let domain, range;
-        if (BASELINE > p05 && BASELINE < p95) {
-          domain = [p05, BASELINE, p95]; range = PALETTE;
-        } else if (BASELINE <= p05) {
-          domain = [p05, p95]; range = [PALETTE[1], PALETTE[2]];
-        } else {
-          domain = [p05, p95]; range = [PALETTE[0], PALETTE[1]];
-        }
-        const scale = d3.scaleLinear().domain(domain).range(range)
+        const scale = d3.scaleLinear()
+          .domain([p05, p50, p95]).range(PALETTE)
           .interpolate(d3.interpolateLab).clamp(true);
         return { scale, pcts: { p05, p50, p95 } };
       };
@@ -5156,12 +5143,12 @@ async function loadMap() {
       document.getElementById("legend-label").textContent = label;
       // Legend tick labels + bar gradient swap based on view.
       // Per-domain views: percentile-rank tan→green ramp, evenly-spaced
-      // 1/25/50/75/100 ticks (the existing CSS default).
-      // Lived / Nominal: ochre/cream/slate diverging palette anchored at
-      // BASELINE = 0.50 (the all-Adequate floor). Cream's visual position
-      // on the gradient bar is non-uniform — it sits where 0.50 falls
-      // inside the data's [p05, p95] band — so the tick row is positioned
-      // absolutely to match.
+      // 1/25/50/75/100 ticks (existing CSS default).
+      // Lived / Nominal: pale-to-deep-slate sequential ramp. Three labels
+      // at p05 / p50 / p95 (evenly-spaced visually since the gradient is
+      // linear). The all-Adequate baseline (0.50) gets a small tick mark
+      // overlaid on the bar so readers can see where the bare-minimum
+      // bar falls inside the distribution, but it no longer pivots color.
       const ticksEl = document.querySelector(".legend-ticks");
       const barEl = document.querySelector(".legend-bar");
       const fmtFLY = (v) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2);
@@ -5169,33 +5156,27 @@ async function loadMap() {
         currentView === "lived_v1" ? livedPercentiles :
         currentView === "nominal"  ? nominalPercentiles : null;
       if (pctsForView) {
-        const { p05, p95 } = pctsForView;
+        const { p05, p50, p95 } = pctsForView;
         const span = p95 - p05;
-        // Cream's visual position along the bar (fraction 0..1).
-        const creamPosRaw = span > 0 ? (BASELINE - p05) / span : 0.5;
-        const creamPos = Math.max(0, Math.min(1, creamPosRaw));
-        const creamPct = (creamPos * 100).toFixed(1);
-        // Build the gradient — three-stop if BASELINE falls within range,
-        // two-stop otherwise (matches the d3 scale's case handling above).
-        let grad;
-        if (creamPosRaw <= 0) {
-          grad = `linear-gradient(to right, ${PALETTE[1]} 0%, ${PALETTE[2]} 100%)`;
-        } else if (creamPosRaw >= 1) {
-          grad = `linear-gradient(to right, ${PALETTE[0]} 0%, ${PALETTE[1]} 100%)`;
-        } else {
-          grad = `linear-gradient(to right, ${PALETTE[0]} 0%, ${PALETTE[1]} ${creamPct}%, ${PALETTE[2]} 100%)`;
-        }
-        if (barEl) barEl.style.background = grad;
-        if (ticksEl) {
-          ticksEl.classList.add("anchored");
-          // Three labels: p05 at left, BASELINE at the cream position
-          // (only shown if it's actually inside the bar), p95 at right.
-          let html = `<span>${fmtFLY(p05)}</span>`;
-          if (creamPosRaw > 0 && creamPosRaw < 1) {
-            html += `<span style="left: ${creamPct}%">${fmtFLY(BASELINE)}<span class="legend-tick-note">all-Adequate</span></span>`;
+        const baselinePosRaw = span > 0 ? (BASELINE - p05) / span : -1;
+        if (barEl) {
+          let bg = `linear-gradient(to right, ${PALETTE[0]} 0%, ${PALETTE[1]} 50%, ${PALETTE[2]} 100%)`;
+          // Overlay a thin tick mark on the bar at the BASELINE position
+          // (only when it lands inside the visible range).
+          if (baselinePosRaw > 0 && baselinePosRaw < 1) {
+            const bp = (baselinePosRaw * 100).toFixed(1);
+            bg = `linear-gradient(to right, transparent ${bp}%, rgba(26,24,20,0.55) ${bp}%, rgba(26,24,20,0.55) calc(${bp}% + 1.5px), transparent calc(${bp}% + 1.5px)), ${bg}`;
           }
-          html += `<span>${fmtFLY(p95)}</span>`;
-          ticksEl.innerHTML = html;
+          barEl.style.background = bg;
+        }
+        if (ticksEl) {
+          ticksEl.classList.remove("anchored");
+          ticksEl.innerHTML =
+            `<span>${fmtFLY(p05)}</span>` +
+            `<span></span>` +
+            `<span>${fmtFLY(p50)}</span>` +
+            `<span></span>` +
+            `<span>${fmtFLY(p95)}</span>`;
         }
       } else {
         if (ticksEl) {
