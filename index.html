@@ -4602,6 +4602,32 @@ async function loadMap() {
       .interpolate(d3.interpolateLab)
       .clamp(true);
 
+    // Lived FLY (v1.0) gets its own diverging palette anchored at the
+    // *empirical* percentiles of the data, not the theoretical [-0.5, 1.0]
+    // range. ~90% of counties live in [0.45, 0.77], so stretching the color
+    // spectrum across that band makes the differences inside the bell curve
+    // legible. Below-median counties read warm (toward accent red), above
+    // read cool (toward deep green); the median is paper-cream-neutral.
+    let colorLived = null;
+    let livedPercentiles = null;
+    function buildColorLived() {
+      const vals = [];
+      for (const f of counties.features) {
+        const l = getLived(f.properties.GEOID);
+        if (l) vals.push(l.lived);
+      }
+      if (vals.length < 10) return;
+      vals.sort((a, b) => a - b);
+      const pct = (p) => vals[Math.max(0, Math.min(vals.length - 1, Math.floor((vals.length - 1) * p)))];
+      livedPercentiles = { p05: pct(0.05), p50: pct(0.50), p95: pct(0.95) };
+      colorLived = d3.scaleLinear()
+        .domain([livedPercentiles.p05, livedPercentiles.p50, livedPercentiles.p95])
+        .range(["#9e2a16", "#e8dcc0", "#1a3a2e"])
+        .interpolate(d3.interpolateLab)
+        .clamp(true);
+    }
+    buildColorLived();
+
     const svg = d3.select("#map-svg");
     svg.selectAll("*").remove();
     const tooltip = document.getElementById("tooltip");
@@ -4733,7 +4759,12 @@ async function loadMap() {
     function applyView() {
       countyPaths
         .attr("fill", d => {
-          const v = getValue(d.properties.GEOID, currentView);
+          const geoid = d.properties.GEOID;
+          if (currentView === "lived_v1" && colorLived) {
+            const lived = getLived(geoid);
+            return lived ? colorLived(lived.lived) : "#c9bfa8";
+          }
+          const v = getValue(geoid, currentView);
           return v == null ? "#c9bfa8" : color(v);
         })
         .attr("fill-opacity", d => {
@@ -4767,13 +4798,34 @@ async function loadMap() {
       const label = VIEW_LABEL[currentView];
       document.getElementById("meta-range-label").textContent = `${label} range`;
       document.getElementById("legend-label").textContent = label;
-      // Swap legend tick labels: percentile (1, 25, 50, 75, 100) for v0.9
-      // and per-domain views; FLY-space ticks for v1.0.
+      // Swap legend tick labels and the legend-bar gradient itself based
+      // on view. v0.9 / per-domain stays the existing tan→green ramp at
+      // 1/25/50/75/100 percentile-rank ticks. v1.0 lived FLY uses the
+      // empirical-percentile diverging palette with p05/p50/p95 ticks
+      // shown verbatim (so the color anchors are honest).
       const ticksEl = document.querySelector(".legend-ticks");
-      if (ticksEl) {
-        ticksEl.innerHTML = currentView === "lived_v1"
-          ? `<span>−0.50</span><span>−0.13</span><span>+0.25</span><span>+0.63</span><span>+1.00</span>`
-          : `<span>1</span><span>25</span><span>50</span><span>75</span><span>100</span>`;
+      const barEl = document.querySelector(".legend-bar");
+      const fmtLived = (v) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2);
+      if (currentView === "lived_v1" && livedPercentiles) {
+        const { p05, p50, p95 } = livedPercentiles;
+        if (ticksEl) {
+          ticksEl.innerHTML =
+            `<span>${fmtLived(p05)}</span>` +
+            `<span></span>` +
+            `<span>${fmtLived(p50)}</span>` +
+            `<span></span>` +
+            `<span>${fmtLived(p95)}</span>`;
+        }
+        if (barEl) {
+          barEl.style.background = "linear-gradient(to right, #9e2a16, #e8dcc0, #1a3a2e)";
+        }
+      } else {
+        if (ticksEl) {
+          ticksEl.innerHTML = `<span>1</span><span>25</span><span>50</span><span>75</span><span>100</span>`;
+        }
+        if (barEl) {
+          barEl.style.background = "";  // restore CSS default (the v0.9 ramp)
+        }
       }
       // Mock banner — visible only when v1.0 lived FLY view is active AND
       // we're in mock mode. In live mode (county_lived_fly populated) the
