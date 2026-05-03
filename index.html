@@ -317,6 +317,93 @@
     color: var(--ink);
   }
 
+  /* Hero lived-flourishing callout. The first big number on the page,
+     populated live from national_trend on load. The structure pairs a
+     dominant lived total (left) with a small audit-trail block (right)
+     showing the lived/raw deltas vs 2019 plus the raw total. */
+  .lived-headline {
+    margin-bottom: 36px;
+    padding: 32px 36px 26px;
+    background: var(--paper-warm);
+    border-left: 4px solid var(--accent);
+  }
+  .lived-headline-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .lived-headline-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 36px;
+    align-items: center;
+  }
+  .lived-headline-main { min-width: 0; }
+  .lived-headline-num {
+    font-family: 'Fraunces', serif; font-weight: 400;
+    font-size: clamp(48px, 6.5vw, 84px);
+    letter-spacing: -0.02em; line-height: 1;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+    margin-bottom: 10px;
+  }
+  .lived-headline-num .lived-headline-unit {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500;
+    margin-left: 12px; vertical-align: middle;
+  }
+  .lived-headline-caption {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic; font-size: 18px; line-height: 1.4;
+    color: var(--ink-soft);
+  }
+  .lived-headline-aside-block {
+    border-left: 1px solid var(--rule);
+    padding-left: 22px;
+    min-width: 220px;
+  }
+  .lived-headline-aside-row {
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 4px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+  .lived-headline-aside-row + .lived-headline-aside-row {
+    border-top: 1px dashed var(--rule);
+    padding-top: 8px; margin-top: 4px;
+  }
+  .lived-headline-aside-label {
+    color: var(--ink-soft); letter-spacing: 0.04em;
+    text-transform: uppercase; font-size: 10px;
+  }
+  .lived-headline-aside-val {
+    color: var(--ink); font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .lived-headline-aside-val.raw { color: var(--ink-soft); font-weight: 400; }
+  .lived-headline-aside-val.delta-up { color: #2d5a4a; }
+  .lived-headline-aside-val.delta-down { color: var(--accent); }
+  .lived-headline-foot {
+    margin-top: 18px; padding-top: 14px;
+    border-top: 1px dashed var(--rule);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.02em;
+    color: var(--ink-soft); line-height: 1.55;
+  }
+  .lived-headline-foot a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .lived-headline-foot a:hover { color: var(--ink); }
+
+  @media (max-width: 720px) {
+    .lived-headline { padding: 24px 22px 18px; margin-bottom: 28px; }
+    .lived-headline-row { grid-template-columns: 1fr; gap: 18px; }
+    .lived-headline-aside-block {
+      border-left: none;
+      border-top: 1px solid var(--rule);
+      padding-left: 0; padding-top: 16px; min-width: 0;
+    }
+  }
+
   .national-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -2356,6 +2443,41 @@
   <!-- NATIONAL PICTURE STRIP -->
   <section class="national-strip">
     <div class="national-strip-label">§ The national picture</div>
+
+    <!-- Hero lived-flourishing callout. Populated live from loadBalance once
+         national_trend rows are fetched; falls back to em-dashes if data is
+         unavailable. The first big number on the page is the lived FLY total
+         — what the country actually produced in lived terms, with the raw
+         additive number kept alongside as audit. -->
+    <div class="lived-headline" id="lived-headline">
+      <div class="lived-headline-label">Lived flourishing produced</div>
+      <div class="lived-headline-row">
+        <div class="lived-headline-main">
+          <div class="lived-headline-num" id="lived-headline-num">— <span class="lived-headline-unit">M lived FLY</span></div>
+          <div class="lived-headline-caption" id="lived-headline-caption">
+            for <span id="lived-headline-pop">— million</span> Americans in <span id="lived-headline-year">—</span>.
+          </div>
+        </div>
+        <div class="lived-headline-aside-block" id="lived-headline-aside-block">
+          <div class="lived-headline-aside-row">
+            <span class="lived-headline-aside-label">vs 2019 (lived)</span>
+            <span class="lived-headline-aside-val" id="lived-headline-delta-lived">—</span>
+          </div>
+          <div class="lived-headline-aside-row">
+            <span class="lived-headline-aside-label">vs 2019 (raw)</span>
+            <span class="lived-headline-aside-val raw" id="lived-headline-delta-raw">—</span>
+          </div>
+          <div class="lived-headline-aside-row">
+            <span class="lived-headline-aside-label">Raw additive total</span>
+            <span class="lived-headline-aside-val raw" id="lived-headline-raw">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="lived-headline-foot">
+        The gap between the two ledgers is the cost of unbalanced flourishing — domains backsliding below 2019, weighted 2× per <a href="#why-losses">§ Why losses count double</a>.
+      </div>
+    </div>
+
     <div class="national-strip-title">Every score on this site is drawn from these inputs — open federal data, <em>no proprietary estimates</em>.</div>
     <div class="national-stats">
       <div class="nstat">
@@ -2647,9 +2769,9 @@
     <div class="balance-inner">
       <div class="section-label">§ The national balance</div>
       <div class="balance-header">
-        <h2>National FLY, year over year. <em>2019 = 100.</em></h2>
+        <h2>Lived flourishing, year over year. <em>2019 = 100.</em></h2>
         <p class="balance-lede">
-          The county map is cross-sectional — one snapshot per release. To answer "is national flourishing moving up or down?" we anchor at 2019 (the last full pre-COVID year) and track the index forward in real terms.
+          How much flourishing is the country actually producing? <strong>Lived</strong> is the headline — total per-person flourishing aggregated nationally, with below-2019 domains weighted 2× per loss aversion. Anchored at 2019 (last full pre-COVID year). The raw additive total stays alongside in lighter type so the gap between the two ledgers — what we produced on the books vs what we produced in lives — is visible at every step. <a href="#why-losses">§ Why losses count double</a> explains the rule.
         </p>
         <div class="balance-headline-strip" id="balance-headline-strip"></div>
         <div class="balance-verdict" id="balance-verdict"></div>
@@ -4235,6 +4357,37 @@ async function loadBalance() {
           `</span>`
         : "");
     document.getElementById("balance-headline-strip").innerHTML = tilesHTML;
+
+    // Hero lived-flourishing callout (in §The national picture). Single
+    // source of truth: the same lived/raw figures the §balance headline
+    // strip uses, just hoisted to the top of the page.
+    const livedHead = document.getElementById("lived-headline");
+    if (livedHead && totalLast != null) {
+      const livedM = (totalLast / 1e6);
+      const livedNumStr = livedM >= 100 ? livedM.toFixed(1) : livedM.toFixed(2);
+      document.getElementById("lived-headline-num").innerHTML =
+        `${livedNumStr} <span class="lived-headline-unit">M lived FLY</span>`;
+      const popM = (popLast != null) ? (popLast / 1e6).toFixed(1) + "M" : "—";
+      document.getElementById("lived-headline-pop").textContent = popM;
+      document.getElementById("lived-headline-year").textContent = last.year;
+      // Aside block — three rows: lived delta, raw delta, raw total.
+      const ldEl = document.getElementById("lived-headline-delta-lived");
+      const rdEl = document.getElementById("lived-headline-delta-raw");
+      const rtEl = document.getElementById("lived-headline-raw");
+      if (ldEl && totalDelta != null) {
+        const livedDeltaSign = totalDelta > 0 ? "+" : (totalDelta < 0 ? "" : "");
+        const livedCls = totalDelta > 0 ? "delta-up" : totalDelta < 0 ? "delta-down" : "";
+        ldEl.className = "lived-headline-aside-val " + livedCls;
+        ldEl.textContent = `${livedDeltaSign}${fmtMillions(Math.abs(totalDelta))} (${livedDeltaSign}${totalDeltaPct.toFixed(1)}%)`;
+      }
+      if (rdEl && totalDeltaRaw != null) {
+        const rawDeltaSign = totalDeltaRaw > 0 ? "+" : "";
+        rdEl.textContent = `${rawDeltaSign}${fmtMillions(Math.abs(totalDeltaRaw))} (${rawDeltaSign}${totalDeltaPctRaw.toFixed(1)}%)`;
+      }
+      if (rtEl && totalLastRaw != null) {
+        rtEl.textContent = fmtMillions(totalLastRaw);
+      }
+    }
 
     // Verdict line — using lived FLY per the loss-weighting rule, so the
     // marginal-FLY-per-American figure reflects lived flourishing produced
