@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#f4efe6">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Flourishing Life Year — Personal Assessment">
-<meta property="og:description" content="Your Flourishing Score, against your peers nationally and locally. 13 questions, about four minutes.">
+<meta property="og:description" content="Your Flourishing Read: where you stand across five domains against your age cohort nationally. 13 questions, about four minutes.">
 <meta property="og:url" content="https://www.flourishinglifeyear.com/assessment">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -436,7 +436,7 @@
         <div class="q-label"><span class="qnum">03</span>Demographics</div>
         <div class="q-prompt">ZIP code (optional)</div>
         <input type="text" name="zip" pattern="[0-9]{5}" maxlength="5" placeholder="5 digits" />
-        <div class="q-help">Used in v0.6 to deflate income by your county's regional price parity. Ignored in v0.5.</div>
+        <div class="q-help">Used in v0.6 to deflate income by your county's regional price parity. Not used in v0.5 — safe to leave blank.</div>
       </div>
 
       <!-- Q4 Household income -->
@@ -496,7 +496,7 @@
           <label><input type="radio" name="kids" value="no"><span>No</span></label>
         </div>
         <div class="q-help">
-          Children currently living with you most of the time. Younger siblings of a college student living at home don't count — the question is about your own dependents, not housemates. Step-children and foster children count.
+          Your own dependent children currently living with you most of the time. Step-children and foster children count. Other minors in the household — younger siblings, nieces/nephews, or other relatives' children — do not count; this question is specifically about your own dependents.
         </div>
       </div>
 
@@ -581,7 +581,7 @@
           <label><input type="radio" name="savings_flow" value="no"><span>No</span></label>
         </div>
         <div class="q-help">
-          Q8.5 ("able to save and actively engaged in saving"): any non-zero contribution counts — 401(k) or 403(b) at work, a Roth or traditional IRA, an HSA, a 529 for a child, employer match alone (if you're enrolled), brokerage deposits, or comparable long-term savings. Pension accruals through your employer count. Paying down a mortgage principal counts. Building an emergency fund in a savings account does <em>not</em> count for this question — that's liquidity, not long-term savings.
+          Q8.5 ("able to save and actively engaged in saving"): any non-zero contribution counts — 401(k) or 403(b) at work, a Roth or traditional IRA, an HSA, a 529 for a child, employer match alone (if you're enrolled), brokerage deposits, or comparable long-term savings. Pension accruals through your employer count. Paying down a mortgage principal counts. Building an emergency fund in a savings account does <em>not</em> count for this question — that's liquidity, not long-term savings. If you're retired and no longer making contributions (living off existing savings or a pension), answer <em>No</em> — this question is about active accumulation.
         </div>
       </div>
 
@@ -1067,7 +1067,13 @@ function renderResult(scored) {
   if (scored.strong)   summaryParts.push(`${scored.strong} domain${scored.strong === 1 ? "" : "s"} strong`);
   if (scored.adequate) summaryParts.push(`${scored.adequate} adequate`);
   if (scored.below)    summaryParts.push(`${scored.below} below cohort`);
-  const summaryLine = summaryParts.join(" · ") + ". Family is shown descriptively.";
+  const fam = scored.reads.family;
+  const familySuffix = fam.status === "descriptive"
+    ? ". Family domain is stage-neutral below 30 — shown descriptively."
+    : fam.status === "strong"
+      ? ". Family reads strong."
+      : ". Family reads below cohort (see card).";
+  const summaryLine = summaryParts.join(" · ") + familySuffix;
   document.getElementById("result-summary").textContent = summaryLine;
 
   // ————— Per-person FLY preview (v1.0 methodology proposal) —————
